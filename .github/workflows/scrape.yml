@@ -1,4 +1,4 @@
-yamlname: Daily Rail Scraper
+name: Daily Rail Scraper
 
 on:
   schedule:
