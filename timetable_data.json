@@ -1,0 +1,15 @@
+{
+  "last_updated": "2025-05-24 20:09:50",
+  "routes": {
+    "Laagri to Tallinn": {
+      "departure_station": "Laagri",
+      "arrival_station": "Tallinn",
+      "timetable": []
+    },
+    "Tallinn to Laagri": {
+      "departure_station": "Tallinn",
+      "arrival_station": "Laagri",
+      "timetable": []
+    }
+  }
+}
