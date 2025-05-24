@@ -317,23 +317,12 @@ class RailScraper:
         logger.info("Scraping job completed successfully!")
 
 def main():
-    """Main function to run the scraper."""
+    """Main function to run the scraper once."""
     scraper = RailScraper()
     
-    # Schedule daily scraping
-    scrape_time = scraper.config.get('scrape_time', '06:00')
-    schedule.every().day.at(scrape_time).do(scraper.run_scraping_job)
-    
-    logger.info(f"Rail scraper started. Scheduled to run daily at {scrape_time}")
-    logger.info("Running initial scrape...")
-    
-    # Run initial scrape
+    logger.info("Running rail scraper...")
     scraper.run_scraping_job()
-    
-    # Keep the script running
-    while True:
-        schedule.run_pending()
-        time.sleep(60)  # Check every minute
+    logger.info("Scraper completed!")
 
 if __name__ == "__main__":
     main()
