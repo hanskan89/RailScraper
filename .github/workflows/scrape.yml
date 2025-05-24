@@ -2,18 +2,16 @@ name: Daily Rail Scraper
 
 on:
   schedule:
-    # Run daily at 6:00 AM UTC
-    - cron: '0 6 * * *'
-  workflow_dispatch: # Allows manual triggering
+    - cron: '0 6 * * *'  # 6 AM UTC daily
+  workflow_dispatch:
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      
+    - uses: actions/checkout@v4
+    
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
@@ -21,13 +19,12 @@ jobs:
         
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
         pip install -r requirements.txt
         
     - name: Run scraper
       run: python RailScraper.py
       
-    - name: Commit and push changes
+    - name: Commit results
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
