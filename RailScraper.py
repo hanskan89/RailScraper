@@ -136,27 +136,22 @@ class RailScraper:
             time_pattern = re.compile(r'\b([0-2]?[0-9]):([0-5][0-9])\b')
             
             for container in trip_containers:
-                # Get all text from the container
-                container_text = container.get_text(strip=True)
+
+                span_times = [
+                    match.group()
+                    for span in container.find_all('span')
+                    if (match := time_pattern.search(span.get_text()))
+                ]
                 
-                # Find all times in the container
-                time_matches = time_pattern.findall(container_text)
-                
-                if len(time_matches) >= 2:
-                    # Format times with leading zeros
-                    departure_time = f"{time_matches[0][0].zfill(2)}:{time_matches[0][1]}"
-                    arrival_time = f"{time_matches[1][0].zfill(2)}:{time_matches[1][1]}"
-                    
-                    timetable.append({
+                if len(span_times) >= 2:
+                    departure_time = span_times[0]
+                    arrival_time = span_times[1]
+            
+                    trip_data = {
                         'departure': departure_time,
                         'arrival': arrival_time
-                    })
-                    
-                    logger.debug(f"Found trip: {departure_time} -> {arrival_time}")
-                elif len(time_matches) == 1:
-                    # Sometimes there might be only departure time visible
-                    departure_time = f"{time_matches[0][0].zfill(2)}:{time_matches[0][1]}"
-                    logger.debug(f"Found partial trip: {departure_time} (no arrival time)")
+                    }
+                    timetable.append(trip_data)
             
             # Remove duplicates while preserving order
             seen = set()
