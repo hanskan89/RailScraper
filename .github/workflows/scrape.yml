@@ -1,8 +1,8 @@
-name: Daily Rail Scraper
+yamlname: Daily Rail Scraper
 
 on:
   schedule:
-    - cron: '0 6 * * *'  # 6 AM UTC daily
+    - cron: '0 6 * * *'
   workflow_dispatch:
 
 jobs:
@@ -17,9 +17,15 @@ jobs:
       with:
         python-version: '3.9'
         
+    - name: Install Chrome
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y google-chrome-stable
+        
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
+        pip install webdriver-manager
         
     - name: Run scraper
       run: python RailScraper.py
