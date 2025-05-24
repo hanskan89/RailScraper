@@ -38,8 +38,7 @@ class RailScraper:
                     "departure_station": "Laagri",
                     "arrival_station": "Tallinn",
                     "selectors": {
-                        "departure_time": ".time-departure",
-                        "arrival_time": ".time-arrival"
+                        "trip_container": ".trip-summary__timespan"
                     }
                 },
                 {
@@ -48,8 +47,7 @@ class RailScraper:
                     "departure_station": "Tallinn",
                     "arrival_station": "Laagri",
                     "selectors": {
-                        "departure_time": ".time-departure",
-                        "arrival_time": ".time-arrival"
+                        "trip_container": ".trip-summary__timespan"
                     }
                 }
             ],
@@ -82,57 +80,49 @@ class RailScraper:
             
             soup = BeautifulSoup(response.content, 'html.parser')
             
-            # For Elron website, we need to look for the specific structure
-            # Let's try multiple possible selectors for Elron
+            # Find all trip timespan containers
+            trip_containers = soup.select(route_config['selectors']['trip_container'])
+            
             timetable = []
             
-            # Try to find train schedule entries - Elron uses different class names
-            # We'll look for common patterns on Estonian rail sites
-            schedule_entries = soup.find_all(['div', 'tr'], class_=lambda x: x and any(
-                keyword in x.lower() for keyword in ['schedule', 'timetable', 'route', 'trip', 'journey']
-            ))
+            # Extract times from each trip container
+            import re
+            time_pattern = re.compile(r'\b([0-2]?[0-9]):([0-5][0-9])\b')
             
-            if not schedule_entries:
-                # Fallback: look for time patterns in the HTML
-                time_elements = soup.find_all(text=lambda text: text and 
-                    any(c.isdigit() and ':' in text for c in text.split()))
+            for container in trip_containers:
+                # Get all text from the container
+                container_text = container.get_text(strip=True)
                 
-                # Extract times that match HH:MM format
-                import re
-                time_pattern = re.compile(r'\b([0-2]?[0-9]):([0-5][0-9])\b')
+                # Find all times in the container
+                time_matches = time_pattern.findall(container_text)
                 
-                times = []
-                for element in time_elements:
-                    matches = time_pattern.findall(str(element))
-                    for match in matches:
-                        time_str = f"{match[0].zfill(2)}:{match[1]}"
-                        times.append(time_str)
-                
-                # Pair times as departure/arrival
-                for i in range(0, len(times) - 1, 2):
-                    if i + 1 < len(times):
-                        timetable.append({
-                            'departure': times[i],
-                            'arrival': times[i + 1]
-                        })
-            else:
-                # Extract times from schedule entries using the configured selectors
-                departure_elements = soup.select(route_config['selectors']['departure_time'])
-                arrival_elements = soup.select(route_config['selectors']['arrival_time'])
-                
-                # Pair departure and arrival times
-                for dep, arr in zip(departure_elements, arrival_elements):
-                    departure_time = dep.get_text(strip=True)
-                    arrival_time = arr.get_text(strip=True)
+                if len(time_matches) >= 2:
+                    # Format times with leading zeros
+                    departure_time = f"{time_matches[0][0].zfill(2)}:{time_matches[0][1]}"
+                    arrival_time = f"{time_matches[1][0].zfill(2)}:{time_matches[1][1]}"
                     
-                    if departure_time and arrival_time:
-                        timetable.append({
-                            'departure': departure_time,
-                            'arrival': arrival_time
-                        })
+                    timetable.append({
+                        'departure': departure_time,
+                        'arrival': arrival_time
+                    })
+                    
+                    logger.debug(f"Found trip: {departure_time} -> {arrival_time}")
+                elif len(time_matches) == 1:
+                    # Sometimes there might be only departure time visible
+                    departure_time = f"{time_matches[0][0].zfill(2)}:{time_matches[0][1]}"
+                    logger.debug(f"Found partial trip: {departure_time} (no arrival time)")
             
-            logger.info(f"Found {len(timetable)} schedules for {route_config['name']}")
-            return timetable
+            # Remove duplicates while preserving order
+            seen = set()
+            unique_timetable = []
+            for trip in timetable:
+                trip_key = (trip['departure'], trip['arrival'])
+                if trip_key not in seen:
+                    seen.add(trip_key)
+                    unique_timetable.append(trip)
+            
+            logger.info(f"Found {len(unique_timetable)} unique schedules for {route_config['name']}")
+            return unique_timetable
             
         except Exception as e:
             logger.error(f"Error scraping {route_config['name']}: {str(e)}")
@@ -317,7 +307,7 @@ class RailScraper:
         logger.info("Scraping job completed successfully!")
 
 def main():
-    """Main function to run the scraper once."""
+    """Main function to run the scraper once (optimized for GitHub Actions)."""
     scraper = RailScraper()
     
     logger.info("Running rail scraper...")
