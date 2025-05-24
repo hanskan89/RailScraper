@@ -13,20 +13,50 @@ import time
 import os
 from typing import List, Dict, Tuple
 import logging
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import TimeoutException, WebDriverException
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 class RailScraper:
+    def setup_webdriver(self):
+        """Setup Chrome WebDriver with appropriate options."""
+        try:
+            chrome_options = Options()
+            chrome_options.add_argument('--headless')  # Run in background
+            chrome_options.add_argument('--no-sandbox')
+            chrome_options.add_argument('--disable-dev-shm-usage')
+            chrome_options.add_argument('--disable-gpu')
+            chrome_options.add_argument('--window-size=1920,1080')
+            chrome_options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
+            
+            self.driver = webdriver.Chrome(options=chrome_options)
+            self.driver.set_page_load_timeout(30)
+            logger.info("WebDriver initialized successfully")
+            
+        except Exception as e:
+            logger.error(f"Failed to initialize WebDriver: {str(e)}")
+            raise
+    
+    def close_webdriver(self):
+        """Close the WebDriver."""
+        if self.driver:
+            try:
+                self.driver.quit()
+                logger.info("WebDriver closed successfully")
+            except Exception as e:
+                logger.error(f"Error closing WebDriver: {str(e)}")
     def __init__(self, config_file='config.json'):
         """Initialize the rail scraper with configuration."""
         self.config = self.load_config(config_file)
-        self.session = requests.Session()
-        # Set a user agent to avoid being blocked
-        self.session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-        })
+        self.driver = None
+        self.setup_webdriver()
     
     def load_config(self, config_file: str) -> Dict:
         """Load configuration from JSON file."""
@@ -70,15 +100,31 @@ class RailScraper:
         return url_template.format(date=current_date)
     
     def scrape_route(self, route_config: Dict) -> List[Dict]:
-        """Scrape timetable data for a single route."""
+        """Scrape timetable data for a single route using Selenium."""
         try:
             # Generate URL with current date
             url = self.get_current_date_url(route_config['url_template'])
             logger.info(f"Scraping {route_config['name']} from {url}")
-            response = self.session.get(url, timeout=10)
-            response.raise_for_status()
             
-            soup = BeautifulSoup(response.content, 'html.parser')
+            # Load the page
+            self.driver.get(url)
+            
+            # Wait for the page to load and data to populate
+            logger.info("Waiting for dynamic content to load...")
+            time.sleep(5)  # Wait 5 seconds for dynamic content
+            
+            # Additional wait for specific elements to be present
+            try:
+                # Wait up to 10 seconds for at least one trip container to appear
+                WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, route_config['selectors']['trip_container']))
+                )
+                logger.info("Trip containers found, proceeding with extraction")
+            except TimeoutException:
+                logger.warning("Timeout waiting for trip containers, proceeding anyway")
+            
+            # Get page source and parse with BeautifulSoup
+            soup = BeautifulSoup(self.driver.page_source, 'html.parser')
             
             # Find all trip timespan containers
             trip_containers = soup.select(route_config['selectors']['trip_container'])
@@ -123,7 +169,6 @@ class RailScraper:
             
             logger.info(f"Found {len(unique_timetable)} unique schedules for {route_config['name']}")
             return unique_timetable
-            
         except Exception as e:
             logger.error(f"Error scraping {route_config['name']}: {str(e)}")
             return []
@@ -291,20 +336,25 @@ class RailScraper:
         """Run the complete scraping job."""
         logger.info("Starting daily scraping job...")
         
-        # Scrape all routes
-        data = self.scrape_all_routes()
-        
-        # Generate HTML
-        html_content = self.generate_html(data)
-        
-        # Save HTML file
-        self.save_html(html_content)
-        
-        # Save data as JSON backup
-        with open('timetable_data.json', 'w') as f:
-            json.dump(data, f, indent=2)
-        
-        logger.info("Scraping job completed successfully!")
+        try:
+            # Scrape all routes
+            data = self.scrape_all_routes()
+            
+            # Generate HTML
+            html_content = self.generate_html(data)
+            
+            # Save HTML file
+            self.save_html(html_content)
+            
+            # Save data as JSON backup
+            with open('timetable_data.json', 'w') as f:
+                json.dump(data, f, indent=2)
+            
+            logger.info("Scraping job completed successfully!")
+            
+        finally:
+            # Always close the webdriver
+            self.close_webdriver()
 
 def main():
     """Main function to run the scraper once (optimized for GitHub Actions)."""
