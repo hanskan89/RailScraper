@@ -1,0 +1,401 @@
+{
+  "last_updated": "2025-06-07 22:02:03",
+  "routes": {
+    "Laagri to Tallinn": {
+      "departure_station": "Laagri",
+      "arrival_station": "Tallinn",
+      "timetable": [
+        {
+          "departure": "06:32",
+          "arrival": "06:53"
+        },
+        {
+          "departure": "06:53",
+          "arrival": "07:14"
+        },
+        {
+          "departure": "07:32",
+          "arrival": "07:53"
+        },
+        {
+          "departure": "07:52",
+          "arrival": "08:13"
+        },
+        {
+          "departure": "08:12",
+          "arrival": "08:33"
+        },
+        {
+          "departure": "08:32",
+          "arrival": "08:53"
+        },
+        {
+          "departure": "08:53",
+          "arrival": "09:14"
+        },
+        {
+          "departure": "09:12",
+          "arrival": "09:33"
+        },
+        {
+          "departure": "09:32",
+          "arrival": "09:53"
+        },
+        {
+          "departure": "09:53",
+          "arrival": "10:14"
+        },
+        {
+          "departure": "10:12",
+          "arrival": "10:33"
+        },
+        {
+          "departure": "10:32",
+          "arrival": "10:53"
+        },
+        {
+          "departure": "10:53",
+          "arrival": "11:14"
+        },
+        {
+          "departure": "11:12",
+          "arrival": "11:33"
+        },
+        {
+          "departure": "11:32",
+          "arrival": "11:53"
+        },
+        {
+          "departure": "11:52",
+          "arrival": "12:13"
+        },
+        {
+          "departure": "12:12",
+          "arrival": "12:33"
+        },
+        {
+          "departure": "12:32",
+          "arrival": "12:53"
+        },
+        {
+          "departure": "12:53",
+          "arrival": "13:14"
+        },
+        {
+          "departure": "13:12",
+          "arrival": "13:33"
+        },
+        {
+          "departure": "13:32",
+          "arrival": "13:53"
+        },
+        {
+          "departure": "13:53",
+          "arrival": "14:14"
+        },
+        {
+          "departure": "14:12",
+          "arrival": "14:33"
+        },
+        {
+          "departure": "14:32",
+          "arrival": "14:53"
+        },
+        {
+          "departure": "14:52",
+          "arrival": "15:13"
+        },
+        {
+          "departure": "15:12",
+          "arrival": "15:33"
+        },
+        {
+          "departure": "15:32",
+          "arrival": "15:53"
+        },
+        {
+          "departure": "15:53",
+          "arrival": "16:14"
+        },
+        {
+          "departure": "16:12",
+          "arrival": "16:33"
+        },
+        {
+          "departure": "16:32",
+          "arrival": "16:53"
+        },
+        {
+          "departure": "16:52",
+          "arrival": "17:13"
+        },
+        {
+          "departure": "17:12",
+          "arrival": "17:33"
+        },
+        {
+          "departure": "17:32",
+          "arrival": "17:53"
+        },
+        {
+          "departure": "17:53",
+          "arrival": "18:14"
+        },
+        {
+          "departure": "18:12",
+          "arrival": "18:33"
+        },
+        {
+          "departure": "18:32",
+          "arrival": "18:53"
+        },
+        {
+          "departure": "18:52",
+          "arrival": "19:13"
+        },
+        {
+          "departure": "19:12",
+          "arrival": "19:33"
+        },
+        {
+          "departure": "19:32",
+          "arrival": "19:53"
+        },
+        {
+          "departure": "19:53",
+          "arrival": "20:14"
+        },
+        {
+          "departure": "20:12",
+          "arrival": "20:33"
+        },
+        {
+          "departure": "20:32",
+          "arrival": "20:53"
+        },
+        {
+          "departure": "21:02",
+          "arrival": "21:23"
+        },
+        {
+          "departure": "21:32",
+          "arrival": "21:53"
+        },
+        {
+          "departure": "22:02",
+          "arrival": "22:23"
+        },
+        {
+          "departure": "22:32",
+          "arrival": "22:53"
+        },
+        {
+          "departure": "23:03",
+          "arrival": "23:24"
+        }
+      ]
+    },
+    "Tallinn to Laagri": {
+      "departure_station": "Tallinn",
+      "arrival_station": "Laagri",
+      "timetable": [
+        {
+          "departure": "05:45",
+          "arrival": "06:06"
+        },
+        {
+          "departure": "06:45",
+          "arrival": "07:06"
+        },
+        {
+          "departure": "07:05",
+          "arrival": "07:26"
+        },
+        {
+          "departure": "07:25",
+          "arrival": "07:46"
+        },
+        {
+          "departure": "07:45",
+          "arrival": "08:06"
+        },
+        {
+          "departure": "08:05",
+          "arrival": "08:26"
+        },
+        {
+          "departure": "08:25",
+          "arrival": "08:46"
+        },
+        {
+          "departure": "08:45",
+          "arrival": "09:06"
+        },
+        {
+          "departure": "09:05",
+          "arrival": "09:26"
+        },
+        {
+          "departure": "09:25",
+          "arrival": "09:46"
+        },
+        {
+          "departure": "09:45",
+          "arrival": "10:06"
+        },
+        {
+          "departure": "10:05",
+          "arrival": "10:26"
+        },
+        {
+          "departure": "10:25",
+          "arrival": "10:46"
+        },
+        {
+          "departure": "10:45",
+          "arrival": "11:06"
+        },
+        {
+          "departure": "11:05",
+          "arrival": "11:26"
+        },
+        {
+          "departure": "11:25",
+          "arrival": "11:46"
+        },
+        {
+          "departure": "11:45",
+          "arrival": "12:06"
+        },
+        {
+          "departure": "12:05",
+          "arrival": "12:26"
+        },
+        {
+          "departure": "12:25",
+          "arrival": "12:46"
+        },
+        {
+          "departure": "12:45",
+          "arrival": "13:06"
+        },
+        {
+          "departure": "13:05",
+          "arrival": "13:26"
+        },
+        {
+          "departure": "13:25",
+          "arrival": "13:46"
+        },
+        {
+          "departure": "13:45",
+          "arrival": "14:06"
+        },
+        {
+          "departure": "14:05",
+          "arrival": "14:26"
+        },
+        {
+          "departure": "14:25",
+          "arrival": "14:46"
+        },
+        {
+          "departure": "14:45",
+          "arrival": "15:06"
+        },
+        {
+          "departure": "15:05",
+          "arrival": "15:26"
+        },
+        {
+          "departure": "15:25",
+          "arrival": "15:46"
+        },
+        {
+          "departure": "15:45",
+          "arrival": "16:06"
+        },
+        {
+          "departure": "16:05",
+          "arrival": "16:26"
+        },
+        {
+          "departure": "16:25",
+          "arrival": "16:46"
+        },
+        {
+          "departure": "16:45",
+          "arrival": "17:06"
+        },
+        {
+          "departure": "17:05",
+          "arrival": "17:26"
+        },
+        {
+          "departure": "17:25",
+          "arrival": "17:46"
+        },
+        {
+          "departure": "17:45",
+          "arrival": "18:06"
+        },
+        {
+          "departure": "18:05",
+          "arrival": "18:26"
+        },
+        {
+          "departure": "18:25",
+          "arrival": "18:46"
+        },
+        {
+          "departure": "18:45",
+          "arrival": "19:06"
+        },
+        {
+          "departure": "19:05",
+          "arrival": "19:26"
+        },
+        {
+          "departure": "19:25",
+          "arrival": "19:46"
+        },
+        {
+          "departure": "19:45",
+          "arrival": "20:06"
+        },
+        {
+          "departure": "20:15",
+          "arrival": "20:36"
+        },
+        {
+          "departure": "20:45",
+          "arrival": "21:06"
+        },
+        {
+          "departure": "21:15",
+          "arrival": "21:36"
+        },
+        {
+          "departure": "21:45",
+          "arrival": "22:06"
+        },
+        {
+          "departure": "22:15",
+          "arrival": "22:36"
+        },
+        {
+          "departure": "22:45",
+          "arrival": "23:06"
+        },
+        {
+          "departure": "23:15",
+          "arrival": "23:36"
+        },
+        {
+          "departure": "23:45",
+          "arrival": "00:06"
+        }
+      ]
+    }
+  }
+}
