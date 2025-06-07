@@ -186,135 +186,456 @@ class RailScraper:
         return all_data
     
     def generate_html(self, data: Dict) -> str:
-        """Generate HTML page from scraped data."""
+        """Generate HTML page from scraped data with client-side time filtering."""
         html_template = f"""
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rail Timetables</title>
-    <style>
-        body {{
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }}
-        .header {{
-            text-align: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-        }}
-        .route {{
-            background: white;
-            margin: 20px 0;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }}
-        .route h2 {{
-            color: #333;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 10px;
-        }}
-        .route-info {{
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 15px 0;
-        }}
-        table {{
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }}
-        th, td {{
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }}
-        th {{
-            background-color: #667eea;
-            color: white;
-        }}
-        tr:nth-child(even) {{
-            background-color: #f2f2f2;
-        }}
-        tr:hover {{
-            background-color: #e8f4f8;
-        }}
-        .last-updated {{
-            text-align: center;
-            color: #666;
-            font-style: italic;
-            margin-top: 30px;
-        }}
-        .no-data {{
-            text-align: center;
-            color: #999;
-            padding: 20px;
-            font-style: italic;
-        }}
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>🚂 Rail Timetables</h1>
-        <p>Current train schedules for your daily commute</p>
-    </div>
-"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Rail Timetables</title>
+        <style>
+            body {{
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #f5f5f5;
+            }}
+            .header {{
+                text-align: center;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 30px;
+                border-radius: 10px;
+                margin-bottom: 30px;
+                position: relative;
+            }}
+            .current-time {{
+                display: inline;
+            }}
+            .route {{
+                background: white;
+                margin: 20px 0;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }}
+            .route h2 {{
+                color: #333;
+                border-bottom: 3px solid #667eea;
+                padding-bottom: 10px;
+                margin-bottom: 15px;
+            }}
+            .route-info {{
+                background: #f8f9fa;
+                padding: 15px;
+                border-radius: 5px;
+                margin: 15px 0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+            }}
+            .route-details {{
+                display: flex;
+                gap: 20px;
+                flex-wrap: wrap;
+            }}
+            .filter-controls {{
+                display: flex;
+                gap: 10px;
+                align-items: center;
+                margin-top: 10px;
+            }}
+            .filter-toggle {{
+                background: #667eea;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 0.9em;
+                transition: background-color 0.3s;
+            }}
+            .filter-toggle:hover {{
+                background: #5a6fd8;
+            }}
+            .filter-toggle.active {{
+                background: #28a745;
+            }}
+            .show-all-toggle {{
+                background: #6c757d;
+            }}
+            .show-all-toggle:hover {{
+                background: #5a6268;
+            }}
+            .upcoming-count {{
+                color: #28a745;
+                font-weight: bold;
+                margin-left: 10px;
+            }}
+            table {{
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 15px;
+            }}
+            th, td {{
+                padding: 12px;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+            }}
+            th {{
+                background-color: #667eea;
+                color: white;
+            }}
+            tr:nth-child(even) {{
+                background-color: #f2f2f2;
+            }}
+            tr:hover {{
+                background-color: #e8f4f8;
+            }}
+            .time-cell {{
+                font-weight: bold;
+                font-family: 'Courier New', monospace;
+            }}
+            .past-time {{
+                opacity: 0.5;
+                color: #999;
+            }}
+            .next-train {{
+                background-color: #d4edda !important;
+                border-left: 4px solid #28a745;
+            }}
+            .leaving-soon {{
+                background-color: #fff3cd !important;
+                border-left: 4px solid #ffc107;
+            }}
+            .hidden {{
+                display: none !important;
+            }}
+            .last-updated {{
+                text-align: center;
+                color: #666;
+                font-style: italic;
+                margin-top: 30px;
+            }}
+            .no-data {{
+                text-align: center;
+                color: #999;
+                padding: 20px;
+                font-style: italic;
+            }}
+            .no-upcoming {{
+                text-align: center;
+                color: #dc3545;
+                padding: 20px;
+                font-style: italic;
+                background: #f8d7da;
+                border-radius: 5px;
+                margin-top: 15px;
+            }}
+            .status-indicator {{
+                display: inline-block;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                margin-right: 8px;
+            }}
+            .status-upcoming {{
+                background-color: #28a745;
+            }}
+            .status-soon {{
+                background-color: #ffc107;
+            }}
+            .status-past {{
+                background-color: #dc3545;
+            }}
+            @media (max-width: 768px) {{
+                .route-info {{
+                    flex-direction: column;
+                    align-items: flex-start;
+                }}
+                .filter-controls {{
+                    margin-top: 15px;
+                    flex-wrap: wrap;
+                }}
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            🚂 Rail Timetables: <div class="current-time" id="currentTime"></div>
+        </div>
+    """
         
         for route_name, route_data in data['routes'].items():
+            # Create a unique ID for each route
+            route_id = route_name.lower().replace(' ', '-').replace('to', 'to')
+            
             html_template += f"""
-    <div class="route">
-        <h2>{route_name}</h2>
-        <div class="route-info">
-            <strong>From:</strong> {route_data['departure_station']} 
-            <strong>To:</strong> {route_data['arrival_station']}
-        </div>
-"""
+        <div class="route" id="route-{route_id}">
+            <h2>{route_name} <a href="#" onclick="cycleToNext('route-')">&lt;&lt;&gt;&gt;</a></h2>
+            <div class="route-info">
+                <div class="route-details">
+                    <span><strong>From:</strong> {route_data['departure_station']}</span>
+                    <span><strong>To:</strong> {route_data['arrival_station']}</span>
+                </div>
+                <div class="filter-controls">
+                    <button class="filter-toggle active" onclick="toggleFilter('{route_id}', true)">
+                        Future Only
+                    </button>
+                    <button class="filter-toggle show-all-toggle" onclick="toggleFilter('{route_id}', false)">
+                        Show All
+                    </button>
+                    <span class="upcoming-count" id="count-{route_id}"></span>
+                </div>
+            </div>
+    """
             
             if route_data['timetable']:
-                html_template += """
-        <table>
-            <thead>
-                <tr>
-                    <th>Departure Time</th>
-                    <th>Arrival Time</th>
-                </tr>
-            </thead>
-            <tbody>
-"""
-                for schedule in route_data['timetable']:
+                html_template += f"""
+            <table id="table-{route_id}">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Departure</th>
+                        <th>Arrival</th>
+                        <th>Time Left</th>
+                    </tr>
+                </thead>
+                <tbody>
+    """
+                for i, schedule in enumerate(route_data['timetable']):
                     html_template += f"""
-                <tr>
-                    <td>{schedule['departure']}</td>
-                    <td>{schedule['arrival']}</td>
-                </tr>
-"""
+                    <tr class="train-row" data-route="{route_id}" data-departure="{schedule['departure']}" data-index="{i}">
+                        <td class="status-cell">
+                            <span class="status-indicator" id="status-{route_id}-{i}"></span>
+                            <span id="status-text-{route_id}-{i}"></span>
+                        </td>
+                        <td class="time-cell departure-time">{schedule['departure']}</td>
+                        <td class="time-cell arrival-time">{schedule['arrival']}</td>
+                        <td class="time-cell countdown" id="countdown-{route_id}-{i}"></td>
+                    </tr>
+    """
                 html_template += """
-            </tbody>
-        </table>
-"""
+                </tbody>
+            </table>
+            <div class="no-upcoming hidden" id="no-upcoming-""" + route_id + """">
+                No upcoming trains for today. Check back tomorrow!
+            </div>
+    """
             else:
                 html_template += """
-        <div class="no-data">No timetable data available</div>
-"""
+            <div class="no-data">No timetable data available</div>
+    """
             
             html_template += "    </div>\n"
         
         html_template += f"""
-    <div class="last-updated">
-        Last updated: {data['last_updated']}
-    </div>
-</body>
-</html>
-"""
+        <div class="last-updated">
+            Last updated: {data['last_updated']}
+        </div>
+    
+        <script>
+            // Global state
+            const routeFilters = {{}};
+            
+            // Initialize filters (all routes start with future-only filter active)
+            {json.dumps([route['name'].lower().replace(' ', '-').replace('to', 'to') for route in self.config['routes']])}.forEach(routeId => {{
+                routeFilters[routeId] = true; // true = show future only, false = show all
+            }});
+    
+            function parseTime(timeStr) {{
+                const [hours, minutes] = timeStr.split(':').map(Number);
+                const now = new Date();
+                const timeToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
+                
+                // If the time has passed today, assume it's for tomorrow
+                if (timeToday < now) {{
+                    timeToday.setDate(timeToday.getDate() + 1);
+                }}
+                
+                return timeToday;
+            }}
+    
+            function formatTimeUntil(targetTime) {{
+                const now = new Date();
+                const diffMs = targetTime - now;
+                
+                if (diffMs < 0) {{
+                    return 'Departed';
+                }}
+                
+                const diffMinutes = Math.floor(diffMs / (1000 * 60));
+                const diffHours = Math.floor(diffMinutes / 60);
+                const remainingMinutes = diffMinutes % 60;
+                
+                if (diffHours > 0) {{
+                    return `${{diffHours}}h ${{remainingMinutes}}m`;
+                }} else if (diffMinutes > 0) {{
+                    return `${{diffMinutes}}m`;
+                }} else {{
+                    return 'Now';
+                }}
+            }}
+    
+            function updateTimeDisplay() {{
+                const now = new Date();
+                document.getElementById('currentTime').textContent = now.toLocaleTimeString();
+            }}
+    
+            function updateTrainStatus() {{
+                const now = new Date();
+                
+                document.querySelectorAll('.train-row').forEach(row => {{
+                    const routeId = row.dataset.route;
+                    const departureTime = row.dataset.departure;
+                    const index = row.dataset.index;
+                    const targetTime = parseTime(departureTime);
+                    const diffMs = targetTime - now;
+                    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+                    
+                    // Update countdown
+                    const countdownEl = document.getElementById(`countdown-${{routeId}}-${{index}}`);
+                    const statusIndicator = document.getElementById(`status-${{routeId}}-${{index}}`);
+                    const statusText = document.getElementById(`status-text-${{routeId}}-${{index}}`);
+                    
+                    if (diffMs < 0) {{
+                        // Train has departed
+                        row.classList.add('past-time');
+                        row.classList.remove('next-train', 'leaving-soon');
+                        statusIndicator.className = 'status-indicator status-past';
+                        statusText.textContent = 'Departed';
+                        countdownEl.textContent = 'Departed';
+                    }} else if (diffMinutes <= 15) {{
+                        // Train leaving soon (within 15 minutes)
+                        row.classList.add('leaving-soon');
+                        row.classList.remove('past-time', 'next-train');
+                        statusIndicator.className = 'status-indicator status-soon';
+                        statusText.textContent = 'Soon';
+                        countdownEl.textContent = formatTimeUntil(targetTime);
+                    }} else {{
+                        // Future train
+                        row.classList.add('next-train');
+                        row.classList.remove('past-time', 'leaving-soon');
+                        statusIndicator.className = 'status-indicator status-upcoming';
+                        statusText.textContent = '';
+                        countdownEl.textContent = formatTimeUntil(targetTime);
+                    }}
+                    
+                    // Apply filtering
+                    const showFutureOnly = routeFilters[routeId];
+                    if (showFutureOnly && diffMs < 0) {{
+                        row.classList.add('hidden');
+                    }} else {{
+                        row.classList.remove('hidden');
+                    }}
+                }});
+                
+                // Update counters for each route
+                Object.keys(routeFilters).forEach(routeId => {{
+                    updateUpcomingCount(routeId);
+                }});
+            }}
+    
+            function updateUpcomingCount(routeId) {{
+                const rows = document.querySelectorAll(`[data-route="${{routeId}}"]`);
+                const upcomingCount = Array.from(rows).filter(row => {{
+                    const departureTime = row.dataset.departure;
+                    const targetTime = parseTime(departureTime);
+                    const now = new Date();
+                    return targetTime > now;
+                }}).length;
+                
+                const countEl = document.getElementById(`count-${{routeId}}`);
+                if (countEl) {{
+                    countEl.textContent = `(${{upcomingCount}} upcoming)`;
+                }}
+                
+                // Show/hide no upcoming message
+                const noUpcomingEl = document.getElementById(`no-upcoming-${{routeId}}`);
+                const tableEl = document.getElementById(`table-${{routeId}}`);
+                
+                if (routeFilters[routeId] && upcomingCount === 0) {{
+                    if (noUpcomingEl) noUpcomingEl.classList.remove('hidden');
+                    if (tableEl) tableEl.classList.add('hidden');
+                }} else {{
+                    if (noUpcomingEl) noUpcomingEl.classList.add('hidden');
+                    if (tableEl) tableEl.classList.remove('hidden');
+                }}
+            }}
+    
+            function toggleFilter(routeId, showFutureOnly) {{
+                routeFilters[routeId] = showFutureOnly;
+                
+                // Update button states
+                const routeDiv = document.getElementById(`route-${{routeId}}`);
+                const buttons = routeDiv.querySelectorAll('.filter-toggle');
+                buttons.forEach(btn => btn.classList.remove('active'));
+                
+                if (showFutureOnly) {{
+                    routeDiv.querySelector('.filter-toggle:first-of-type').classList.add('active');
+                }} else {{
+                    routeDiv.querySelector('.show-all-toggle').classList.add('active');
+                }}
+                
+                // Reapply filtering
+                updateTrainStatus();
+            }}
+            
+            let currentIndex = -1;
+            
+            function cycleToNext(prefix) {{
+                const allElements = document.querySelectorAll('[id^="' + prefix + '"]');
+                
+                if (allElements.length === 0) {{
+                    console.log('No elements found with prefix: ' + prefix);
+                    return;
+                }}
+                
+                currentIndex = (currentIndex + 1) % allElements.length;
+                const targetElement = allElements[currentIndex];
+                
+                console.log('Attempting to scroll to:', targetElement.id);
+                console.log('Element visible:', targetElement.offsetHeight > 0);
+                console.log('Element position:', targetElement.getBoundingClientRect());
+                
+                // Try multiple scroll methods
+                try {{
+                    targetElement.scrollIntoView({{
+                        behavior: 'smooth',
+                        block: 'start'
+                    }});
+                    
+                    // Fallback: try direct scroll after a small delay
+                    setTimeout(() => {{
+                        targetElement.scrollIntoView();
+                    }}, 100);
+                    
+                }} catch (error) {{
+                    console.log('Scroll error:', error);
+                }}
+            }}
+    
+            // Initialize and start updates
+            function init() {{
+                updateTimeDisplay();
+                updateTrainStatus();
+                
+                // Update every 30 seconds
+                setInterval(() => {{
+                    updateTimeDisplay();
+                    updateTrainStatus();
+                }}, 30000);
+            }}
+    
+            // Start when page loads
+            document.addEventListener('DOMContentLoaded', init);
+        </script>
+    </body>
+    </html>
+    """
         return html_template
     
     def save_html(self, html_content: str):
