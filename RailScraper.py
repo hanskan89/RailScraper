@@ -375,7 +375,7 @@ class RailScraper:
             
             html_template += f"""
         <div class="route" id="route-{route_id}">
-            <h2>{route_name}</h2>
+            <h2>{route_name} <a href="#" onclick="cycleToNext('route-')">&lt;&lt;&gt;&gt;</a></h2>
             <div class="route-info">
                 <div class="route-details">
                     <span><strong>From:</strong> {route_data['departure_station']}</span>
@@ -582,6 +582,40 @@ class RailScraper:
                 
                 // Reapply filtering
                 updateTrainStatus();
+            }}
+            
+            let currentIndex = -1;
+            
+            function cycleToNext(prefix) {{
+                const allElements = document.querySelectorAll('[id^="' + prefix + '"]');
+                
+                if (allElements.length === 0) {{
+                    console.log('No elements found with prefix: ' + prefix);
+                    return;
+                }}
+                
+                currentIndex = (currentIndex + 1) % allElements.length;
+                const targetElement = allElements[currentIndex];
+                
+                console.log('Attempting to scroll to:', targetElement.id);
+                console.log('Element visible:', targetElement.offsetHeight > 0);
+                console.log('Element position:', targetElement.getBoundingClientRect());
+                
+                // Try multiple scroll methods
+                try {{
+                    targetElement.scrollIntoView({{
+                        behavior: 'smooth',
+                        block: 'start'
+                    }});
+                    
+                    // Fallback: try direct scroll after a small delay
+                    setTimeout(() => {{
+                        targetElement.scrollIntoView();
+                    }}, 100);
+                    
+                }} catch (error) {{
+                    console.log('Scroll error:', error);
+                }}
             }}
     
             // Initialize and start updates
