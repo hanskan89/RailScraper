@@ -180,7 +180,7 @@
         </div>
     
         <div class="route" id="route-laagri-to-tallinn">
-            <h2>Laagri to Tallinn</h2>
+            <h2>Laagri to Tallinn <a href="#" onclick="cycleToNext('route-')">&lt;&lt;&gt;&gt;</a></h2>
             <div class="route-info">
                 <div class="route-details">
                     <span><strong>From:</strong> Laagri</span>
@@ -686,7 +686,7 @@
         </div>
 
         <div class="route" id="route-tallinn-to-laagri">
-            <h2>Tallinn to Laagri</h2>
+            <h2>Tallinn to Laagri <a href="#" onclick="cycleToNext('route-')">&lt;&lt;&gt;&gt;</a></h2>
             <div class="route-info">
                 <div class="route-details">
                     <span><strong>From:</strong> Tallinn</span>
@@ -1212,7 +1212,7 @@
         </div>
 
         <div class="last-updated">
-            Last updated: 2025-06-07 22:22:55
+            Last updated: 2025-06-07 22:43:53
         </div>
     
         <script>
@@ -1360,6 +1360,40 @@
                 
                 // Reapply filtering
                 updateTrainStatus();
+            }
+            
+            let currentIndex = -1;
+            
+            function cycleToNext(prefix) {
+                const allElements = document.querySelectorAll('[id^="' + prefix + '"]');
+                
+                if (allElements.length === 0) {
+                    console.log('No elements found with prefix: ' + prefix);
+                    return;
+                }
+                
+                currentIndex = (currentIndex + 1) % allElements.length;
+                const targetElement = allElements[currentIndex];
+                
+                console.log('Attempting to scroll to:', targetElement.id);
+                console.log('Element visible:', targetElement.offsetHeight > 0);
+                console.log('Element position:', targetElement.getBoundingClientRect());
+                
+                // Try multiple scroll methods
+                try {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    
+                    // Fallback: try direct scroll after a small delay
+                    setTimeout(() => {
+                        targetElement.scrollIntoView();
+                    }, 100);
+                    
+                } catch (error) {
+                    console.log('Scroll error:', error);
+                }
             }
     
             // Initialize and start updates
