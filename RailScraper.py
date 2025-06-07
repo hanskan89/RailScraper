@@ -212,11 +212,7 @@ class RailScraper:
                 position: relative;
             }}
             .current-time {{
-                position: absolute;
-                top: 10px;
-                right: 20px;
-                font-size: 0.9em;
-                opacity: 0.9;
+                display: inline;
             }}
             .route {{
                 background: white;
@@ -364,18 +360,12 @@ class RailScraper:
                     margin-top: 15px;
                     flex-wrap: wrap;
                 }}
-                .current-time {{
-                    position: static;
-                    margin-top: 10px;
-                }}
             }}
         </style>
     </head>
     <body>
         <div class="header">
-            <h1>🚂 Rail Timetables</h1>
-            <p>Current train schedules for your daily commute</p>
-            <div class="current-time" id="currentTime"></div>
+            🚂 Rail Timetables: <div class="current-time" id="currentTime"></div>
         </div>
     """
         
@@ -408,10 +398,10 @@ class RailScraper:
             <table id="table-{route_id}">
                 <thead>
                     <tr>
-                        <th>Status</th>
-                        <th>Departure Time</th>
-                        <th>Arrival Time</th>
-                        <th>Time Until Departure</th>
+                        <th></th>
+                        <th>Departure</th>
+                        <th>Arrival</th>
+                        <th>Time Left</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -425,7 +415,7 @@ class RailScraper:
                         </td>
                         <td class="time-cell departure-time">{schedule['departure']}</td>
                         <td class="time-cell arrival-time">{schedule['arrival']}</td>
-                        <td class="countdown" id="countdown-{route_id}-{i}"></td>
+                        <td class="time-cell countdown" id="countdown-{route_id}-{i}"></td>
                     </tr>
     """
                 html_template += """
@@ -530,7 +520,7 @@ class RailScraper:
                         row.classList.add('next-train');
                         row.classList.remove('past-time', 'leaving-soon');
                         statusIndicator.className = 'status-indicator status-upcoming';
-                        statusText.textContent = 'Upcoming';
+                        statusText.textContent = '';
                         countdownEl.textContent = formatTimeUntil(targetTime);
                     }}
                     
