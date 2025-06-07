@@ -23,11 +23,7 @@
                 position: relative;
             }
             .current-time {
-                position: absolute;
-                top: 10px;
-                right: 20px;
-                font-size: 0.9em;
-                opacity: 0.9;
+                display: inline;
             }
             .route {
                 background: white;
@@ -175,18 +171,12 @@
                     margin-top: 15px;
                     flex-wrap: wrap;
                 }
-                .current-time {
-                    position: static;
-                    margin-top: 10px;
-                }
             }
         </style>
     </head>
     <body>
         <div class="header">
-            <h1>🚂 Rail Timetables</h1>
-            <p>Current train schedules for your daily commute</p>
-            <div class="current-time" id="currentTime"></div>
+            🚂 Rail Timetables: <div class="current-time" id="currentTime"></div>
         </div>
     
         <div class="route" id="route-laagri-to-tallinn">
@@ -210,10 +200,10 @@
             <table id="table-laagri-to-tallinn">
                 <thead>
                     <tr>
-                        <th>Status</th>
-                        <th>Departure Time</th>
-                        <th>Arrival Time</th>
-                        <th>Time Until Departure</th>
+                        <th></th>
+                        <th>Departure</th>
+                        <th>Arrival</th>
+                        <th>Time Left</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -225,7 +215,7 @@
                         </td>
                         <td class="time-cell departure-time">06:32</td>
                         <td class="time-cell arrival-time">06:53</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-0"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-0"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="06:53" data-index="1">
@@ -235,7 +225,7 @@
                         </td>
                         <td class="time-cell departure-time">06:53</td>
                         <td class="time-cell arrival-time">07:14</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-1"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-1"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="07:32" data-index="2">
@@ -245,7 +235,7 @@
                         </td>
                         <td class="time-cell departure-time">07:32</td>
                         <td class="time-cell arrival-time">07:53</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-2"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-2"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="07:52" data-index="3">
@@ -255,7 +245,7 @@
                         </td>
                         <td class="time-cell departure-time">07:52</td>
                         <td class="time-cell arrival-time">08:13</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-3"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-3"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="08:12" data-index="4">
@@ -265,7 +255,7 @@
                         </td>
                         <td class="time-cell departure-time">08:12</td>
                         <td class="time-cell arrival-time">08:33</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-4"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-4"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="08:32" data-index="5">
@@ -275,7 +265,7 @@
                         </td>
                         <td class="time-cell departure-time">08:32</td>
                         <td class="time-cell arrival-time">08:53</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-5"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-5"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="08:53" data-index="6">
@@ -285,7 +275,7 @@
                         </td>
                         <td class="time-cell departure-time">08:53</td>
                         <td class="time-cell arrival-time">09:14</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-6"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-6"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="09:12" data-index="7">
@@ -295,7 +285,7 @@
                         </td>
                         <td class="time-cell departure-time">09:12</td>
                         <td class="time-cell arrival-time">09:33</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-7"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-7"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="09:32" data-index="8">
@@ -305,7 +295,7 @@
                         </td>
                         <td class="time-cell departure-time">09:32</td>
                         <td class="time-cell arrival-time">09:53</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-8"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-8"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="09:53" data-index="9">
@@ -315,7 +305,7 @@
                         </td>
                         <td class="time-cell departure-time">09:53</td>
                         <td class="time-cell arrival-time">10:14</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-9"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-9"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="10:12" data-index="10">
@@ -325,7 +315,7 @@
                         </td>
                         <td class="time-cell departure-time">10:12</td>
                         <td class="time-cell arrival-time">10:33</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-10"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-10"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="10:32" data-index="11">
@@ -335,7 +325,7 @@
                         </td>
                         <td class="time-cell departure-time">10:32</td>
                         <td class="time-cell arrival-time">10:53</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-11"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-11"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="10:53" data-index="12">
@@ -345,7 +335,7 @@
                         </td>
                         <td class="time-cell departure-time">10:53</td>
                         <td class="time-cell arrival-time">11:14</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-12"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-12"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="11:12" data-index="13">
@@ -355,7 +345,7 @@
                         </td>
                         <td class="time-cell departure-time">11:12</td>
                         <td class="time-cell arrival-time">11:33</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-13"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-13"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="11:32" data-index="14">
@@ -365,7 +355,7 @@
                         </td>
                         <td class="time-cell departure-time">11:32</td>
                         <td class="time-cell arrival-time">11:53</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-14"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-14"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="11:52" data-index="15">
@@ -375,7 +365,7 @@
                         </td>
                         <td class="time-cell departure-time">11:52</td>
                         <td class="time-cell arrival-time">12:13</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-15"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-15"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="12:12" data-index="16">
@@ -385,7 +375,7 @@
                         </td>
                         <td class="time-cell departure-time">12:12</td>
                         <td class="time-cell arrival-time">12:33</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-16"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-16"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="12:32" data-index="17">
@@ -395,7 +385,7 @@
                         </td>
                         <td class="time-cell departure-time">12:32</td>
                         <td class="time-cell arrival-time">12:53</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-17"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-17"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="12:53" data-index="18">
@@ -405,7 +395,7 @@
                         </td>
                         <td class="time-cell departure-time">12:53</td>
                         <td class="time-cell arrival-time">13:14</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-18"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-18"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="13:12" data-index="19">
@@ -415,7 +405,7 @@
                         </td>
                         <td class="time-cell departure-time">13:12</td>
                         <td class="time-cell arrival-time">13:33</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-19"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-19"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="13:32" data-index="20">
@@ -425,7 +415,7 @@
                         </td>
                         <td class="time-cell departure-time">13:32</td>
                         <td class="time-cell arrival-time">13:53</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-20"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-20"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="13:53" data-index="21">
@@ -435,7 +425,7 @@
                         </td>
                         <td class="time-cell departure-time">13:53</td>
                         <td class="time-cell arrival-time">14:14</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-21"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-21"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="14:12" data-index="22">
@@ -445,7 +435,7 @@
                         </td>
                         <td class="time-cell departure-time">14:12</td>
                         <td class="time-cell arrival-time">14:33</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-22"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-22"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="14:32" data-index="23">
@@ -455,7 +445,7 @@
                         </td>
                         <td class="time-cell departure-time">14:32</td>
                         <td class="time-cell arrival-time">14:53</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-23"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-23"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="14:52" data-index="24">
@@ -465,7 +455,7 @@
                         </td>
                         <td class="time-cell departure-time">14:52</td>
                         <td class="time-cell arrival-time">15:13</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-24"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-24"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="15:12" data-index="25">
@@ -475,7 +465,7 @@
                         </td>
                         <td class="time-cell departure-time">15:12</td>
                         <td class="time-cell arrival-time">15:33</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-25"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-25"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="15:32" data-index="26">
@@ -485,7 +475,7 @@
                         </td>
                         <td class="time-cell departure-time">15:32</td>
                         <td class="time-cell arrival-time">15:53</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-26"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-26"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="15:53" data-index="27">
@@ -495,7 +485,7 @@
                         </td>
                         <td class="time-cell departure-time">15:53</td>
                         <td class="time-cell arrival-time">16:14</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-27"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-27"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="16:12" data-index="28">
@@ -505,7 +495,7 @@
                         </td>
                         <td class="time-cell departure-time">16:12</td>
                         <td class="time-cell arrival-time">16:33</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-28"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-28"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="16:32" data-index="29">
@@ -515,7 +505,7 @@
                         </td>
                         <td class="time-cell departure-time">16:32</td>
                         <td class="time-cell arrival-time">16:53</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-29"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-29"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="16:52" data-index="30">
@@ -525,7 +515,7 @@
                         </td>
                         <td class="time-cell departure-time">16:52</td>
                         <td class="time-cell arrival-time">17:13</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-30"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-30"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="17:12" data-index="31">
@@ -535,7 +525,7 @@
                         </td>
                         <td class="time-cell departure-time">17:12</td>
                         <td class="time-cell arrival-time">17:33</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-31"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-31"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="17:32" data-index="32">
@@ -545,7 +535,7 @@
                         </td>
                         <td class="time-cell departure-time">17:32</td>
                         <td class="time-cell arrival-time">17:53</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-32"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-32"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="17:53" data-index="33">
@@ -555,7 +545,7 @@
                         </td>
                         <td class="time-cell departure-time">17:53</td>
                         <td class="time-cell arrival-time">18:14</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-33"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-33"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="18:12" data-index="34">
@@ -565,7 +555,7 @@
                         </td>
                         <td class="time-cell departure-time">18:12</td>
                         <td class="time-cell arrival-time">18:33</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-34"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-34"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="18:32" data-index="35">
@@ -575,7 +565,7 @@
                         </td>
                         <td class="time-cell departure-time">18:32</td>
                         <td class="time-cell arrival-time">18:53</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-35"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-35"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="18:52" data-index="36">
@@ -585,7 +575,7 @@
                         </td>
                         <td class="time-cell departure-time">18:52</td>
                         <td class="time-cell arrival-time">19:13</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-36"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-36"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="19:12" data-index="37">
@@ -595,7 +585,7 @@
                         </td>
                         <td class="time-cell departure-time">19:12</td>
                         <td class="time-cell arrival-time">19:33</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-37"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-37"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="19:32" data-index="38">
@@ -605,7 +595,7 @@
                         </td>
                         <td class="time-cell departure-time">19:32</td>
                         <td class="time-cell arrival-time">19:53</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-38"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-38"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="19:53" data-index="39">
@@ -615,7 +605,7 @@
                         </td>
                         <td class="time-cell departure-time">19:53</td>
                         <td class="time-cell arrival-time">20:14</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-39"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-39"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="20:12" data-index="40">
@@ -625,7 +615,7 @@
                         </td>
                         <td class="time-cell departure-time">20:12</td>
                         <td class="time-cell arrival-time">20:33</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-40"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-40"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="20:32" data-index="41">
@@ -635,7 +625,7 @@
                         </td>
                         <td class="time-cell departure-time">20:32</td>
                         <td class="time-cell arrival-time">20:53</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-41"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-41"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="21:02" data-index="42">
@@ -645,7 +635,7 @@
                         </td>
                         <td class="time-cell departure-time">21:02</td>
                         <td class="time-cell arrival-time">21:23</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-42"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-42"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="21:32" data-index="43">
@@ -655,7 +645,7 @@
                         </td>
                         <td class="time-cell departure-time">21:32</td>
                         <td class="time-cell arrival-time">21:53</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-43"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-43"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="22:02" data-index="44">
@@ -665,7 +655,7 @@
                         </td>
                         <td class="time-cell departure-time">22:02</td>
                         <td class="time-cell arrival-time">22:23</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-44"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-44"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="22:32" data-index="45">
@@ -675,7 +665,7 @@
                         </td>
                         <td class="time-cell departure-time">22:32</td>
                         <td class="time-cell arrival-time">22:53</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-45"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-45"></td>
                     </tr>
     
                     <tr class="train-row" data-route="laagri-to-tallinn" data-departure="23:03" data-index="46">
@@ -685,7 +675,7 @@
                         </td>
                         <td class="time-cell departure-time">23:03</td>
                         <td class="time-cell arrival-time">23:24</td>
-                        <td class="countdown" id="countdown-laagri-to-tallinn-46"></td>
+                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-46"></td>
                     </tr>
     
                 </tbody>
@@ -716,10 +706,10 @@
             <table id="table-tallinn-to-laagri">
                 <thead>
                     <tr>
-                        <th>Status</th>
-                        <th>Departure Time</th>
-                        <th>Arrival Time</th>
-                        <th>Time Until Departure</th>
+                        <th></th>
+                        <th>Departure</th>
+                        <th>Arrival</th>
+                        <th>Time Left</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -731,7 +721,7 @@
                         </td>
                         <td class="time-cell departure-time">05:45</td>
                         <td class="time-cell arrival-time">06:06</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-0"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-0"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="06:45" data-index="1">
@@ -741,7 +731,7 @@
                         </td>
                         <td class="time-cell departure-time">06:45</td>
                         <td class="time-cell arrival-time">07:06</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-1"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-1"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="07:05" data-index="2">
@@ -751,7 +741,7 @@
                         </td>
                         <td class="time-cell departure-time">07:05</td>
                         <td class="time-cell arrival-time">07:26</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-2"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-2"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="07:25" data-index="3">
@@ -761,7 +751,7 @@
                         </td>
                         <td class="time-cell departure-time">07:25</td>
                         <td class="time-cell arrival-time">07:46</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-3"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-3"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="07:45" data-index="4">
@@ -771,7 +761,7 @@
                         </td>
                         <td class="time-cell departure-time">07:45</td>
                         <td class="time-cell arrival-time">08:06</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-4"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-4"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="08:05" data-index="5">
@@ -781,7 +771,7 @@
                         </td>
                         <td class="time-cell departure-time">08:05</td>
                         <td class="time-cell arrival-time">08:26</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-5"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-5"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="08:25" data-index="6">
@@ -791,7 +781,7 @@
                         </td>
                         <td class="time-cell departure-time">08:25</td>
                         <td class="time-cell arrival-time">08:46</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-6"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-6"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="08:45" data-index="7">
@@ -801,7 +791,7 @@
                         </td>
                         <td class="time-cell departure-time">08:45</td>
                         <td class="time-cell arrival-time">09:06</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-7"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-7"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="09:05" data-index="8">
@@ -811,7 +801,7 @@
                         </td>
                         <td class="time-cell departure-time">09:05</td>
                         <td class="time-cell arrival-time">09:26</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-8"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-8"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="09:25" data-index="9">
@@ -821,7 +811,7 @@
                         </td>
                         <td class="time-cell departure-time">09:25</td>
                         <td class="time-cell arrival-time">09:46</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-9"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-9"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="09:45" data-index="10">
@@ -831,7 +821,7 @@
                         </td>
                         <td class="time-cell departure-time">09:45</td>
                         <td class="time-cell arrival-time">10:06</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-10"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-10"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="10:05" data-index="11">
@@ -841,7 +831,7 @@
                         </td>
                         <td class="time-cell departure-time">10:05</td>
                         <td class="time-cell arrival-time">10:26</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-11"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-11"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="10:25" data-index="12">
@@ -851,7 +841,7 @@
                         </td>
                         <td class="time-cell departure-time">10:25</td>
                         <td class="time-cell arrival-time">10:46</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-12"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-12"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="10:45" data-index="13">
@@ -861,7 +851,7 @@
                         </td>
                         <td class="time-cell departure-time">10:45</td>
                         <td class="time-cell arrival-time">11:06</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-13"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-13"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="11:05" data-index="14">
@@ -871,7 +861,7 @@
                         </td>
                         <td class="time-cell departure-time">11:05</td>
                         <td class="time-cell arrival-time">11:26</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-14"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-14"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="11:25" data-index="15">
@@ -881,7 +871,7 @@
                         </td>
                         <td class="time-cell departure-time">11:25</td>
                         <td class="time-cell arrival-time">11:46</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-15"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-15"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="11:45" data-index="16">
@@ -891,7 +881,7 @@
                         </td>
                         <td class="time-cell departure-time">11:45</td>
                         <td class="time-cell arrival-time">12:06</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-16"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-16"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="12:05" data-index="17">
@@ -901,7 +891,7 @@
                         </td>
                         <td class="time-cell departure-time">12:05</td>
                         <td class="time-cell arrival-time">12:26</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-17"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-17"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="12:25" data-index="18">
@@ -911,7 +901,7 @@
                         </td>
                         <td class="time-cell departure-time">12:25</td>
                         <td class="time-cell arrival-time">12:46</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-18"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-18"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="12:45" data-index="19">
@@ -921,7 +911,7 @@
                         </td>
                         <td class="time-cell departure-time">12:45</td>
                         <td class="time-cell arrival-time">13:06</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-19"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-19"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="13:05" data-index="20">
@@ -931,7 +921,7 @@
                         </td>
                         <td class="time-cell departure-time">13:05</td>
                         <td class="time-cell arrival-time">13:26</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-20"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-20"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="13:25" data-index="21">
@@ -941,7 +931,7 @@
                         </td>
                         <td class="time-cell departure-time">13:25</td>
                         <td class="time-cell arrival-time">13:46</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-21"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-21"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="13:45" data-index="22">
@@ -951,7 +941,7 @@
                         </td>
                         <td class="time-cell departure-time">13:45</td>
                         <td class="time-cell arrival-time">14:06</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-22"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-22"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="14:05" data-index="23">
@@ -961,7 +951,7 @@
                         </td>
                         <td class="time-cell departure-time">14:05</td>
                         <td class="time-cell arrival-time">14:26</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-23"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-23"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="14:25" data-index="24">
@@ -971,7 +961,7 @@
                         </td>
                         <td class="time-cell departure-time">14:25</td>
                         <td class="time-cell arrival-time">14:46</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-24"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-24"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="14:45" data-index="25">
@@ -981,7 +971,7 @@
                         </td>
                         <td class="time-cell departure-time">14:45</td>
                         <td class="time-cell arrival-time">15:06</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-25"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-25"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="15:05" data-index="26">
@@ -991,7 +981,7 @@
                         </td>
                         <td class="time-cell departure-time">15:05</td>
                         <td class="time-cell arrival-time">15:26</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-26"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-26"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="15:25" data-index="27">
@@ -1001,7 +991,7 @@
                         </td>
                         <td class="time-cell departure-time">15:25</td>
                         <td class="time-cell arrival-time">15:46</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-27"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-27"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="15:45" data-index="28">
@@ -1011,7 +1001,7 @@
                         </td>
                         <td class="time-cell departure-time">15:45</td>
                         <td class="time-cell arrival-time">16:06</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-28"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-28"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="16:05" data-index="29">
@@ -1021,7 +1011,7 @@
                         </td>
                         <td class="time-cell departure-time">16:05</td>
                         <td class="time-cell arrival-time">16:26</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-29"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-29"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="16:25" data-index="30">
@@ -1031,7 +1021,7 @@
                         </td>
                         <td class="time-cell departure-time">16:25</td>
                         <td class="time-cell arrival-time">16:46</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-30"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-30"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="16:45" data-index="31">
@@ -1041,7 +1031,7 @@
                         </td>
                         <td class="time-cell departure-time">16:45</td>
                         <td class="time-cell arrival-time">17:06</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-31"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-31"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="17:05" data-index="32">
@@ -1051,7 +1041,7 @@
                         </td>
                         <td class="time-cell departure-time">17:05</td>
                         <td class="time-cell arrival-time">17:26</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-32"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-32"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="17:25" data-index="33">
@@ -1061,7 +1051,7 @@
                         </td>
                         <td class="time-cell departure-time">17:25</td>
                         <td class="time-cell arrival-time">17:46</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-33"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-33"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="17:45" data-index="34">
@@ -1071,7 +1061,7 @@
                         </td>
                         <td class="time-cell departure-time">17:45</td>
                         <td class="time-cell arrival-time">18:06</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-34"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-34"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="18:05" data-index="35">
@@ -1081,7 +1071,7 @@
                         </td>
                         <td class="time-cell departure-time">18:05</td>
                         <td class="time-cell arrival-time">18:26</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-35"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-35"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="18:25" data-index="36">
@@ -1091,7 +1081,7 @@
                         </td>
                         <td class="time-cell departure-time">18:25</td>
                         <td class="time-cell arrival-time">18:46</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-36"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-36"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="18:45" data-index="37">
@@ -1101,7 +1091,7 @@
                         </td>
                         <td class="time-cell departure-time">18:45</td>
                         <td class="time-cell arrival-time">19:06</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-37"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-37"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="19:05" data-index="38">
@@ -1111,7 +1101,7 @@
                         </td>
                         <td class="time-cell departure-time">19:05</td>
                         <td class="time-cell arrival-time">19:26</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-38"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-38"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="19:25" data-index="39">
@@ -1121,7 +1111,7 @@
                         </td>
                         <td class="time-cell departure-time">19:25</td>
                         <td class="time-cell arrival-time">19:46</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-39"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-39"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="19:45" data-index="40">
@@ -1131,7 +1121,7 @@
                         </td>
                         <td class="time-cell departure-time">19:45</td>
                         <td class="time-cell arrival-time">20:06</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-40"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-40"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="20:15" data-index="41">
@@ -1141,7 +1131,7 @@
                         </td>
                         <td class="time-cell departure-time">20:15</td>
                         <td class="time-cell arrival-time">20:36</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-41"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-41"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="20:45" data-index="42">
@@ -1151,7 +1141,7 @@
                         </td>
                         <td class="time-cell departure-time">20:45</td>
                         <td class="time-cell arrival-time">21:06</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-42"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-42"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="21:15" data-index="43">
@@ -1161,7 +1151,7 @@
                         </td>
                         <td class="time-cell departure-time">21:15</td>
                         <td class="time-cell arrival-time">21:36</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-43"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-43"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="21:45" data-index="44">
@@ -1171,7 +1161,7 @@
                         </td>
                         <td class="time-cell departure-time">21:45</td>
                         <td class="time-cell arrival-time">22:06</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-44"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-44"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="22:15" data-index="45">
@@ -1181,7 +1171,7 @@
                         </td>
                         <td class="time-cell departure-time">22:15</td>
                         <td class="time-cell arrival-time">22:36</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-45"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-45"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="22:45" data-index="46">
@@ -1191,7 +1181,7 @@
                         </td>
                         <td class="time-cell departure-time">22:45</td>
                         <td class="time-cell arrival-time">23:06</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-46"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-46"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="23:15" data-index="47">
@@ -1201,7 +1191,7 @@
                         </td>
                         <td class="time-cell departure-time">23:15</td>
                         <td class="time-cell arrival-time">23:36</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-47"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-47"></td>
                     </tr>
     
                     <tr class="train-row" data-route="tallinn-to-laagri" data-departure="23:45" data-index="48">
@@ -1211,7 +1201,7 @@
                         </td>
                         <td class="time-cell departure-time">23:45</td>
                         <td class="time-cell arrival-time">00:06</td>
-                        <td class="countdown" id="countdown-tallinn-to-laagri-48"></td>
+                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-48"></td>
                     </tr>
     
                 </tbody>
@@ -1222,7 +1212,7 @@
         </div>
 
         <div class="last-updated">
-            Last updated: 2025-06-07 22:02:09
+            Last updated: 2025-06-07 22:22:55
         </div>
     
         <script>
@@ -1308,7 +1298,7 @@
                         row.classList.add('next-train');
                         row.classList.remove('past-time', 'leaving-soon');
                         statusIndicator.className = 'status-indicator status-upcoming';
-                        statusText.textContent = 'Upcoming';
+                        statusText.textContent = '';
                         countdownEl.textContent = formatTimeUntil(targetTime);
                     }
                     
