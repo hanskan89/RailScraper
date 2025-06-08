@@ -1230,10 +1230,12 @@
                 const timeToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
                 
                 // If the time has passed today, assume it's for tomorrow
+                /*
                 if (timeToday < now) {
                     timeToday.setDate(timeToday.getDate() + 1);
                 }
-                
+                */
+                console.log("Parsing time:. String: "+timeStr+". Time:"+timeToday)
                 return timeToday;
             }
     
@@ -1244,7 +1246,7 @@
                 if (diffMs < 0) {
                     return 'Departed';
                 }
-                
+                    
                 const diffMinutes = Math.floor(diffMs / (1000 * 60));
                 const diffHours = Math.floor(diffMinutes / 60);
                 const remainingMinutes = diffMinutes % 60;

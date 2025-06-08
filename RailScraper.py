@@ -451,11 +451,6 @@ class RailScraper:
                 const now = new Date();
                 const timeToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
                 
-                // If the time has passed today, assume it's for tomorrow
-                if (timeToday < now) {{
-                    timeToday.setDate(timeToday.getDate() + 1);
-                }}
-                
                 return timeToday;
             }}
     
