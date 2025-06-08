@@ -1,18 +1,10 @@
 {
-  "last_updated": "2025-06-08 03:49:32",
+  "last_updated": "2025-06-08 07:20:59",
   "routes": {
     "Laagri to Tallinn": {
       "departure_station": "Laagri",
       "arrival_station": "Tallinn",
       "timetable": [
-        {
-          "departure": "06:32",
-          "arrival": "06:53"
-        },
-        {
-          "departure": "06:53",
-          "arrival": "07:14"
-        },
         {
           "departure": "07:32",
           "arrival": "07:53"
@@ -199,18 +191,6 @@
       "departure_station": "Tallinn",
       "arrival_station": "Laagri",
       "timetable": [
-        {
-          "departure": "05:45",
-          "arrival": "06:06"
-        },
-        {
-          "departure": "06:45",
-          "arrival": "07:06"
-        },
-        {
-          "departure": "07:05",
-          "arrival": "07:26"
-        },
         {
           "departure": "07:25",
           "arrival": "07:46"
