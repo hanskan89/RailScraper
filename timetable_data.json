@@ -1,10 +1,18 @@
 {
-  "last_updated": "2026-01-25 04:11:13",
+  "last_updated": "2026-01-26 04:13:37",
   "routes": {
     "Laagri to Tallinn": {
       "departure_station": "Laagri",
       "arrival_station": "Tallinn",
       "timetable": [
+        {
+          "departure": "05:33",
+          "arrival": "05:54"
+        },
+        {
+          "departure": "06:03",
+          "arrival": "06:24"
+        },
         {
           "departure": "06:33",
           "arrival": "06:54"
@@ -14,16 +22,40 @@
           "arrival": "07:14"
         },
         {
+          "departure": "07:05",
+          "arrival": "07:22"
+        },
+        {
+          "departure": "07:13",
+          "arrival": "07:34"
+        },
+        {
+          "departure": "07:25",
+          "arrival": "07:42"
+        },
+        {
           "departure": "07:33",
           "arrival": "07:54"
+        },
+        {
+          "departure": "07:45",
+          "arrival": "08:02"
         },
         {
           "departure": "07:53",
           "arrival": "08:14"
         },
         {
+          "departure": "08:05",
+          "arrival": "08:22"
+        },
+        {
           "departure": "08:13",
           "arrival": "08:34"
+        },
+        {
+          "departure": "08:25",
+          "arrival": "08:42"
         },
         {
           "departure": "08:33",
@@ -134,8 +166,16 @@
           "arrival": "17:34"
         },
         {
+          "departure": "17:25",
+          "arrival": "17:42"
+        },
+        {
           "departure": "17:33",
           "arrival": "17:54"
+        },
+        {
+          "departure": "17:45",
+          "arrival": "18:02"
         },
         {
           "departure": "17:53",
@@ -204,6 +244,14 @@
           "arrival": "06:06"
         },
         {
+          "departure": "06:15",
+          "arrival": "06:36"
+        },
+        {
+          "departure": "06:35",
+          "arrival": "06:53"
+        },
+        {
           "departure": "06:45",
           "arrival": "07:06"
         },
@@ -214,6 +262,10 @@
         {
           "departure": "07:25",
           "arrival": "07:46"
+        },
+        {
+          "departure": "07:37",
+          "arrival": "07:55"
         },
         {
           "departure": "07:45",
@@ -320,16 +372,32 @@
           "arrival": "16:26"
         },
         {
+          "departure": "16:16",
+          "arrival": "16:33"
+        },
+        {
           "departure": "16:25",
           "arrival": "16:46"
+        },
+        {
+          "departure": "16:36",
+          "arrival": "16:53"
         },
         {
           "departure": "16:45",
           "arrival": "17:06"
         },
         {
+          "departure": "16:56",
+          "arrival": "17:13"
+        },
+        {
           "departure": "17:05",
           "arrival": "17:26"
+        },
+        {
+          "departure": "17:16",
+          "arrival": "17:34"
         },
         {
           "departure": "17:25",
