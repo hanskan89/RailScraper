@@ -61,28 +61,34 @@ class RailScraper:
     def load_config(self, config_file: str) -> Dict:
         """Load configuration from JSON file."""
         default_config = {
-            "routes": [
+            "stations": {
+                "laagri":  {"name": "Laagri",  "lat": 59.3667, "lng": 24.6333},
+                "kivimae": {"name": "Kivimäe", "lat": 59.4019, "lng": 24.7069},
+                "tallinn": {"name": "Tallinn", "lat": 59.4400, "lng": 24.7375}
+            },
+            "route_pairs": [
                 {
-                    "name": "Laagri to Tallinn",
-                    "url_template": "https://elron.pilet.ee/et/otsing/Laagri/Tallinn/{date}",
-                    "departure_station": "Laagri",
-                    "arrival_station": "Tallinn",
-                    "selectors": {
-                        "trip_container": ".trip-summary__timespan"
-                    }
+                    "id": "laagri-tallinn",
+                    "label": "Laagri ↔ Tallinn",
+                    "stations": ["laagri", "tallinn"],
+                    "url_templates": {
+                        "laagri-tallinn": "https://elron.pilet.ee/et/otsing/Laagri/Tallinn/{date}",
+                        "tallinn-laagri": "https://elron.pilet.ee/et/otsing/Tallinn/Laagri/{date}"
+                    },
+                    "selectors": {"trip_container": ".trip-summary__timespan"}
                 },
                 {
-                    "name": "Tallinn to Laagri", 
-                    "url_template": "https://elron.pilet.ee/et/otsing/Tallinn/Laagri/{date}",
-                    "departure_station": "Tallinn",
-                    "arrival_station": "Laagri",
-                    "selectors": {
-                        "trip_container": ".trip-summary__timespan"
-                    }
+                    "id": "kivimae-laagri",
+                    "label": "Kivimäe ↔ Laagri",
+                    "stations": ["kivimae", "laagri"],
+                    "url_templates": {
+                        "kivimae-laagri": "https://elron.pilet.ee/et/otsing/Kivim%C3%A4e/Laagri/{date}",
+                        "laagri-kivimae": "https://elron.pilet.ee/et/otsing/Laagri/Kivim%C3%A4e/{date}"
+                    },
+                    "selectors": {"trip_container": ".trip-summary__timespan"}
                 }
             ],
-            "output_file": "timetable.html",
-            "scrape_time": "06:00"
+            "output_file": "timetable.html"
         }
         
         try:
@@ -99,12 +105,12 @@ class RailScraper:
         current_date = datetime.datetime.now().strftime('%Y-%m-%d')
         return url_template.format(date=current_date)
     
-    def scrape_route(self, route_config: Dict) -> List[Dict]:
-        """Scrape timetable data for a single route using Selenium."""
+    def scrape_route(self, url_template: str, selectors: Dict, direction_label: str) -> List[Dict]:
+        """Scrape timetable data for a single route direction using Selenium."""
         try:
             # Generate URL with current date
-            url = self.get_current_date_url(route_config['url_template'])
-            logger.info(f"Scraping {route_config['name']} from {url}")
+            url = self.get_current_date_url(url_template)
+            logger.info(f"Scraping {direction_label} from {url}")
             
             # Load the page
             self.driver.get(url)
@@ -117,17 +123,17 @@ class RailScraper:
             try:
                 # Wait up to 10 seconds for at least one trip container to appear
                 WebDriverWait(self.driver, 10).until(
-                    EC.presence_of_element_located((By.CSS_SELECTOR, route_config['selectors']['trip_container']))
+                    EC.presence_of_element_located((By.CSS_SELECTOR, selectors['trip_container']))
                 )
                 logger.info("Trip containers found, proceeding with extraction")
             except TimeoutException:
                 logger.warning("Timeout waiting for trip containers, proceeding anyway")
-            
+
             # Get page source and parse with BeautifulSoup
             soup = BeautifulSoup(self.driver.page_source, 'html.parser')
-            
+
             # Find all trip timespan containers
-            trip_containers = soup.select(route_config['selectors']['trip_container'])
+            trip_containers = soup.select(selectors['trip_container'])
             
             timetable = []
             
@@ -162,476 +168,564 @@ class RailScraper:
                     seen.add(trip_key)
                     unique_timetable.append(trip)
             
-            logger.info(f"Found {len(unique_timetable)} unique schedules for {route_config['name']}")
+            logger.info(f"Found {len(unique_timetable)} unique schedules for {direction_label}")
             return unique_timetable
         except Exception as e:
-            logger.error(f"Error scraping {route_config['name']}: {str(e)}")
+            logger.error(f"Error scraping {direction_label}: {str(e)}")
             return []
     
     def scrape_all_routes(self) -> Dict:
-        """Scrape all configured routes."""
+        """Scrape all configured route pairs and directions."""
         all_data = {
             'last_updated': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'routes': {}
+            'stations': self.config['stations'],
+            'route_pairs': []
         }
-        
-        for route in self.config['routes']:
-            timetable = self.scrape_route(route)
-            all_data['routes'][route['name']] = {
-                'departure_station': route['departure_station'],
-                'arrival_station': route['arrival_station'],
-                'timetable': timetable
+
+        for pair in self.config['route_pairs']:
+            pair_data = {
+                'id': pair['id'],
+                'label': pair['label'],
+                'stations': pair['stations'],
+                'directions': {}
             }
-        
+
+            for direction_id, url_template in pair['url_templates'].items():
+                stations = direction_id.split('-')
+                from_station = stations[0]
+                to_station = stations[1]
+                direction_label = f"{self.config['stations'][from_station]['name']} → {self.config['stations'][to_station]['name']}"
+
+                timetable = self.scrape_route(url_template, pair['selectors'], direction_label)
+                pair_data['directions'][direction_id] = {
+                    'from': from_station,
+                    'to': to_station,
+                    'timetable': timetable
+                }
+
+            all_data['route_pairs'].append(pair_data)
+
         return all_data
     
     def generate_html(self, data: Dict) -> str:
-        """Generate HTML page from scraped data with client-side time filtering."""
-        html_template = f"""
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Rail Timetables</title>
-        <style>
-            body {{
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 20px;
-                background-color: #f5f5f5;
-            }}
-            .header {{
-                text-align: center;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-                padding: 30px;
-                border-radius: 10px;
-                margin-bottom: 30px;
-                position: relative;
-            }}
-            .current-time {{
-                display: inline;
-            }}
-            .route {{
-                background: white;
-                margin: 20px 0;
-                padding: 20px;
-                border-radius: 10px;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            }}
-            .route h2 {{
-                color: #333;
-                border-bottom: 3px solid #667eea;
-                padding-bottom: 10px;
-                margin-bottom: 15px;
-            }}
-            .route-info {{
-                background: #f8f9fa;
-                padding: 15px;
-                border-radius: 5px;
-                margin: 15px 0;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                flex-wrap: wrap;
-            }}
-            .route-details {{
-                display: flex;
-                gap: 20px;
-                flex-wrap: wrap;
-            }}
-            .filter-controls {{
-                display: flex;
-                gap: 10px;
-                align-items: center;
-                margin-top: 10px;
-            }}
-            .filter-toggle {{
-                background: #667eea;
-                color: white;
-                border: none;
-                padding: 8px 16px;
-                border-radius: 5px;
-                cursor: pointer;
-                font-size: 0.9em;
-                transition: background-color 0.3s;
-            }}
-            .filter-toggle:hover {{
-                background: #5a6fd8;
-            }}
-            .filter-toggle.active {{
-                background: #28a745;
-            }}
-            .show-all-toggle {{
-                background: #6c757d;
-            }}
-            .show-all-toggle:hover {{
-                background: #5a6268;
-            }}
-            .upcoming-count {{
-                color: #28a745;
-                font-weight: bold;
-                margin-left: 10px;
-            }}
-            table {{
-                width: 100%;
-                border-collapse: collapse;
-                margin-top: 15px;
-            }}
-            th, td {{
-                padding: 12px;
-                text-align: left;
-                border-bottom: 1px solid #ddd;
-            }}
-            th {{
-                background-color: #667eea;
-                color: white;
-            }}
-            tr:nth-child(even) {{
-                background-color: #f2f2f2;
-            }}
-            tr:hover {{
-                background-color: #e8f4f8;
-            }}
-            .time-cell {{
-                font-weight: bold;
-                font-family: 'Courier New', monospace;
-            }}
-            .past-time {{
-                opacity: 0.5;
-                color: #999;
-            }}
-            .next-train {{
-                background-color: #d4edda !important;
-                border-left: 4px solid #28a745;
-            }}
-            .leaving-soon {{
-                background-color: #fff3cd !important;
-                border-left: 4px solid #ffc107;
-            }}
-            .hidden {{
-                display: none !important;
-            }}
-            .last-updated {{
-                text-align: center;
-                color: #666;
-                font-style: italic;
-                margin-top: 30px;
-            }}
-            .no-data {{
-                text-align: center;
-                color: #999;
-                padding: 20px;
-                font-style: italic;
-            }}
-            .no-upcoming {{
-                text-align: center;
-                color: #dc3545;
-                padding: 20px;
-                font-style: italic;
-                background: #f8d7da;
-                border-radius: 5px;
-                margin-top: 15px;
-            }}
-            .status-indicator {{
-                display: inline-block;
-                width: 8px;
-                height: 8px;
-                border-radius: 50%;
-                margin-right: 8px;
-            }}
-            .status-upcoming {{
-                background-color: #28a745;
-            }}
-            .status-soon {{
-                background-color: #ffc107;
-            }}
-            .status-past {{
-                background-color: #dc3545;
-            }}
-            @media (max-width: 768px) {{
-                .route-info {{
-                    flex-direction: column;
-                    align-items: flex-start;
+        """Generate HTML page with client-side rendering, tabs, geolocation, and persistence."""
+        data_json = json.dumps(data)
+        html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rail Timetables</title>
+    <style>
+        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f1117;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }}
+        .header {{
+            background: #1a1d28;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #2a2d3a;
+        }}
+        .header-title {{
+            font-size: 1.1em;
+            font-weight: 600;
+        }}
+        .current-time {{
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 1.1em;
+            color: #8b8fa3;
+        }}
+        .tab-bar {{
+            display: flex;
+            background: #1a1d28;
+            padding: 0 12px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid #2a2d3a;
+        }}
+        .tab {{
+            flex: 1;
+            padding: 14px 8px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+            color: #6b7080;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }}
+        .tab.active {{
+            color: #7c8aff;
+            border-bottom-color: #7c8aff;
+        }}
+        .direction-bar {{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            background: #1e2130;
+        }}
+        .direction-label {{
+            font-size: 1.05em;
+            font-weight: 600;
+        }}
+        .swap-btn {{
+            background: #2a2d3a;
+            border: 1px solid #3a3d4a;
+            color: #7c8aff;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }}
+        .swap-btn:active {{ background: #3a3d4a; }}
+        .hero {{
+            background: linear-gradient(135deg, #1e2a4a 0%, #1a2040 100%);
+            margin: 16px;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid #2a3a5a;
+        }}
+        .hero-countdown {{
+            font-size: 2.8em;
+            font-weight: 700;
+            color: #7c8aff;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            line-height: 1.1;
+        }}
+        .hero-time {{
+            font-size: 1.2em;
+            color: #8b8fa3;
+            margin-top: 6px;
+        }}
+        .hero-label {{
+            font-size: 0.85em;
+            color: #5a5e70;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }}
+        .hero.no-trains {{
+            border-color: #3a2a2a;
+            background: linear-gradient(135deg, #2a1a1a 0%, #201a1a 100%);
+        }}
+        .hero.no-trains .hero-countdown {{
+            color: #666;
+            font-size: 1.2em;
+        }}
+        .filter-bar {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 1px solid #1e2130;
+        }}
+        .upcoming-count {{
+            font-size: 0.85em;
+            color: #5a5e70;
+        }}
+        .filter-btn {{
+            background: none;
+            border: 1px solid #2a2d3a;
+            color: #6b7080;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }}
+        .filter-btn.active {{
+            border-color: #7c8aff;
+            color: #7c8aff;
+        }}
+        .timetable {{
+            padding: 0 12px 100px;
+        }}
+        .train-row {{
+            display: flex;
+            align-items: center;
+            padding: 14px 12px;
+            border-bottom: 1px solid #1a1d28;
+            transition: opacity 0.2s;
+        }}
+        .train-row.past {{ opacity: 0.3; }}
+        .train-row.soon {{
+            background: #1e2a1e;
+            border-left: 3px solid #4caf50;
+            border-radius: 4px;
+            margin: 2px 0;
+        }}
+        .train-row.next {{
+            background: #1a1e3a;
+            border-left: 3px solid #7c8aff;
+            border-radius: 4px;
+            margin: 2px 0;
+        }}
+        .train-dot {{
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 14px;
+            flex-shrink: 0;
+        }}
+        .dot-past {{ background: #444; }}
+        .dot-soon {{ background: #4caf50; }}
+        .dot-future {{ background: #7c8aff; }}
+        .train-times {{
+            flex: 1;
+            display: flex;
+            gap: 8px;
+            align-items: baseline;
+        }}
+        .train-dep {{
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 1.15em;
+            font-weight: 600;
+        }}
+        .train-arr {{
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.9em;
+            color: #5a5e70;
+        }}
+        .train-arrow {{
+            color: #3a3d4a;
+            font-size: 0.8em;
+        }}
+        .train-countdown {{
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.95em;
+            color: #5a5e70;
+            text-align: right;
+            min-width: 60px;
+        }}
+        .train-row.soon .train-countdown {{ color: #4caf50; font-weight: 600; }}
+        .train-row.next .train-countdown {{ color: #7c8aff; }}
+        .no-trains-msg {{
+            text-align: center;
+            color: #444;
+            padding: 40px 20px;
+            font-style: italic;
+        }}
+        .last-updated {{
+            text-align: center;
+            color: #3a3d4a;
+            font-size: 0.75em;
+            padding: 20px;
+        }}
+        .hidden {{ display: none !important; }}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <span class="header-title">Rail Timetables</span>
+        <span class="current-time" id="currentTime"></span>
+    </div>
+    <div class="tab-bar" id="tabBar"></div>
+    <div class="direction-bar">
+        <span class="direction-label" id="directionLabel"></span>
+        <button class="swap-btn" id="swapBtn" onclick="swapDirection()">&#8644;</button>
+    </div>
+    <div class="hero" id="hero">
+        <div class="hero-label">Next train</div>
+        <div class="hero-countdown" id="heroCountdown"></div>
+        <div class="hero-time" id="heroTime"></div>
+    </div>
+    <div class="filter-bar">
+        <span class="upcoming-count" id="upcomingCount"></span>
+        <button class="filter-btn active" id="filterBtn" onclick="toggleFilter()">Future only</button>
+    </div>
+    <div class="timetable" id="timetable"></div>
+    <div class="last-updated">Updated: {data['last_updated']}</div>
+
+    <script>
+        const DATA = {data_json};
+        const GEO_TTL = 30 * 60 * 1000; // 30 minutes
+
+        let activePairIndex = 0;
+        let activeDirectionIndex = 0; // 0 = first direction, 1 = second
+        let showFutureOnly = true;
+
+        // --- Geolocation & Persistence ---
+
+        function haversine(lat1, lng1, lat2, lng2) {{
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLng = (lng2 - lng1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLng/2) * Math.sin(dLng/2);
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        }}
+
+        function findClosestStation(lat, lng) {{
+            let closest = null;
+            let minDist = Infinity;
+            for (const [id, st] of Object.entries(DATA.stations)) {{
+                const d = haversine(lat, lng, st.lat, st.lng);
+                if (d < minDist) {{
+                    minDist = d;
+                    closest = id;
                 }}
-                .filter-controls {{
-                    margin-top: 15px;
-                    flex-wrap: wrap;
-                }}
             }}
-        </style>
-    </head>
-    <body>
-        <div class="header">
-            🚂 Rail Timetables: <div class="current-time" id="currentTime"></div>
-        </div>
-    """
-        
-        for route_name, route_data in data['routes'].items():
-            # Create a unique ID for each route
-            route_id = route_name.lower().replace(' ', '-').replace('to', 'to')
-            
-            html_template += f"""
-        <div class="route" id="route-{route_id}">
-            <h2>{route_name} <a href="#" onclick="cycleToNext('route-')">&lt;&lt;&gt;&gt;</a></h2>
-            <div class="route-info">
-                <div class="route-details">
-                    <span><strong>From:</strong> {route_data['departure_station']}</span>
-                    <span><strong>To:</strong> {route_data['arrival_station']}</span>
-                </div>
-                <div class="filter-controls">
-                    <button class="filter-toggle active" onclick="toggleFilter('{route_id}', true)">
-                        Future Only
-                    </button>
-                    <button class="filter-toggle show-all-toggle" onclick="toggleFilter('{route_id}', false)">
-                        Show All
-                    </button>
-                    <span class="upcoming-count" id="count-{route_id}"></span>
-                </div>
-            </div>
-    """
-            
-            if route_data['timetable']:
-                html_template += f"""
-            <table id="table-{route_id}">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Departure</th>
-                        <th>Arrival</th>
-                        <th>Time Left</th>
-                    </tr>
-                </thead>
-                <tbody>
-    """
-                for i, schedule in enumerate(route_data['timetable']):
-                    html_template += f"""
-                    <tr class="train-row" data-route="{route_id}" data-departure="{schedule['departure']}" data-index="{i}">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-{route_id}-{i}"></span>
-                            <span id="status-text-{route_id}-{i}"></span>
-                        </td>
-                        <td class="time-cell departure-time">{schedule['departure']}</td>
-                        <td class="time-cell arrival-time">{schedule['arrival']}</td>
-                        <td class="time-cell countdown" id="countdown-{route_id}-{i}"></td>
-                    </tr>
-    """
-                html_template += """
-                </tbody>
-            </table>
-            <div class="no-upcoming hidden" id="no-upcoming-""" + route_id + """">
-                No upcoming trains for today. Check back tomorrow!
-            </div>
-    """
-            else:
-                html_template += """
-            <div class="no-data">No timetable data available</div>
-    """
-            
-            html_template += "    </div>\n"
-        
-        html_template += f"""
-        <div class="last-updated">
-            Last updated: {data['last_updated']}
-        </div>
-    
-        <script>
-            // Global state
-            const routeFilters = {{}};
-            
-            // Initialize filters (all routes start with future-only filter active)
-            {json.dumps([route['name'].lower().replace(' ', '-').replace('to', 'to') for route in self.config['routes']])}.forEach(routeId => {{
-                routeFilters[routeId] = true; // true = show future only, false = show all
+            return closest;
+        }}
+
+        function applyGeoSelection(lat, lng) {{
+            let bestPairIdx = 0;
+            let bestDirIdx = 0;
+            let bestDist = Infinity;
+
+            DATA.route_pairs.forEach((pair, pi) => {{
+                const dirKeys = Object.keys(pair.directions);
+                pair.stations.forEach((stId, si) => {{
+                    const st = DATA.stations[stId];
+                    const d = haversine(lat, lng, st.lat, st.lng);
+                    if (d < bestDist) {{
+                        bestDist = d;
+                        bestPairIdx = pi;
+                        // direction where this station is the "from"
+                        bestDirIdx = dirKeys.findIndex(k => pair.directions[k].from === stId);
+                        if (bestDirIdx === -1) bestDirIdx = 0;
+                    }}
+                }});
             }});
-    
-            function parseTime(timeStr) {{
-                const [hours, minutes] = timeStr.split(':').map(Number);
-                const now = new Date();
-                const timeToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
-                
-                return timeToday;
-            }}
-    
-            function formatTimeUntil(targetTime) {{
-                const now = new Date();
-                const diffMs = targetTime - now;
-                
-                if (diffMs < 0) {{
-                    return 'Departed';
-                }}
-                
-                const diffMinutes = Math.floor(diffMs / (1000 * 60));
-                const diffHours = Math.floor(diffMinutes / 60);
-                const remainingMinutes = diffMinutes % 60;
-                
-                if (diffHours > 0) {{
-                    return `${{diffHours}}h ${{remainingMinutes}}m`;
-                }} else if (diffMinutes > 0) {{
-                    return `${{diffMinutes}}m`;
-                }} else {{
-                    return 'Now';
-                }}
-            }}
-    
-            function updateTimeDisplay() {{
-                const now = new Date();
-                document.getElementById('currentTime').textContent = now.toLocaleTimeString();
-            }}
-    
-            function updateTrainStatus() {{
-                const now = new Date();
-                
-                document.querySelectorAll('.train-row').forEach(row => {{
-                    const routeId = row.dataset.route;
-                    const departureTime = row.dataset.departure;
-                    const index = row.dataset.index;
-                    const targetTime = parseTime(departureTime);
-                    const diffMs = targetTime - now;
-                    const diffMinutes = Math.floor(diffMs / (1000 * 60));
-                    
-                    // Update countdown
-                    const countdownEl = document.getElementById(`countdown-${{routeId}}-${{index}}`);
-                    const statusIndicator = document.getElementById(`status-${{routeId}}-${{index}}`);
-                    const statusText = document.getElementById(`status-text-${{routeId}}-${{index}}`);
-                    
-                    if (diffMs < 0) {{
-                        // Train has departed
-                        row.classList.add('past-time');
-                        row.classList.remove('next-train', 'leaving-soon');
-                        statusIndicator.className = 'status-indicator status-past';
-                        statusText.textContent = 'Departed';
-                        countdownEl.textContent = 'Departed';
-                    }} else if (diffMinutes <= 15) {{
-                        // Train leaving soon (within 15 minutes)
-                        row.classList.add('leaving-soon');
-                        row.classList.remove('past-time', 'next-train');
-                        statusIndicator.className = 'status-indicator status-soon';
-                        statusText.textContent = 'Soon';
-                        countdownEl.textContent = formatTimeUntil(targetTime);
-                    }} else {{
-                        // Future train
-                        row.classList.add('next-train');
-                        row.classList.remove('past-time', 'leaving-soon');
-                        statusIndicator.className = 'status-indicator status-upcoming';
-                        statusText.textContent = '';
-                        countdownEl.textContent = formatTimeUntil(targetTime);
-                    }}
-                    
-                    // Apply filtering
-                    const showFutureOnly = routeFilters[routeId];
-                    if (showFutureOnly && diffMs < 0) {{
-                        row.classList.add('hidden');
-                    }} else {{
-                        row.classList.remove('hidden');
-                    }}
-                }});
-                
-                // Update counters for each route
-                Object.keys(routeFilters).forEach(routeId => {{
-                    updateUpcomingCount(routeId);
-                }});
-            }}
-    
-            function updateUpcomingCount(routeId) {{
-                const rows = document.querySelectorAll(`[data-route="${{routeId}}"]`);
-                const upcomingCount = Array.from(rows).filter(row => {{
-                    const departureTime = row.dataset.departure;
-                    const targetTime = parseTime(departureTime);
-                    const now = new Date();
-                    return targetTime > now;
-                }}).length;
-                
-                const countEl = document.getElementById(`count-${{routeId}}`);
-                if (countEl) {{
-                    countEl.textContent = `(${{upcomingCount}} upcoming)`;
-                }}
-                
-                // Show/hide no upcoming message
-                const noUpcomingEl = document.getElementById(`no-upcoming-${{routeId}}`);
-                const tableEl = document.getElementById(`table-${{routeId}}`);
-                
-                if (routeFilters[routeId] && upcomingCount === 0) {{
-                    if (noUpcomingEl) noUpcomingEl.classList.remove('hidden');
-                    if (tableEl) tableEl.classList.add('hidden');
-                }} else {{
-                    if (noUpcomingEl) noUpcomingEl.classList.add('hidden');
-                    if (tableEl) tableEl.classList.remove('hidden');
-                }}
-            }}
-    
-            function toggleFilter(routeId, showFutureOnly) {{
-                routeFilters[routeId] = showFutureOnly;
-                
-                // Update button states
-                const routeDiv = document.getElementById(`route-${{routeId}}`);
-                const buttons = routeDiv.querySelectorAll('.filter-toggle');
-                buttons.forEach(btn => btn.classList.remove('active'));
-                
-                if (showFutureOnly) {{
-                    routeDiv.querySelector('.filter-toggle:first-of-type').classList.add('active');
-                }} else {{
-                    routeDiv.querySelector('.show-all-toggle').classList.add('active');
-                }}
-                
-                // Reapply filtering
-                updateTrainStatus();
-            }}
-            
-            let currentIndex = -1;
-            
-            function cycleToNext(prefix) {{
-                const allElements = document.querySelectorAll('[id^="' + prefix + '"]');
-                
-                if (allElements.length === 0) {{
-                    console.log('No elements found with prefix: ' + prefix);
+
+            activePairIndex = bestPairIdx;
+            activeDirectionIndex = bestDirIdx;
+
+            // Cache
+            try {{
+                localStorage.setItem('railscraper_geo', JSON.stringify({{
+                    pair: activePairIndex,
+                    dir: activeDirectionIndex,
+                    ts: Date.now()
+                }}));
+            }} catch(e) {{}}
+
+            renderAll();
+        }}
+
+        function loadPreferences() {{
+            // 1. Check geo cache
+            try {{
+                const geo = JSON.parse(localStorage.getItem('railscraper_geo'));
+                if (geo && (Date.now() - geo.ts) < GEO_TTL) {{
+                    activePairIndex = geo.pair;
+                    activeDirectionIndex = geo.dir;
                     return;
                 }}
-                
-                currentIndex = (currentIndex + 1) % allElements.length;
-                const targetElement = allElements[currentIndex];
-                
-                console.log('Attempting to scroll to:', targetElement.id);
-                console.log('Element visible:', targetElement.offsetHeight > 0);
-                console.log('Element position:', targetElement.getBoundingClientRect());
-                
-                // Try multiple scroll methods
-                try {{
-                    targetElement.scrollIntoView({{
-                        behavior: 'smooth',
-                        block: 'start'
-                    }});
-                    
-                    // Fallback: try direct scroll after a small delay
-                    setTimeout(() => {{
-                        targetElement.scrollIntoView();
-                    }}, 100);
-                    
-                }} catch (error) {{
-                    console.log('Scroll error:', error);
+            }} catch(e) {{}}
+
+            // 2. Try fresh geolocation
+            if (navigator.geolocation) {{
+                navigator.geolocation.getCurrentPosition(
+                    pos => applyGeoSelection(pos.coords.latitude, pos.coords.longitude),
+                    () => loadFallback()
+                );
+                // Load fallback immediately while waiting for geo
+                loadFallback();
+                return;
+            }}
+
+            loadFallback();
+        }}
+
+        function loadFallback() {{
+            try {{
+                const last = JSON.parse(localStorage.getItem('railscraper_last_pair'));
+                if (last) {{
+                    activePairIndex = last.pair;
+                    activeDirectionIndex = last.dir;
                 }}
+            }} catch(e) {{}}
+        }}
+
+        function saveManualChoice() {{
+            try {{
+                localStorage.setItem('railscraper_last_pair', JSON.stringify({{
+                    pair: activePairIndex,
+                    dir: activeDirectionIndex
+                }}));
+            }} catch(e) {{}}
+        }}
+
+        // --- Rendering ---
+
+        function getActivePair() {{ return DATA.route_pairs[activePairIndex]; }}
+
+        function getActiveDirection() {{
+            const pair = getActivePair();
+            const keys = Object.keys(pair.directions);
+            return pair.directions[keys[activeDirectionIndex]];
+        }}
+
+        function renderTabs() {{
+            const bar = document.getElementById('tabBar');
+            bar.innerHTML = '';
+            DATA.route_pairs.forEach((pair, i) => {{
+                const tab = document.createElement('div');
+                tab.className = 'tab' + (i === activePairIndex ? ' active' : '');
+                tab.textContent = pair.label;
+                tab.onclick = () => {{
+                    activePairIndex = i;
+                    activeDirectionIndex = 0;
+                    saveManualChoice();
+                    renderAll();
+                }};
+                bar.appendChild(tab);
+            }});
+        }}
+
+        function renderDirection() {{
+            const dir = getActiveDirection();
+            const fromName = DATA.stations[dir.from].name;
+            const toName = DATA.stations[dir.to].name;
+            document.getElementById('directionLabel').textContent = fromName + ' \\u2192 ' + toName;
+        }}
+
+        function swapDirection() {{
+            const pair = getActivePair();
+            const keys = Object.keys(pair.directions);
+            activeDirectionIndex = (activeDirectionIndex + 1) % keys.length;
+            saveManualChoice();
+            renderAll();
+        }}
+
+        function parseTime(timeStr) {{
+            const [h, m] = timeStr.split(':').map(Number);
+            const now = new Date();
+            return new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m);
+        }}
+
+        function formatCountdown(diffMs) {{
+            if (diffMs < 0) return 'Gone';
+            const mins = Math.floor(diffMs / 60000);
+            const hrs = Math.floor(mins / 60);
+            const rem = mins % 60;
+            if (hrs > 0) return hrs + 'h ' + rem + 'm';
+            if (mins > 0) return mins + 'm';
+            return 'Now';
+        }}
+
+        function renderTimetable() {{
+            const dir = getActiveDirection();
+            const timetable = dir.timetable;
+            const container = document.getElementById('timetable');
+            const now = new Date();
+
+            if (!timetable || timetable.length === 0) {{
+                container.innerHTML = '<div class="no-trains-msg">No timetable data available</div>';
+                document.getElementById('hero').classList.add('no-trains');
+                document.getElementById('heroCountdown').textContent = 'No data';
+                document.getElementById('heroTime').textContent = '';
+                document.getElementById('upcomingCount').textContent = '';
+                return;
             }}
-    
-            // Initialize and start updates
-            function init() {{
-                updateTimeDisplay();
-                updateTrainStatus();
-                
-                // Update every 30 seconds
-                setInterval(() => {{
-                    updateTimeDisplay();
-                    updateTrainStatus();
-                }}, 30000);
+
+            let nextTrain = null;
+            let upcomingCount = 0;
+            let html = '';
+
+            timetable.forEach(train => {{
+                const depTime = parseTime(train.departure);
+                const diffMs = depTime - now;
+                const isPast = diffMs < 0;
+                const isSoon = !isPast && diffMs <= 15 * 60000;
+                const isNext = !isPast && !nextTrain;
+
+                if (!isPast) {{
+                    upcomingCount++;
+                    if (!nextTrain) nextTrain = {{ ...train, diffMs }};
+                }}
+
+                if (showFutureOnly && isPast) return;
+
+                let rowClass = 'train-row';
+                let dotClass = 'train-dot dot-future';
+                if (isPast) {{ rowClass += ' past'; dotClass = 'train-dot dot-past'; }}
+                else if (isSoon) {{ rowClass += ' soon'; dotClass = 'train-dot dot-soon'; }}
+                else if (isNext) {{ rowClass += ' next'; }}
+
+                html += '<div class="' + rowClass + '">' +
+                    '<div class="' + dotClass + '"></div>' +
+                    '<div class="train-times">' +
+                        '<span class="train-dep">' + train.departure + '</span>' +
+                        '<span class="train-arrow">&#8594;</span>' +
+                        '<span class="train-arr">' + train.arrival + '</span>' +
+                    '</div>' +
+                    '<div class="train-countdown">' + (isPast ? '' : formatCountdown(diffMs)) + '</div>' +
+                '</div>';
+            }});
+
+            container.innerHTML = html || '<div class="no-trains-msg">No upcoming trains today</div>';
+
+            // Hero
+            const hero = document.getElementById('hero');
+            if (nextTrain) {{
+                hero.classList.remove('no-trains');
+                document.getElementById('heroCountdown').textContent = formatCountdown(nextTrain.diffMs);
+                document.getElementById('heroTime').textContent = nextTrain.departure + ' \\u2192 ' + nextTrain.arrival;
+            }} else {{
+                hero.classList.add('no-trains');
+                document.getElementById('heroCountdown').textContent = 'No more trains today';
+                document.getElementById('heroTime').textContent = '';
             }}
-    
-            // Start when page loads
-            document.addEventListener('DOMContentLoaded', init);
-        </script>
-    </body>
-    </html>
-    """
-        return html_template
+
+            document.getElementById('upcomingCount').textContent = upcomingCount + ' upcoming';
+        }}
+
+        function toggleFilter() {{
+            showFutureOnly = !showFutureOnly;
+            const btn = document.getElementById('filterBtn');
+            btn.classList.toggle('active', showFutureOnly);
+            btn.textContent = showFutureOnly ? 'Future only' : 'Show all';
+            renderTimetable();
+        }}
+
+        function renderAll() {{
+            renderTabs();
+            renderDirection();
+            renderTimetable();
+        }}
+
+        function updateClock() {{
+            document.getElementById('currentTime').textContent = new Date().toLocaleTimeString();
+        }}
+
+        // --- Init ---
+
+        function init() {{
+            loadPreferences();
+            renderAll();
+            updateClock();
+            setInterval(() => {{
+                updateClock();
+                renderTimetable();
+            }}, 30000);
+        }}
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>"""
+        return html
     
     def save_html(self, html_content: str):
         """Save HTML content to file."""
