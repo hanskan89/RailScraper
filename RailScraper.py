@@ -132,30 +132,39 @@ class RailScraper:
             # Get page source and parse with BeautifulSoup
             soup = BeautifulSoup(self.driver.page_source, 'html.parser')
 
-            # Find all trip timespan containers
-            trip_containers = soup.select(selectors['trip_container'])
-            
+            # Find all trip containers (parent level for times + train number)
+            trip_containers = soup.select('.trip-summary')
+
             timetable = []
-            
-            # Extract times from each trip container
+
+            # Extract times and train number from each trip container
             import re
             time_pattern = re.compile(r'\b([0-2]?[0-9]):([0-5][0-9])\b')
-            
+
             for container in trip_containers:
+                timespan = container.select_one(selectors['trip_container'])
+                if not timespan:
+                    continue
 
                 span_times = [
                     match.group()
-                    for span in container.find_all('span')
+                    for span in timespan.find_all('span')
                     if (match := time_pattern.search(span.get_text()))
                 ]
-                
+
                 if len(span_times) >= 2:
                     departure_time = span_times[0]
                     arrival_time = span_times[1]
-            
+
+                    train_number = ''
+                    line_num_el = container.select_one('.line-number')
+                    if line_num_el:
+                        train_number = line_num_el.get_text(strip=True)
+
                     trip_data = {
                         'departure': departure_time,
-                        'arrival': arrival_time
+                        'arrival': arrival_time,
+                        'train': train_number
                     }
                     timetable.append(trip_data)
             
@@ -402,6 +411,15 @@ class RailScraper:
         .train-arrow {{
             color: #3a3d4a;
             font-size: 0.8em;
+        }}
+        .train-number {{
+            font-size: 0.7em;
+            color: #4a4d5a;
+            background: #1a1d28;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 4px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
         }}
         .train-countdown {{
             font-family: 'SF Mono', 'Fira Code', monospace;
@@ -657,12 +675,15 @@ class RailScraper:
                 else if (isSoon) {{ rowClass += ' soon'; dotClass = 'train-dot dot-soon'; }}
                 else if (isNext) {{ rowClass += ' next'; }}
 
+                const trainNumHtml = train.train ? '<span class="train-number">' + train.train + '</span>' : '';
+
                 html += '<div class="' + rowClass + '">' +
                     '<div class="' + dotClass + '"></div>' +
                     '<div class="train-times">' +
                         '<span class="train-dep">' + train.departure + '</span>' +
                         '<span class="train-arrow">&#8594;</span>' +
                         '<span class="train-arr">' + train.arrival + '</span>' +
+                        trainNumHtml +
                     '</div>' +
                     '<div class="train-countdown">' + (isPast ? '' : formatCountdown(diffMs)) + '</div>' +
                 '</div>';
@@ -675,7 +696,8 @@ class RailScraper:
             if (nextTrain) {{
                 hero.classList.remove('no-trains');
                 document.getElementById('heroCountdown').textContent = formatCountdown(nextTrain.diffMs);
-                document.getElementById('heroTime').textContent = nextTrain.departure + ' \\u2192 ' + nextTrain.arrival;
+                const heroTrainNum = nextTrain.train ? ' #' + nextTrain.train : '';
+                document.getElementById('heroTime').textContent = nextTrain.departure + ' \\u2192 ' + nextTrain.arrival + heroTrainNum;
             }} else {{
                 hero.classList.add('no-trains');
                 document.getElementById('heroCountdown').textContent = 'No more trains today';
