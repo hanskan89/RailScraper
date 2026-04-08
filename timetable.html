@@ -1,1581 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rail Timetables</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f1117;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+        .header {
+            background: #1a1d28;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #2a2d3a;
+        }
+        .header-title {
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+        .tab-bar {
+            display: flex;
+            background: #1a1d28;
+            padding: 0 12px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid #2a2d3a;
+        }
+        .tab {
+            flex: 1;
+            padding: 14px 8px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+            color: #6b7080;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .tab.active {
+            color: #7c8aff;
+            border-bottom-color: #7c8aff;
+        }
+        .direction-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            background: #1e2130;
+        }
+        .direction-label {
+            font-size: 1.05em;
+            font-weight: 600;
+        }
+        .swap-btn {
+            background: #2a2d3a;
+            border: 1px solid #3a3d4a;
+            color: #7c8aff;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .swap-btn:active { background: #3a3d4a; }
+        .hero {
+            background: linear-gradient(135deg, #1e2a4a 0%, #1a2040 100%);
+            margin: 16px;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid #2a3a5a;
+        }
+        .hero-countdown {
+            font-size: 2.8em;
+            font-weight: 700;
+            color: #7c8aff;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            line-height: 1.1;
+        }
+        .hero-time {
+            font-size: 1.2em;
+            color: #8b8fa3;
+            margin-top: 6px;
+        }
+        .hero-label {
+            font-size: 0.85em;
+            color: #5a5e70;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .hero.no-trains {
+            border-color: #3a2a2a;
+            background: linear-gradient(135deg, #2a1a1a 0%, #201a1a 100%);
+        }
+        .hero.no-trains .hero-countdown {
+            color: #666;
+            font-size: 1.2em;
+        }
+        .filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 1px solid #1e2130;
+        }
+        .upcoming-count {
+            font-size: 0.85em;
+            color: #5a5e70;
+        }
+        .filter-btn {
+            background: none;
+            border: 1px solid #2a2d3a;
+            color: #6b7080;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .filter-btn.active {
+            border-color: #7c8aff;
+            color: #7c8aff;
+        }
+        .timetable {
+            padding: 0 12px 100px;
+        }
+        .train-row {
+            display: flex;
+            align-items: center;
+            padding: 14px 12px;
+            border-bottom: 1px solid #1a1d28;
+            transition: opacity 0.2s;
+        }
+        .train-row.past { opacity: 0.3; }
+        .train-row.soon {
+            background: #1e2a1e;
+            border-left: 3px solid #4caf50;
+            border-radius: 4px;
+            margin: 2px 0;
+        }
+        .train-row.next {
+            background: #1a1e3a;
+            border-left: 3px solid #7c8aff;
+            border-radius: 4px;
+            margin: 2px 0;
+        }
+        .train-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 14px;
+            flex-shrink: 0;
+        }
+        .dot-past { background: #444; }
+        .dot-soon { background: #4caf50; }
+        .dot-future { background: #7c8aff; }
+        .train-times {
+            flex: 1;
+            display: flex;
+            gap: 8px;
+            align-items: baseline;
+        }
+        .train-dep {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 1.15em;
+            font-weight: 600;
+        }
+        .train-arr {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.9em;
+            color: #5a5e70;
+        }
+        .train-arrow {
+            color: #3a3d4a;
+            font-size: 0.8em;
+        }
+        .train-countdown {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.95em;
+            color: #5a5e70;
+            text-align: right;
+            min-width: 60px;
+        }
+        .train-row.soon .train-countdown { color: #4caf50; font-weight: 600; }
+        .train-row.next .train-countdown { color: #7c8aff; }
+        .no-trains-msg {
+            text-align: center;
+            color: #444;
+            padding: 40px 20px;
+            font-style: italic;
+        }
+        .last-updated {
+            text-align: center;
+            color: #3a3d4a;
+            font-size: 0.75em;
+            padding: 20px;
+        }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <span class="header-title">Rail Timetables</span>
+    </div>
+    <div class="tab-bar" id="tabBar"></div>
+    <div class="direction-bar">
+        <span class="direction-label" id="directionLabel"></span>
+        <button class="swap-btn" id="swapBtn" onclick="swapDirection()">&#8644;</button>
+    </div>
+    <div class="hero" id="hero">
+        <div class="hero-label">Next train</div>
+        <div class="hero-countdown" id="heroCountdown"></div>
+        <div class="hero-time" id="heroTime"></div>
+    </div>
+    <div class="filter-bar">
+        <span class="upcoming-count" id="upcomingCount"></span>
+        <button class="filter-btn active" id="filterBtn" onclick="toggleFilter()">Future only</button>
+    </div>
+    <div class="timetable" id="timetable"></div>
+    <div class="last-updated">Updated: 2026-04-08 04:54:31</div>
 
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Rail Timetables</title>
-        <style>
-            body {
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 20px;
-                background-color: #f5f5f5;
-            }
-            .header {
-                text-align: center;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-                padding: 30px;
-                border-radius: 10px;
-                margin-bottom: 30px;
-                position: relative;
-            }
-            .current-time {
-                display: inline;
-            }
-            .route {
-                background: white;
-                margin: 20px 0;
-                padding: 20px;
-                border-radius: 10px;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            }
-            .route h2 {
-                color: #333;
-                border-bottom: 3px solid #667eea;
-                padding-bottom: 10px;
-                margin-bottom: 15px;
-            }
-            .route-info {
-                background: #f8f9fa;
-                padding: 15px;
-                border-radius: 5px;
-                margin: 15px 0;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                flex-wrap: wrap;
-            }
-            .route-details {
-                display: flex;
-                gap: 20px;
-                flex-wrap: wrap;
-            }
-            .filter-controls {
-                display: flex;
-                gap: 10px;
-                align-items: center;
-                margin-top: 10px;
-            }
-            .filter-toggle {
-                background: #667eea;
-                color: white;
-                border: none;
-                padding: 8px 16px;
-                border-radius: 5px;
-                cursor: pointer;
-                font-size: 0.9em;
-                transition: background-color 0.3s;
-            }
-            .filter-toggle:hover {
-                background: #5a6fd8;
-            }
-            .filter-toggle.active {
-                background: #28a745;
-            }
-            .show-all-toggle {
-                background: #6c757d;
-            }
-            .show-all-toggle:hover {
-                background: #5a6268;
-            }
-            .upcoming-count {
-                color: #28a745;
-                font-weight: bold;
-                margin-left: 10px;
-            }
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-top: 15px;
-            }
-            th, td {
-                padding: 12px;
-                text-align: left;
-                border-bottom: 1px solid #ddd;
-            }
-            th {
-                background-color: #667eea;
-                color: white;
-            }
-            tr:nth-child(even) {
-                background-color: #f2f2f2;
-            }
-            tr:hover {
-                background-color: #e8f4f8;
-            }
-            .time-cell {
-                font-weight: bold;
-                font-family: 'Courier New', monospace;
-            }
-            .past-time {
-                opacity: 0.5;
-                color: #999;
-            }
-            .next-train {
-                background-color: #d4edda !important;
-                border-left: 4px solid #28a745;
-            }
-            .leaving-soon {
-                background-color: #fff3cd !important;
-                border-left: 4px solid #ffc107;
-            }
-            .hidden {
-                display: none !important;
-            }
-            .last-updated {
-                text-align: center;
-                color: #666;
-                font-style: italic;
-                margin-top: 30px;
-            }
-            .no-data {
-                text-align: center;
-                color: #999;
-                padding: 20px;
-                font-style: italic;
-            }
-            .no-upcoming {
-                text-align: center;
-                color: #dc3545;
-                padding: 20px;
-                font-style: italic;
-                background: #f8d7da;
-                border-radius: 5px;
-                margin-top: 15px;
-            }
-            .status-indicator {
-                display: inline-block;
-                width: 8px;
-                height: 8px;
-                border-radius: 50%;
-                margin-right: 8px;
-            }
-            .status-upcoming {
-                background-color: #28a745;
-            }
-            .status-soon {
-                background-color: #ffc107;
-            }
-            .status-past {
-                background-color: #dc3545;
-            }
-            @media (max-width: 768px) {
-                .route-info {
-                    flex-direction: column;
-                    align-items: flex-start;
+    <script>
+        const DATA = {"last_updated": "2026-04-08 04:54:31", "stations": {"laagri": {"name": "Laagri", "lat": 59.3667, "lng": 24.6333}, "kivimae": {"name": "Kivim\u00e4e", "lat": 59.4019, "lng": 24.7069}, "tallinn": {"name": "Tallinn", "lat": 59.44, "lng": 24.7375}}, "route_pairs": [{"id": "laagri-tallinn", "label": "Laagri \u2194 Tallinn", "stations": ["laagri", "tallinn"], "directions": {"laagri-tallinn": {"from": "laagri", "to": "tallinn", "timetable": [{"departure": "05:33", "arrival": "05:54"}, {"departure": "06:03", "arrival": "06:24"}, {"departure": "06:33", "arrival": "06:54"}, {"departure": "06:53", "arrival": "07:14"}, {"departure": "07:05", "arrival": "07:22"}, {"departure": "07:13", "arrival": "07:34"}, {"departure": "07:25", "arrival": "07:42"}, {"departure": "07:33", "arrival": "07:54"}, {"departure": "07:45", "arrival": "08:02"}, {"departure": "07:53", "arrival": "08:14"}, {"departure": "08:05", "arrival": "08:22"}, {"departure": "08:13", "arrival": "08:34"}, {"departure": "08:25", "arrival": "08:42"}, {"departure": "08:33", "arrival": "08:54"}, {"departure": "08:53", "arrival": "09:14"}, {"departure": "09:13", "arrival": "09:34"}, {"departure": "09:33", "arrival": "09:54"}, {"departure": "09:53", "arrival": "10:14"}, {"departure": "10:13", "arrival": "10:34"}, {"departure": "10:33", "arrival": "10:54"}, {"departure": "10:53", "arrival": "11:14"}, {"departure": "11:13", "arrival": "11:34"}, {"departure": "11:33", "arrival": "11:54"}, {"departure": "11:53", "arrival": "12:14"}, {"departure": "12:13", "arrival": "12:34"}, {"departure": "12:33", "arrival": "12:54"}, {"departure": "12:53", "arrival": "13:14"}, {"departure": "13:13", "arrival": "13:34"}, {"departure": "13:33", "arrival": "13:54"}, {"departure": "13:53", "arrival": "14:14"}, {"departure": "14:13", "arrival": "14:34"}, {"departure": "14:33", "arrival": "14:54"}, {"departure": "14:53", "arrival": "15:14"}, {"departure": "15:13", "arrival": "15:34"}, {"departure": "15:33", "arrival": "15:54"}, {"departure": "15:53", "arrival": "16:14"}, {"departure": "16:13", "arrival": "16:34"}, {"departure": "16:33", "arrival": "16:54"}, {"departure": "16:53", "arrival": "17:14"}, {"departure": "17:13", "arrival": "17:34"}, {"departure": "17:25", "arrival": "17:42"}, {"departure": "17:33", "arrival": "17:54"}, {"departure": "17:45", "arrival": "18:02"}, {"departure": "17:53", "arrival": "18:14"}, {"departure": "18:13", "arrival": "18:34"}, {"departure": "18:33", "arrival": "18:54"}, {"departure": "18:53", "arrival": "19:14"}, {"departure": "19:13", "arrival": "19:34"}, {"departure": "19:33", "arrival": "19:54"}, {"departure": "19:53", "arrival": "20:14"}, {"departure": "20:13", "arrival": "20:34"}, {"departure": "20:33", "arrival": "20:54"}, {"departure": "21:03", "arrival": "21:24"}, {"departure": "21:33", "arrival": "21:54"}, {"departure": "22:03", "arrival": "22:24"}, {"departure": "22:33", "arrival": "22:54"}, {"departure": "23:03", "arrival": "23:24"}]}, "tallinn-laagri": {"from": "tallinn", "to": "laagri", "timetable": [{"departure": "05:45", "arrival": "06:06"}, {"departure": "06:15", "arrival": "06:36"}, {"departure": "06:35", "arrival": "06:53"}, {"departure": "06:45", "arrival": "07:06"}, {"departure": "07:05", "arrival": "07:26"}, {"departure": "07:25", "arrival": "07:46"}, {"departure": "07:37", "arrival": "07:55"}, {"departure": "07:45", "arrival": "08:06"}, {"departure": "08:05", "arrival": "08:26"}, {"departure": "08:25", "arrival": "08:46"}, {"departure": "08:45", "arrival": "09:06"}, {"departure": "09:05", "arrival": "09:26"}, {"departure": "09:25", "arrival": "09:46"}, {"departure": "09:45", "arrival": "10:06"}, {"departure": "10:05", "arrival": "10:26"}, {"departure": "10:25", "arrival": "10:46"}, {"departure": "10:45", "arrival": "11:06"}, {"departure": "11:05", "arrival": "11:26"}, {"departure": "11:25", "arrival": "11:46"}, {"departure": "11:45", "arrival": "12:06"}, {"departure": "12:05", "arrival": "12:26"}, {"departure": "12:25", "arrival": "12:46"}, {"departure": "12:45", "arrival": "13:06"}, {"departure": "13:05", "arrival": "13:26"}, {"departure": "13:25", "arrival": "13:46"}, {"departure": "13:45", "arrival": "14:06"}, {"departure": "14:05", "arrival": "14:26"}, {"departure": "14:25", "arrival": "14:46"}, {"departure": "14:45", "arrival": "15:06"}, {"departure": "15:05", "arrival": "15:26"}, {"departure": "15:25", "arrival": "15:46"}, {"departure": "15:45", "arrival": "16:06"}, {"departure": "16:05", "arrival": "16:26"}, {"departure": "16:16", "arrival": "16:33"}, {"departure": "16:25", "arrival": "16:46"}, {"departure": "16:36", "arrival": "16:53"}, {"departure": "16:45", "arrival": "17:06"}, {"departure": "16:56", "arrival": "17:13"}, {"departure": "17:05", "arrival": "17:26"}, {"departure": "17:16", "arrival": "17:34"}, {"departure": "17:25", "arrival": "17:46"}, {"departure": "17:45", "arrival": "18:06"}, {"departure": "18:05", "arrival": "18:26"}, {"departure": "18:25", "arrival": "18:46"}, {"departure": "18:45", "arrival": "19:06"}, {"departure": "19:05", "arrival": "19:26"}, {"departure": "19:25", "arrival": "19:46"}, {"departure": "19:45", "arrival": "20:06"}, {"departure": "20:15", "arrival": "20:36"}, {"departure": "20:45", "arrival": "21:06"}, {"departure": "21:15", "arrival": "21:36"}, {"departure": "21:45", "arrival": "22:06"}, {"departure": "22:15", "arrival": "22:36"}, {"departure": "22:45", "arrival": "23:06"}, {"departure": "23:15", "arrival": "23:36"}, {"departure": "23:45", "arrival": "00:06"}]}}}, {"id": "kivimae-laagri", "label": "Kivim\u00e4e \u2194 Laagri", "stations": ["kivimae", "laagri"], "directions": {"kivimae-laagri": {"from": "kivimae", "to": "laagri", "timetable": [{"departure": "06:01", "arrival": "06:06"}, {"departure": "06:31", "arrival": "06:36"}, {"departure": "07:01", "arrival": "07:06"}, {"departure": "07:21", "arrival": "07:26"}, {"departure": "07:41", "arrival": "07:46"}, {"departure": "08:01", "arrival": "08:06"}, {"departure": "08:21", "arrival": "08:26"}, {"departure": "08:41", "arrival": "08:46"}, {"departure": "09:01", "arrival": "09:06"}, {"departure": "09:21", "arrival": "09:26"}, {"departure": "09:41", "arrival": "09:46"}, {"departure": "10:01", "arrival": "10:06"}, {"departure": "10:21", "arrival": "10:26"}, {"departure": "10:41", "arrival": "10:46"}, {"departure": "11:01", "arrival": "11:06"}, {"departure": "11:21", "arrival": "11:26"}, {"departure": "11:41", "arrival": "11:46"}, {"departure": "12:01", "arrival": "12:06"}, {"departure": "12:21", "arrival": "12:26"}, {"departure": "12:41", "arrival": "12:46"}, {"departure": "13:01", "arrival": "13:06"}, {"departure": "13:21", "arrival": "13:26"}, {"departure": "13:41", "arrival": "13:46"}, {"departure": "14:01", "arrival": "14:06"}, {"departure": "14:21", "arrival": "14:26"}, {"departure": "14:41", "arrival": "14:46"}, {"departure": "15:01", "arrival": "15:06"}, {"departure": "15:21", "arrival": "15:26"}, {"departure": "15:41", "arrival": "15:46"}, {"departure": "16:01", "arrival": "16:06"}, {"departure": "16:21", "arrival": "16:26"}, {"departure": "16:41", "arrival": "16:46"}, {"departure": "17:01", "arrival": "17:06"}, {"departure": "17:21", "arrival": "17:26"}, {"departure": "17:41", "arrival": "17:46"}, {"departure": "18:01", "arrival": "18:06"}, {"departure": "18:21", "arrival": "18:26"}, {"departure": "18:41", "arrival": "18:46"}, {"departure": "19:01", "arrival": "19:06"}, {"departure": "19:21", "arrival": "19:26"}, {"departure": "19:41", "arrival": "19:46"}, {"departure": "20:01", "arrival": "20:06"}, {"departure": "20:31", "arrival": "20:36"}, {"departure": "21:01", "arrival": "21:06"}, {"departure": "21:31", "arrival": "21:36"}, {"departure": "22:01", "arrival": "22:06"}, {"departure": "22:31", "arrival": "22:36"}, {"departure": "23:01", "arrival": "23:06"}, {"departure": "23:31", "arrival": "23:36"}]}, "laagri-kivimae": {"from": "laagri", "to": "kivimae", "timetable": [{"departure": "05:33", "arrival": "05:38"}, {"departure": "06:03", "arrival": "06:08"}, {"departure": "06:33", "arrival": "06:38"}, {"departure": "06:53", "arrival": "06:58"}, {"departure": "07:13", "arrival": "07:18"}, {"departure": "07:33", "arrival": "07:38"}, {"departure": "07:53", "arrival": "07:58"}, {"departure": "08:13", "arrival": "08:18"}, {"departure": "08:33", "arrival": "08:38"}, {"departure": "08:53", "arrival": "08:58"}, {"departure": "09:13", "arrival": "09:18"}, {"departure": "09:33", "arrival": "09:38"}, {"departure": "09:53", "arrival": "09:58"}, {"departure": "10:13", "arrival": "10:18"}, {"departure": "10:33", "arrival": "10:38"}, {"departure": "10:53", "arrival": "10:58"}, {"departure": "11:13", "arrival": "11:18"}, {"departure": "11:33", "arrival": "11:38"}, {"departure": "11:53", "arrival": "11:58"}, {"departure": "12:13", "arrival": "12:18"}, {"departure": "12:33", "arrival": "12:38"}, {"departure": "12:53", "arrival": "12:58"}, {"departure": "13:13", "arrival": "13:18"}, {"departure": "13:33", "arrival": "13:38"}, {"departure": "13:53", "arrival": "13:58"}, {"departure": "14:13", "arrival": "14:18"}, {"departure": "14:33", "arrival": "14:38"}, {"departure": "14:53", "arrival": "14:58"}, {"departure": "15:13", "arrival": "15:18"}, {"departure": "15:33", "arrival": "15:38"}, {"departure": "15:53", "arrival": "15:58"}, {"departure": "16:13", "arrival": "16:18"}, {"departure": "16:33", "arrival": "16:38"}, {"departure": "16:53", "arrival": "16:58"}, {"departure": "17:13", "arrival": "17:18"}, {"departure": "17:33", "arrival": "17:38"}, {"departure": "17:53", "arrival": "17:58"}, {"departure": "18:13", "arrival": "18:18"}, {"departure": "18:33", "arrival": "18:38"}, {"departure": "18:53", "arrival": "18:58"}, {"departure": "19:13", "arrival": "19:18"}, {"departure": "19:33", "arrival": "19:38"}, {"departure": "19:53", "arrival": "19:58"}, {"departure": "20:13", "arrival": "20:18"}, {"departure": "20:33", "arrival": "20:38"}, {"departure": "21:03", "arrival": "21:08"}, {"departure": "21:33", "arrival": "21:38"}, {"departure": "22:03", "arrival": "22:08"}, {"departure": "22:33", "arrival": "22:38"}, {"departure": "23:03", "arrival": "23:08"}]}}}]};
+        const GEO_TTL = 30 * 60 * 1000; // 30 minutes
+
+        let activePairIndex = 0;
+        let activeDirectionIndex = 0; // 0 = first direction, 1 = second
+        let showFutureOnly = true;
+
+        // --- Geolocation & Persistence ---
+
+        function haversine(lat1, lng1, lat2, lng2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLng = (lng2 - lng1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLng/2) * Math.sin(dLng/2);
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        }
+
+        function findClosestStation(lat, lng) {
+            let closest = null;
+            let minDist = Infinity;
+            for (const [id, st] of Object.entries(DATA.stations)) {
+                const d = haversine(lat, lng, st.lat, st.lng);
+                if (d < minDist) {
+                    minDist = d;
+                    closest = id;
                 }
-                .filter-controls {
-                    margin-top: 15px;
-                    flex-wrap: wrap;
-                }
             }
-        </style>
-    </head>
-    <body>
-        <div class="header">
-            🚂 Rail Timetables: <div class="current-time" id="currentTime"></div>
-        </div>
-    
-        <div class="route" id="route-laagri-to-tallinn">
-            <h2>Laagri to Tallinn <a href="#" onclick="cycleToNext('route-')">&lt;&lt;&gt;&gt;</a></h2>
-            <div class="route-info">
-                <div class="route-details">
-                    <span><strong>From:</strong> Laagri</span>
-                    <span><strong>To:</strong> Tallinn</span>
-                </div>
-                <div class="filter-controls">
-                    <button class="filter-toggle active" onclick="toggleFilter('laagri-to-tallinn', true)">
-                        Future Only
-                    </button>
-                    <button class="filter-toggle show-all-toggle" onclick="toggleFilter('laagri-to-tallinn', false)">
-                        Show All
-                    </button>
-                    <span class="upcoming-count" id="count-laagri-to-tallinn"></span>
-                </div>
-            </div>
-    
-            <table id="table-laagri-to-tallinn">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Departure</th>
-                        <th>Arrival</th>
-                        <th>Time Left</th>
-                    </tr>
-                </thead>
-                <tbody>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="05:33" data-index="0">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-0"></span>
-                            <span id="status-text-laagri-to-tallinn-0"></span>
-                        </td>
-                        <td class="time-cell departure-time">05:33</td>
-                        <td class="time-cell arrival-time">05:54</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-0"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="06:03" data-index="1">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-1"></span>
-                            <span id="status-text-laagri-to-tallinn-1"></span>
-                        </td>
-                        <td class="time-cell departure-time">06:03</td>
-                        <td class="time-cell arrival-time">06:24</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-1"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="06:33" data-index="2">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-2"></span>
-                            <span id="status-text-laagri-to-tallinn-2"></span>
-                        </td>
-                        <td class="time-cell departure-time">06:33</td>
-                        <td class="time-cell arrival-time">06:54</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-2"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="06:53" data-index="3">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-3"></span>
-                            <span id="status-text-laagri-to-tallinn-3"></span>
-                        </td>
-                        <td class="time-cell departure-time">06:53</td>
-                        <td class="time-cell arrival-time">07:14</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-3"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="07:05" data-index="4">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-4"></span>
-                            <span id="status-text-laagri-to-tallinn-4"></span>
-                        </td>
-                        <td class="time-cell departure-time">07:05</td>
-                        <td class="time-cell arrival-time">07:22</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-4"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="07:13" data-index="5">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-5"></span>
-                            <span id="status-text-laagri-to-tallinn-5"></span>
-                        </td>
-                        <td class="time-cell departure-time">07:13</td>
-                        <td class="time-cell arrival-time">07:34</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-5"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="07:25" data-index="6">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-6"></span>
-                            <span id="status-text-laagri-to-tallinn-6"></span>
-                        </td>
-                        <td class="time-cell departure-time">07:25</td>
-                        <td class="time-cell arrival-time">07:42</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-6"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="07:33" data-index="7">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-7"></span>
-                            <span id="status-text-laagri-to-tallinn-7"></span>
-                        </td>
-                        <td class="time-cell departure-time">07:33</td>
-                        <td class="time-cell arrival-time">07:54</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-7"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="07:45" data-index="8">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-8"></span>
-                            <span id="status-text-laagri-to-tallinn-8"></span>
-                        </td>
-                        <td class="time-cell departure-time">07:45</td>
-                        <td class="time-cell arrival-time">08:02</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-8"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="07:53" data-index="9">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-9"></span>
-                            <span id="status-text-laagri-to-tallinn-9"></span>
-                        </td>
-                        <td class="time-cell departure-time">07:53</td>
-                        <td class="time-cell arrival-time">08:14</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-9"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="08:05" data-index="10">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-10"></span>
-                            <span id="status-text-laagri-to-tallinn-10"></span>
-                        </td>
-                        <td class="time-cell departure-time">08:05</td>
-                        <td class="time-cell arrival-time">08:22</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-10"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="08:13" data-index="11">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-11"></span>
-                            <span id="status-text-laagri-to-tallinn-11"></span>
-                        </td>
-                        <td class="time-cell departure-time">08:13</td>
-                        <td class="time-cell arrival-time">08:34</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-11"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="08:25" data-index="12">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-12"></span>
-                            <span id="status-text-laagri-to-tallinn-12"></span>
-                        </td>
-                        <td class="time-cell departure-time">08:25</td>
-                        <td class="time-cell arrival-time">08:42</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-12"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="08:33" data-index="13">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-13"></span>
-                            <span id="status-text-laagri-to-tallinn-13"></span>
-                        </td>
-                        <td class="time-cell departure-time">08:33</td>
-                        <td class="time-cell arrival-time">08:54</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-13"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="08:53" data-index="14">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-14"></span>
-                            <span id="status-text-laagri-to-tallinn-14"></span>
-                        </td>
-                        <td class="time-cell departure-time">08:53</td>
-                        <td class="time-cell arrival-time">09:14</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-14"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="09:13" data-index="15">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-15"></span>
-                            <span id="status-text-laagri-to-tallinn-15"></span>
-                        </td>
-                        <td class="time-cell departure-time">09:13</td>
-                        <td class="time-cell arrival-time">09:34</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-15"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="09:33" data-index="16">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-16"></span>
-                            <span id="status-text-laagri-to-tallinn-16"></span>
-                        </td>
-                        <td class="time-cell departure-time">09:33</td>
-                        <td class="time-cell arrival-time">09:54</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-16"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="09:53" data-index="17">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-17"></span>
-                            <span id="status-text-laagri-to-tallinn-17"></span>
-                        </td>
-                        <td class="time-cell departure-time">09:53</td>
-                        <td class="time-cell arrival-time">10:14</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-17"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="10:13" data-index="18">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-18"></span>
-                            <span id="status-text-laagri-to-tallinn-18"></span>
-                        </td>
-                        <td class="time-cell departure-time">10:13</td>
-                        <td class="time-cell arrival-time">10:34</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-18"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="10:33" data-index="19">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-19"></span>
-                            <span id="status-text-laagri-to-tallinn-19"></span>
-                        </td>
-                        <td class="time-cell departure-time">10:33</td>
-                        <td class="time-cell arrival-time">10:54</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-19"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="10:53" data-index="20">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-20"></span>
-                            <span id="status-text-laagri-to-tallinn-20"></span>
-                        </td>
-                        <td class="time-cell departure-time">10:53</td>
-                        <td class="time-cell arrival-time">11:14</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-20"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="11:13" data-index="21">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-21"></span>
-                            <span id="status-text-laagri-to-tallinn-21"></span>
-                        </td>
-                        <td class="time-cell departure-time">11:13</td>
-                        <td class="time-cell arrival-time">11:34</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-21"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="11:33" data-index="22">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-22"></span>
-                            <span id="status-text-laagri-to-tallinn-22"></span>
-                        </td>
-                        <td class="time-cell departure-time">11:33</td>
-                        <td class="time-cell arrival-time">11:54</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-22"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="11:53" data-index="23">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-23"></span>
-                            <span id="status-text-laagri-to-tallinn-23"></span>
-                        </td>
-                        <td class="time-cell departure-time">11:53</td>
-                        <td class="time-cell arrival-time">12:14</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-23"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="12:13" data-index="24">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-24"></span>
-                            <span id="status-text-laagri-to-tallinn-24"></span>
-                        </td>
-                        <td class="time-cell departure-time">12:13</td>
-                        <td class="time-cell arrival-time">12:34</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-24"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="12:33" data-index="25">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-25"></span>
-                            <span id="status-text-laagri-to-tallinn-25"></span>
-                        </td>
-                        <td class="time-cell departure-time">12:33</td>
-                        <td class="time-cell arrival-time">12:54</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-25"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="12:53" data-index="26">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-26"></span>
-                            <span id="status-text-laagri-to-tallinn-26"></span>
-                        </td>
-                        <td class="time-cell departure-time">12:53</td>
-                        <td class="time-cell arrival-time">13:14</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-26"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="13:13" data-index="27">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-27"></span>
-                            <span id="status-text-laagri-to-tallinn-27"></span>
-                        </td>
-                        <td class="time-cell departure-time">13:13</td>
-                        <td class="time-cell arrival-time">13:34</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-27"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="13:33" data-index="28">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-28"></span>
-                            <span id="status-text-laagri-to-tallinn-28"></span>
-                        </td>
-                        <td class="time-cell departure-time">13:33</td>
-                        <td class="time-cell arrival-time">13:54</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-28"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="13:53" data-index="29">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-29"></span>
-                            <span id="status-text-laagri-to-tallinn-29"></span>
-                        </td>
-                        <td class="time-cell departure-time">13:53</td>
-                        <td class="time-cell arrival-time">14:14</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-29"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="14:13" data-index="30">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-30"></span>
-                            <span id="status-text-laagri-to-tallinn-30"></span>
-                        </td>
-                        <td class="time-cell departure-time">14:13</td>
-                        <td class="time-cell arrival-time">14:34</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-30"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="14:33" data-index="31">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-31"></span>
-                            <span id="status-text-laagri-to-tallinn-31"></span>
-                        </td>
-                        <td class="time-cell departure-time">14:33</td>
-                        <td class="time-cell arrival-time">14:54</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-31"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="14:53" data-index="32">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-32"></span>
-                            <span id="status-text-laagri-to-tallinn-32"></span>
-                        </td>
-                        <td class="time-cell departure-time">14:53</td>
-                        <td class="time-cell arrival-time">15:14</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-32"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="15:13" data-index="33">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-33"></span>
-                            <span id="status-text-laagri-to-tallinn-33"></span>
-                        </td>
-                        <td class="time-cell departure-time">15:13</td>
-                        <td class="time-cell arrival-time">15:34</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-33"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="15:33" data-index="34">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-34"></span>
-                            <span id="status-text-laagri-to-tallinn-34"></span>
-                        </td>
-                        <td class="time-cell departure-time">15:33</td>
-                        <td class="time-cell arrival-time">15:54</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-34"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="15:53" data-index="35">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-35"></span>
-                            <span id="status-text-laagri-to-tallinn-35"></span>
-                        </td>
-                        <td class="time-cell departure-time">15:53</td>
-                        <td class="time-cell arrival-time">16:14</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-35"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="16:13" data-index="36">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-36"></span>
-                            <span id="status-text-laagri-to-tallinn-36"></span>
-                        </td>
-                        <td class="time-cell departure-time">16:13</td>
-                        <td class="time-cell arrival-time">16:34</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-36"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="16:33" data-index="37">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-37"></span>
-                            <span id="status-text-laagri-to-tallinn-37"></span>
-                        </td>
-                        <td class="time-cell departure-time">16:33</td>
-                        <td class="time-cell arrival-time">16:54</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-37"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="16:53" data-index="38">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-38"></span>
-                            <span id="status-text-laagri-to-tallinn-38"></span>
-                        </td>
-                        <td class="time-cell departure-time">16:53</td>
-                        <td class="time-cell arrival-time">17:14</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-38"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="17:13" data-index="39">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-39"></span>
-                            <span id="status-text-laagri-to-tallinn-39"></span>
-                        </td>
-                        <td class="time-cell departure-time">17:13</td>
-                        <td class="time-cell arrival-time">17:34</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-39"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="17:25" data-index="40">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-40"></span>
-                            <span id="status-text-laagri-to-tallinn-40"></span>
-                        </td>
-                        <td class="time-cell departure-time">17:25</td>
-                        <td class="time-cell arrival-time">17:42</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-40"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="17:33" data-index="41">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-41"></span>
-                            <span id="status-text-laagri-to-tallinn-41"></span>
-                        </td>
-                        <td class="time-cell departure-time">17:33</td>
-                        <td class="time-cell arrival-time">17:54</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-41"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="17:45" data-index="42">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-42"></span>
-                            <span id="status-text-laagri-to-tallinn-42"></span>
-                        </td>
-                        <td class="time-cell departure-time">17:45</td>
-                        <td class="time-cell arrival-time">18:02</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-42"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="17:53" data-index="43">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-43"></span>
-                            <span id="status-text-laagri-to-tallinn-43"></span>
-                        </td>
-                        <td class="time-cell departure-time">17:53</td>
-                        <td class="time-cell arrival-time">18:14</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-43"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="18:13" data-index="44">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-44"></span>
-                            <span id="status-text-laagri-to-tallinn-44"></span>
-                        </td>
-                        <td class="time-cell departure-time">18:13</td>
-                        <td class="time-cell arrival-time">18:34</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-44"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="18:33" data-index="45">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-45"></span>
-                            <span id="status-text-laagri-to-tallinn-45"></span>
-                        </td>
-                        <td class="time-cell departure-time">18:33</td>
-                        <td class="time-cell arrival-time">18:54</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-45"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="18:53" data-index="46">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-46"></span>
-                            <span id="status-text-laagri-to-tallinn-46"></span>
-                        </td>
-                        <td class="time-cell departure-time">18:53</td>
-                        <td class="time-cell arrival-time">19:14</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-46"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="19:13" data-index="47">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-47"></span>
-                            <span id="status-text-laagri-to-tallinn-47"></span>
-                        </td>
-                        <td class="time-cell departure-time">19:13</td>
-                        <td class="time-cell arrival-time">19:34</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-47"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="19:33" data-index="48">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-48"></span>
-                            <span id="status-text-laagri-to-tallinn-48"></span>
-                        </td>
-                        <td class="time-cell departure-time">19:33</td>
-                        <td class="time-cell arrival-time">19:54</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-48"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="19:53" data-index="49">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-49"></span>
-                            <span id="status-text-laagri-to-tallinn-49"></span>
-                        </td>
-                        <td class="time-cell departure-time">19:53</td>
-                        <td class="time-cell arrival-time">20:14</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-49"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="20:13" data-index="50">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-50"></span>
-                            <span id="status-text-laagri-to-tallinn-50"></span>
-                        </td>
-                        <td class="time-cell departure-time">20:13</td>
-                        <td class="time-cell arrival-time">20:34</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-50"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="20:33" data-index="51">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-51"></span>
-                            <span id="status-text-laagri-to-tallinn-51"></span>
-                        </td>
-                        <td class="time-cell departure-time">20:33</td>
-                        <td class="time-cell arrival-time">20:54</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-51"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="21:03" data-index="52">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-52"></span>
-                            <span id="status-text-laagri-to-tallinn-52"></span>
-                        </td>
-                        <td class="time-cell departure-time">21:03</td>
-                        <td class="time-cell arrival-time">21:24</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-52"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="21:33" data-index="53">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-53"></span>
-                            <span id="status-text-laagri-to-tallinn-53"></span>
-                        </td>
-                        <td class="time-cell departure-time">21:33</td>
-                        <td class="time-cell arrival-time">21:54</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-53"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="22:03" data-index="54">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-54"></span>
-                            <span id="status-text-laagri-to-tallinn-54"></span>
-                        </td>
-                        <td class="time-cell departure-time">22:03</td>
-                        <td class="time-cell arrival-time">22:24</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-54"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="22:33" data-index="55">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-55"></span>
-                            <span id="status-text-laagri-to-tallinn-55"></span>
-                        </td>
-                        <td class="time-cell departure-time">22:33</td>
-                        <td class="time-cell arrival-time">22:54</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-55"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="laagri-to-tallinn" data-departure="23:03" data-index="56">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-laagri-to-tallinn-56"></span>
-                            <span id="status-text-laagri-to-tallinn-56"></span>
-                        </td>
-                        <td class="time-cell departure-time">23:03</td>
-                        <td class="time-cell arrival-time">23:24</td>
-                        <td class="time-cell countdown" id="countdown-laagri-to-tallinn-56"></td>
-                    </tr>
-    
-                </tbody>
-            </table>
-            <div class="no-upcoming hidden" id="no-upcoming-laagri-to-tallinn">
-                No upcoming trains for today. Check back tomorrow!
-            </div>
-        </div>
+            return closest;
+        }
 
-        <div class="route" id="route-tallinn-to-laagri">
-            <h2>Tallinn to Laagri <a href="#" onclick="cycleToNext('route-')">&lt;&lt;&gt;&gt;</a></h2>
-            <div class="route-info">
-                <div class="route-details">
-                    <span><strong>From:</strong> Tallinn</span>
-                    <span><strong>To:</strong> Laagri</span>
-                </div>
-                <div class="filter-controls">
-                    <button class="filter-toggle active" onclick="toggleFilter('tallinn-to-laagri', true)">
-                        Future Only
-                    </button>
-                    <button class="filter-toggle show-all-toggle" onclick="toggleFilter('tallinn-to-laagri', false)">
-                        Show All
-                    </button>
-                    <span class="upcoming-count" id="count-tallinn-to-laagri"></span>
-                </div>
-            </div>
-    
-            <table id="table-tallinn-to-laagri">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Departure</th>
-                        <th>Arrival</th>
-                        <th>Time Left</th>
-                    </tr>
-                </thead>
-                <tbody>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="05:45" data-index="0">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-0"></span>
-                            <span id="status-text-tallinn-to-laagri-0"></span>
-                        </td>
-                        <td class="time-cell departure-time">05:45</td>
-                        <td class="time-cell arrival-time">06:06</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-0"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="06:15" data-index="1">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-1"></span>
-                            <span id="status-text-tallinn-to-laagri-1"></span>
-                        </td>
-                        <td class="time-cell departure-time">06:15</td>
-                        <td class="time-cell arrival-time">06:36</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-1"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="06:35" data-index="2">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-2"></span>
-                            <span id="status-text-tallinn-to-laagri-2"></span>
-                        </td>
-                        <td class="time-cell departure-time">06:35</td>
-                        <td class="time-cell arrival-time">06:53</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-2"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="06:45" data-index="3">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-3"></span>
-                            <span id="status-text-tallinn-to-laagri-3"></span>
-                        </td>
-                        <td class="time-cell departure-time">06:45</td>
-                        <td class="time-cell arrival-time">07:06</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-3"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="07:05" data-index="4">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-4"></span>
-                            <span id="status-text-tallinn-to-laagri-4"></span>
-                        </td>
-                        <td class="time-cell departure-time">07:05</td>
-                        <td class="time-cell arrival-time">07:26</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-4"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="07:25" data-index="5">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-5"></span>
-                            <span id="status-text-tallinn-to-laagri-5"></span>
-                        </td>
-                        <td class="time-cell departure-time">07:25</td>
-                        <td class="time-cell arrival-time">07:46</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-5"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="07:37" data-index="6">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-6"></span>
-                            <span id="status-text-tallinn-to-laagri-6"></span>
-                        </td>
-                        <td class="time-cell departure-time">07:37</td>
-                        <td class="time-cell arrival-time">07:55</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-6"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="07:45" data-index="7">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-7"></span>
-                            <span id="status-text-tallinn-to-laagri-7"></span>
-                        </td>
-                        <td class="time-cell departure-time">07:45</td>
-                        <td class="time-cell arrival-time">08:06</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-7"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="08:05" data-index="8">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-8"></span>
-                            <span id="status-text-tallinn-to-laagri-8"></span>
-                        </td>
-                        <td class="time-cell departure-time">08:05</td>
-                        <td class="time-cell arrival-time">08:26</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-8"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="08:25" data-index="9">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-9"></span>
-                            <span id="status-text-tallinn-to-laagri-9"></span>
-                        </td>
-                        <td class="time-cell departure-time">08:25</td>
-                        <td class="time-cell arrival-time">08:46</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-9"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="08:45" data-index="10">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-10"></span>
-                            <span id="status-text-tallinn-to-laagri-10"></span>
-                        </td>
-                        <td class="time-cell departure-time">08:45</td>
-                        <td class="time-cell arrival-time">09:06</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-10"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="09:05" data-index="11">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-11"></span>
-                            <span id="status-text-tallinn-to-laagri-11"></span>
-                        </td>
-                        <td class="time-cell departure-time">09:05</td>
-                        <td class="time-cell arrival-time">09:26</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-11"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="09:25" data-index="12">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-12"></span>
-                            <span id="status-text-tallinn-to-laagri-12"></span>
-                        </td>
-                        <td class="time-cell departure-time">09:25</td>
-                        <td class="time-cell arrival-time">09:46</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-12"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="09:45" data-index="13">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-13"></span>
-                            <span id="status-text-tallinn-to-laagri-13"></span>
-                        </td>
-                        <td class="time-cell departure-time">09:45</td>
-                        <td class="time-cell arrival-time">10:06</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-13"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="10:05" data-index="14">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-14"></span>
-                            <span id="status-text-tallinn-to-laagri-14"></span>
-                        </td>
-                        <td class="time-cell departure-time">10:05</td>
-                        <td class="time-cell arrival-time">10:26</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-14"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="10:25" data-index="15">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-15"></span>
-                            <span id="status-text-tallinn-to-laagri-15"></span>
-                        </td>
-                        <td class="time-cell departure-time">10:25</td>
-                        <td class="time-cell arrival-time">10:46</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-15"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="10:45" data-index="16">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-16"></span>
-                            <span id="status-text-tallinn-to-laagri-16"></span>
-                        </td>
-                        <td class="time-cell departure-time">10:45</td>
-                        <td class="time-cell arrival-time">11:06</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-16"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="11:05" data-index="17">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-17"></span>
-                            <span id="status-text-tallinn-to-laagri-17"></span>
-                        </td>
-                        <td class="time-cell departure-time">11:05</td>
-                        <td class="time-cell arrival-time">11:26</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-17"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="11:25" data-index="18">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-18"></span>
-                            <span id="status-text-tallinn-to-laagri-18"></span>
-                        </td>
-                        <td class="time-cell departure-time">11:25</td>
-                        <td class="time-cell arrival-time">11:46</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-18"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="11:45" data-index="19">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-19"></span>
-                            <span id="status-text-tallinn-to-laagri-19"></span>
-                        </td>
-                        <td class="time-cell departure-time">11:45</td>
-                        <td class="time-cell arrival-time">12:06</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-19"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="12:05" data-index="20">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-20"></span>
-                            <span id="status-text-tallinn-to-laagri-20"></span>
-                        </td>
-                        <td class="time-cell departure-time">12:05</td>
-                        <td class="time-cell arrival-time">12:26</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-20"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="12:25" data-index="21">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-21"></span>
-                            <span id="status-text-tallinn-to-laagri-21"></span>
-                        </td>
-                        <td class="time-cell departure-time">12:25</td>
-                        <td class="time-cell arrival-time">12:46</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-21"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="12:45" data-index="22">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-22"></span>
-                            <span id="status-text-tallinn-to-laagri-22"></span>
-                        </td>
-                        <td class="time-cell departure-time">12:45</td>
-                        <td class="time-cell arrival-time">13:06</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-22"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="13:05" data-index="23">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-23"></span>
-                            <span id="status-text-tallinn-to-laagri-23"></span>
-                        </td>
-                        <td class="time-cell departure-time">13:05</td>
-                        <td class="time-cell arrival-time">13:26</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-23"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="13:25" data-index="24">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-24"></span>
-                            <span id="status-text-tallinn-to-laagri-24"></span>
-                        </td>
-                        <td class="time-cell departure-time">13:25</td>
-                        <td class="time-cell arrival-time">13:46</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-24"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="13:45" data-index="25">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-25"></span>
-                            <span id="status-text-tallinn-to-laagri-25"></span>
-                        </td>
-                        <td class="time-cell departure-time">13:45</td>
-                        <td class="time-cell arrival-time">14:06</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-25"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="14:05" data-index="26">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-26"></span>
-                            <span id="status-text-tallinn-to-laagri-26"></span>
-                        </td>
-                        <td class="time-cell departure-time">14:05</td>
-                        <td class="time-cell arrival-time">14:26</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-26"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="14:25" data-index="27">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-27"></span>
-                            <span id="status-text-tallinn-to-laagri-27"></span>
-                        </td>
-                        <td class="time-cell departure-time">14:25</td>
-                        <td class="time-cell arrival-time">14:46</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-27"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="14:45" data-index="28">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-28"></span>
-                            <span id="status-text-tallinn-to-laagri-28"></span>
-                        </td>
-                        <td class="time-cell departure-time">14:45</td>
-                        <td class="time-cell arrival-time">15:06</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-28"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="15:05" data-index="29">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-29"></span>
-                            <span id="status-text-tallinn-to-laagri-29"></span>
-                        </td>
-                        <td class="time-cell departure-time">15:05</td>
-                        <td class="time-cell arrival-time">15:26</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-29"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="15:25" data-index="30">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-30"></span>
-                            <span id="status-text-tallinn-to-laagri-30"></span>
-                        </td>
-                        <td class="time-cell departure-time">15:25</td>
-                        <td class="time-cell arrival-time">15:46</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-30"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="15:45" data-index="31">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-31"></span>
-                            <span id="status-text-tallinn-to-laagri-31"></span>
-                        </td>
-                        <td class="time-cell departure-time">15:45</td>
-                        <td class="time-cell arrival-time">16:06</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-31"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="16:05" data-index="32">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-32"></span>
-                            <span id="status-text-tallinn-to-laagri-32"></span>
-                        </td>
-                        <td class="time-cell departure-time">16:05</td>
-                        <td class="time-cell arrival-time">16:26</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-32"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="16:16" data-index="33">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-33"></span>
-                            <span id="status-text-tallinn-to-laagri-33"></span>
-                        </td>
-                        <td class="time-cell departure-time">16:16</td>
-                        <td class="time-cell arrival-time">16:33</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-33"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="16:25" data-index="34">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-34"></span>
-                            <span id="status-text-tallinn-to-laagri-34"></span>
-                        </td>
-                        <td class="time-cell departure-time">16:25</td>
-                        <td class="time-cell arrival-time">16:46</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-34"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="16:36" data-index="35">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-35"></span>
-                            <span id="status-text-tallinn-to-laagri-35"></span>
-                        </td>
-                        <td class="time-cell departure-time">16:36</td>
-                        <td class="time-cell arrival-time">16:53</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-35"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="16:45" data-index="36">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-36"></span>
-                            <span id="status-text-tallinn-to-laagri-36"></span>
-                        </td>
-                        <td class="time-cell departure-time">16:45</td>
-                        <td class="time-cell arrival-time">17:06</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-36"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="16:56" data-index="37">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-37"></span>
-                            <span id="status-text-tallinn-to-laagri-37"></span>
-                        </td>
-                        <td class="time-cell departure-time">16:56</td>
-                        <td class="time-cell arrival-time">17:13</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-37"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="17:05" data-index="38">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-38"></span>
-                            <span id="status-text-tallinn-to-laagri-38"></span>
-                        </td>
-                        <td class="time-cell departure-time">17:05</td>
-                        <td class="time-cell arrival-time">17:26</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-38"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="17:16" data-index="39">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-39"></span>
-                            <span id="status-text-tallinn-to-laagri-39"></span>
-                        </td>
-                        <td class="time-cell departure-time">17:16</td>
-                        <td class="time-cell arrival-time">17:34</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-39"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="17:25" data-index="40">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-40"></span>
-                            <span id="status-text-tallinn-to-laagri-40"></span>
-                        </td>
-                        <td class="time-cell departure-time">17:25</td>
-                        <td class="time-cell arrival-time">17:46</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-40"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="17:45" data-index="41">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-41"></span>
-                            <span id="status-text-tallinn-to-laagri-41"></span>
-                        </td>
-                        <td class="time-cell departure-time">17:45</td>
-                        <td class="time-cell arrival-time">18:06</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-41"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="18:05" data-index="42">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-42"></span>
-                            <span id="status-text-tallinn-to-laagri-42"></span>
-                        </td>
-                        <td class="time-cell departure-time">18:05</td>
-                        <td class="time-cell arrival-time">18:26</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-42"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="18:25" data-index="43">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-43"></span>
-                            <span id="status-text-tallinn-to-laagri-43"></span>
-                        </td>
-                        <td class="time-cell departure-time">18:25</td>
-                        <td class="time-cell arrival-time">18:46</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-43"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="18:45" data-index="44">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-44"></span>
-                            <span id="status-text-tallinn-to-laagri-44"></span>
-                        </td>
-                        <td class="time-cell departure-time">18:45</td>
-                        <td class="time-cell arrival-time">19:06</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-44"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="19:05" data-index="45">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-45"></span>
-                            <span id="status-text-tallinn-to-laagri-45"></span>
-                        </td>
-                        <td class="time-cell departure-time">19:05</td>
-                        <td class="time-cell arrival-time">19:26</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-45"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="19:25" data-index="46">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-46"></span>
-                            <span id="status-text-tallinn-to-laagri-46"></span>
-                        </td>
-                        <td class="time-cell departure-time">19:25</td>
-                        <td class="time-cell arrival-time">19:46</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-46"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="19:45" data-index="47">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-47"></span>
-                            <span id="status-text-tallinn-to-laagri-47"></span>
-                        </td>
-                        <td class="time-cell departure-time">19:45</td>
-                        <td class="time-cell arrival-time">20:06</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-47"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="20:15" data-index="48">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-48"></span>
-                            <span id="status-text-tallinn-to-laagri-48"></span>
-                        </td>
-                        <td class="time-cell departure-time">20:15</td>
-                        <td class="time-cell arrival-time">20:36</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-48"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="20:45" data-index="49">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-49"></span>
-                            <span id="status-text-tallinn-to-laagri-49"></span>
-                        </td>
-                        <td class="time-cell departure-time">20:45</td>
-                        <td class="time-cell arrival-time">21:06</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-49"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="21:15" data-index="50">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-50"></span>
-                            <span id="status-text-tallinn-to-laagri-50"></span>
-                        </td>
-                        <td class="time-cell departure-time">21:15</td>
-                        <td class="time-cell arrival-time">21:36</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-50"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="21:45" data-index="51">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-51"></span>
-                            <span id="status-text-tallinn-to-laagri-51"></span>
-                        </td>
-                        <td class="time-cell departure-time">21:45</td>
-                        <td class="time-cell arrival-time">22:06</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-51"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="22:15" data-index="52">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-52"></span>
-                            <span id="status-text-tallinn-to-laagri-52"></span>
-                        </td>
-                        <td class="time-cell departure-time">22:15</td>
-                        <td class="time-cell arrival-time">22:36</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-52"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="22:45" data-index="53">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-53"></span>
-                            <span id="status-text-tallinn-to-laagri-53"></span>
-                        </td>
-                        <td class="time-cell departure-time">22:45</td>
-                        <td class="time-cell arrival-time">23:06</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-53"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="23:15" data-index="54">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-54"></span>
-                            <span id="status-text-tallinn-to-laagri-54"></span>
-                        </td>
-                        <td class="time-cell departure-time">23:15</td>
-                        <td class="time-cell arrival-time">23:36</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-54"></td>
-                    </tr>
-    
-                    <tr class="train-row" data-route="tallinn-to-laagri" data-departure="23:45" data-index="55">
-                        <td class="status-cell">
-                            <span class="status-indicator" id="status-tallinn-to-laagri-55"></span>
-                            <span id="status-text-tallinn-to-laagri-55"></span>
-                        </td>
-                        <td class="time-cell departure-time">23:45</td>
-                        <td class="time-cell arrival-time">00:06</td>
-                        <td class="time-cell countdown" id="countdown-tallinn-to-laagri-55"></td>
-                    </tr>
-    
-                </tbody>
-            </table>
-            <div class="no-upcoming hidden" id="no-upcoming-tallinn-to-laagri">
-                No upcoming trains for today. Check back tomorrow!
-            </div>
-        </div>
+        function applyGeoSelection(lat, lng) {
+            let bestPairIdx = 0;
+            let bestDirIdx = 0;
+            let bestDist = Infinity;
 
-        <div class="last-updated">
-            Last updated: 2026-04-07 05:04:30
-        </div>
-    
-        <script>
-            // Global state
-            const routeFilters = {};
-            
-            // Initialize filters (all routes start with future-only filter active)
-            ["laagri-to-tallinn", "tallinn-to-laagri"].forEach(routeId => {
-                routeFilters[routeId] = true; // true = show future only, false = show all
+            DATA.route_pairs.forEach((pair, pi) => {
+                const dirKeys = Object.keys(pair.directions);
+                pair.stations.forEach((stId, si) => {
+                    const st = DATA.stations[stId];
+                    const d = haversine(lat, lng, st.lat, st.lng);
+                    if (d < bestDist) {
+                        bestDist = d;
+                        bestPairIdx = pi;
+                        // direction where this station is the "from"
+                        bestDirIdx = dirKeys.findIndex(k => pair.directions[k].from === stId);
+                        if (bestDirIdx === -1) bestDirIdx = 0;
+                    }
+                });
             });
-    
-            function parseTime(timeStr) {
-                const [hours, minutes] = timeStr.split(':').map(Number);
-                const now = new Date();
-                const timeToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
-                
-                return timeToday;
-            }
-    
-            function formatTimeUntil(targetTime) {
-                const now = new Date();
-                const diffMs = targetTime - now;
-                
-                if (diffMs < 0) {
-                    return 'Departed';
-                }
-                
-                const diffMinutes = Math.floor(diffMs / (1000 * 60));
-                const diffHours = Math.floor(diffMinutes / 60);
-                const remainingMinutes = diffMinutes % 60;
-                
-                if (diffHours > 0) {
-                    return `${diffHours}h ${remainingMinutes}m`;
-                } else if (diffMinutes > 0) {
-                    return `${diffMinutes}m`;
-                } else {
-                    return 'Now';
-                }
-            }
-    
-            function updateTimeDisplay() {
-                const now = new Date();
-                document.getElementById('currentTime').textContent = now.toLocaleTimeString();
-            }
-    
-            function updateTrainStatus() {
-                const now = new Date();
-                
-                document.querySelectorAll('.train-row').forEach(row => {
-                    const routeId = row.dataset.route;
-                    const departureTime = row.dataset.departure;
-                    const index = row.dataset.index;
-                    const targetTime = parseTime(departureTime);
-                    const diffMs = targetTime - now;
-                    const diffMinutes = Math.floor(diffMs / (1000 * 60));
-                    
-                    // Update countdown
-                    const countdownEl = document.getElementById(`countdown-${routeId}-${index}`);
-                    const statusIndicator = document.getElementById(`status-${routeId}-${index}`);
-                    const statusText = document.getElementById(`status-text-${routeId}-${index}`);
-                    
-                    if (diffMs < 0) {
-                        // Train has departed
-                        row.classList.add('past-time');
-                        row.classList.remove('next-train', 'leaving-soon');
-                        statusIndicator.className = 'status-indicator status-past';
-                        statusText.textContent = 'Departed';
-                        countdownEl.textContent = 'Departed';
-                    } else if (diffMinutes <= 15) {
-                        // Train leaving soon (within 15 minutes)
-                        row.classList.add('leaving-soon');
-                        row.classList.remove('past-time', 'next-train');
-                        statusIndicator.className = 'status-indicator status-soon';
-                        statusText.textContent = 'Soon';
-                        countdownEl.textContent = formatTimeUntil(targetTime);
-                    } else {
-                        // Future train
-                        row.classList.add('next-train');
-                        row.classList.remove('past-time', 'leaving-soon');
-                        statusIndicator.className = 'status-indicator status-upcoming';
-                        statusText.textContent = '';
-                        countdownEl.textContent = formatTimeUntil(targetTime);
-                    }
-                    
-                    // Apply filtering
-                    const showFutureOnly = routeFilters[routeId];
-                    if (showFutureOnly && diffMs < 0) {
-                        row.classList.add('hidden');
-                    } else {
-                        row.classList.remove('hidden');
-                    }
-                });
-                
-                // Update counters for each route
-                Object.keys(routeFilters).forEach(routeId => {
-                    updateUpcomingCount(routeId);
-                });
-            }
-    
-            function updateUpcomingCount(routeId) {
-                const rows = document.querySelectorAll(`[data-route="${routeId}"]`);
-                const upcomingCount = Array.from(rows).filter(row => {
-                    const departureTime = row.dataset.departure;
-                    const targetTime = parseTime(departureTime);
-                    const now = new Date();
-                    return targetTime > now;
-                }).length;
-                
-                const countEl = document.getElementById(`count-${routeId}`);
-                if (countEl) {
-                    countEl.textContent = `(${upcomingCount} upcoming)`;
-                }
-                
-                // Show/hide no upcoming message
-                const noUpcomingEl = document.getElementById(`no-upcoming-${routeId}`);
-                const tableEl = document.getElementById(`table-${routeId}`);
-                
-                if (routeFilters[routeId] && upcomingCount === 0) {
-                    if (noUpcomingEl) noUpcomingEl.classList.remove('hidden');
-                    if (tableEl) tableEl.classList.add('hidden');
-                } else {
-                    if (noUpcomingEl) noUpcomingEl.classList.add('hidden');
-                    if (tableEl) tableEl.classList.remove('hidden');
-                }
-            }
-    
-            function toggleFilter(routeId, showFutureOnly) {
-                routeFilters[routeId] = showFutureOnly;
-                
-                // Update button states
-                const routeDiv = document.getElementById(`route-${routeId}`);
-                const buttons = routeDiv.querySelectorAll('.filter-toggle');
-                buttons.forEach(btn => btn.classList.remove('active'));
-                
-                if (showFutureOnly) {
-                    routeDiv.querySelector('.filter-toggle:first-of-type').classList.add('active');
-                } else {
-                    routeDiv.querySelector('.show-all-toggle').classList.add('active');
-                }
-                
-                // Reapply filtering
-                updateTrainStatus();
-            }
-            
-            let currentIndex = -1;
-            
-            function cycleToNext(prefix) {
-                const allElements = document.querySelectorAll('[id^="' + prefix + '"]');
-                
-                if (allElements.length === 0) {
-                    console.log('No elements found with prefix: ' + prefix);
+
+            activePairIndex = bestPairIdx;
+            activeDirectionIndex = bestDirIdx;
+
+            // Cache
+            try {
+                localStorage.setItem('railscraper_geo', JSON.stringify({
+                    pair: activePairIndex,
+                    dir: activeDirectionIndex,
+                    ts: Date.now()
+                }));
+            } catch(e) {}
+
+            renderAll();
+        }
+
+        function loadPreferences() {
+            // 1. Check geo cache
+            try {
+                const geo = JSON.parse(localStorage.getItem('railscraper_geo'));
+                if (geo && (Date.now() - geo.ts) < GEO_TTL) {
+                    activePairIndex = geo.pair;
+                    activeDirectionIndex = geo.dir;
                     return;
                 }
-                
-                currentIndex = (currentIndex + 1) % allElements.length;
-                const targetElement = allElements[currentIndex];
-                
-                console.log('Attempting to scroll to:', targetElement.id);
-                console.log('Element visible:', targetElement.offsetHeight > 0);
-                console.log('Element position:', targetElement.getBoundingClientRect());
-                
-                // Try multiple scroll methods
-                try {
-                    targetElement.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                    
-                    // Fallback: try direct scroll after a small delay
-                    setTimeout(() => {
-                        targetElement.scrollIntoView();
-                    }, 100);
-                    
-                } catch (error) {
-                    console.log('Scroll error:', error);
+            } catch(e) {}
+
+            // 2. Try fresh geolocation
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    pos => applyGeoSelection(pos.coords.latitude, pos.coords.longitude),
+                    () => loadFallback()
+                );
+                // Load fallback immediately while waiting for geo
+                loadFallback();
+                return;
+            }
+
+            loadFallback();
+        }
+
+        function loadFallback() {
+            try {
+                const last = JSON.parse(localStorage.getItem('railscraper_last_pair'));
+                if (last) {
+                    activePairIndex = last.pair;
+                    activeDirectionIndex = last.dir;
                 }
+            } catch(e) {}
+        }
+
+        function saveManualChoice() {
+            try {
+                localStorage.setItem('railscraper_last_pair', JSON.stringify({
+                    pair: activePairIndex,
+                    dir: activeDirectionIndex
+                }));
+            } catch(e) {}
+        }
+
+        // --- Rendering ---
+
+        function getActivePair() { return DATA.route_pairs[activePairIndex]; }
+
+        function getActiveDirection() {
+            const pair = getActivePair();
+            const keys = Object.keys(pair.directions);
+            return pair.directions[keys[activeDirectionIndex]];
+        }
+
+        function renderTabs() {
+            const bar = document.getElementById('tabBar');
+            bar.innerHTML = '';
+            DATA.route_pairs.forEach((pair, i) => {
+                const tab = document.createElement('div');
+                tab.className = 'tab' + (i === activePairIndex ? ' active' : '');
+                tab.textContent = pair.label;
+                tab.onclick = () => {
+                    activePairIndex = i;
+                    activeDirectionIndex = 0;
+                    saveManualChoice();
+                    renderAll();
+                };
+                bar.appendChild(tab);
+            });
+        }
+
+        function renderDirection() {
+            const dir = getActiveDirection();
+            const fromName = DATA.stations[dir.from].name;
+            const toName = DATA.stations[dir.to].name;
+            document.getElementById('directionLabel').textContent = fromName + ' \u2192 ' + toName;
+        }
+
+        function swapDirection() {
+            const pair = getActivePair();
+            const keys = Object.keys(pair.directions);
+            activeDirectionIndex = (activeDirectionIndex + 1) % keys.length;
+            saveManualChoice();
+            renderAll();
+        }
+
+        function parseTime(timeStr) {
+            const [h, m] = timeStr.split(':').map(Number);
+            const now = new Date();
+            return new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m);
+        }
+
+        function formatCountdown(diffMs) {
+            if (diffMs < 0) return 'Gone';
+            const mins = Math.floor(diffMs / 60000);
+            const hrs = Math.floor(mins / 60);
+            const rem = mins % 60;
+            if (hrs > 0) return hrs + 'h ' + rem + 'm';
+            if (mins > 0) return mins + 'm';
+            return 'Now';
+        }
+
+        function renderTimetable() {
+            const dir = getActiveDirection();
+            const timetable = dir.timetable;
+            const container = document.getElementById('timetable');
+            const now = new Date();
+
+            if (!timetable || timetable.length === 0) {
+                container.innerHTML = '<div class="no-trains-msg">No timetable data available</div>';
+                document.getElementById('hero').classList.add('no-trains');
+                document.getElementById('heroCountdown').textContent = 'No data';
+                document.getElementById('heroTime').textContent = '';
+                document.getElementById('upcomingCount').textContent = '';
+                return;
             }
-    
-            // Initialize and start updates
-            function init() {
-                updateTimeDisplay();
-                updateTrainStatus();
-                
-                // Update every 30 seconds
-                setInterval(() => {
-                    updateTimeDisplay();
-                    updateTrainStatus();
-                }, 30000);
+
+            let nextTrain = null;
+            let upcomingCount = 0;
+            let html = '';
+
+            timetable.forEach(train => {
+                const depTime = parseTime(train.departure);
+                const diffMs = depTime - now;
+                const isPast = diffMs < 0;
+                const isSoon = !isPast && diffMs <= 15 * 60000;
+                const isNext = !isPast && !nextTrain;
+
+                if (!isPast) {
+                    upcomingCount++;
+                    if (!nextTrain) nextTrain = { ...train, diffMs };
+                }
+
+                if (showFutureOnly && isPast) return;
+
+                let rowClass = 'train-row';
+                let dotClass = 'train-dot dot-future';
+                if (isPast) { rowClass += ' past'; dotClass = 'train-dot dot-past'; }
+                else if (isSoon) { rowClass += ' soon'; dotClass = 'train-dot dot-soon'; }
+                else if (isNext) { rowClass += ' next'; }
+
+                html += '<div class="' + rowClass + '">' +
+                    '<div class="' + dotClass + '"></div>' +
+                    '<div class="train-times">' +
+                        '<span class="train-dep">' + train.departure + '</span>' +
+                        '<span class="train-arrow">&#8594;</span>' +
+                        '<span class="train-arr">' + train.arrival + '</span>' +
+                    '</div>' +
+                    '<div class="train-countdown">' + (isPast ? '' : formatCountdown(diffMs)) + '</div>' +
+                '</div>';
+            });
+
+            container.innerHTML = html || '<div class="no-trains-msg">No upcoming trains today</div>';
+
+            // Hero
+            const hero = document.getElementById('hero');
+            if (nextTrain) {
+                hero.classList.remove('no-trains');
+                document.getElementById('heroCountdown').textContent = formatCountdown(nextTrain.diffMs);
+                document.getElementById('heroTime').textContent = nextTrain.departure + ' \u2192 ' + nextTrain.arrival;
+            } else {
+                hero.classList.add('no-trains');
+                document.getElementById('heroCountdown').textContent = 'No more trains today';
+                document.getElementById('heroTime').textContent = '';
             }
-    
-            // Start when page loads
-            document.addEventListener('DOMContentLoaded', init);
-        </script>
-    </body>
-    </html>
-    
+
+            document.getElementById('upcomingCount').textContent = upcomingCount + ' upcoming';
+        }
+
+        function toggleFilter() {
+            showFutureOnly = !showFutureOnly;
+            const btn = document.getElementById('filterBtn');
+            btn.classList.toggle('active', showFutureOnly);
+            btn.textContent = showFutureOnly ? 'Future only' : 'Show all';
+            renderTimetable();
+        }
+
+        function renderAll() {
+            renderTabs();
+            renderDirection();
+            renderTimetable();
+        }
+
+        // --- Init ---
+
+        function init() {
+            loadPreferences();
+            renderAll();
+            setInterval(() => {
+                renderTimetable();
+            }, 60000);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
