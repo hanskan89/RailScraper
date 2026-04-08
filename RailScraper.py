@@ -236,11 +236,6 @@ class RailScraper:
             font-size: 1.1em;
             font-weight: 600;
         }}
-        .current-time {{
-            font-family: 'SF Mono', 'Fira Code', monospace;
-            font-size: 1.1em;
-            color: #8b8fa3;
-        }}
         .tab-bar {{
             display: flex;
             background: #1a1d28;
@@ -435,7 +430,6 @@ class RailScraper:
 <body>
     <div class="header">
         <span class="header-title">Rail Timetables</span>
-        <span class="current-time" id="currentTime"></span>
     </div>
     <div class="tab-bar" id="tabBar"></div>
     <div class="direction-bar">
@@ -705,20 +699,14 @@ class RailScraper:
             renderTimetable();
         }}
 
-        function updateClock() {{
-            document.getElementById('currentTime').textContent = new Date().toLocaleTimeString();
-        }}
-
         // --- Init ---
 
         function init() {{
             loadPreferences();
             renderAll();
-            updateClock();
             setInterval(() => {{
-                updateClock();
                 renderTimetable();
-            }}, 30000);
+            }}, 60000);
         }}
 
         document.addEventListener('DOMContentLoaded', init);
