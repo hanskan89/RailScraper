@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-08 05:06:23",
+  "last_updated": "2026-04-09 05:04:30",
   "stations": {
     "laagri": {
       "name": "Laagri",
@@ -32,231 +32,288 @@
           "timetable": [
             {
               "departure": "05:33",
-              "arrival": "05:54"
+              "arrival": "05:54",
+              "train": "740"
             },
             {
               "departure": "06:03",
-              "arrival": "06:24"
+              "arrival": "06:24",
+              "train": "742"
             },
             {
               "departure": "06:33",
-              "arrival": "06:54"
+              "arrival": "06:54",
+              "train": "540"
             },
             {
               "departure": "06:53",
-              "arrival": "07:14"
+              "arrival": "07:14",
+              "train": "640"
             },
             {
               "departure": "07:05",
-              "arrival": "07:22"
+              "arrival": "07:22",
+              "train": "50"
             },
             {
               "departure": "07:13",
-              "arrival": "07:34"
+              "arrival": "07:34",
+              "train": "764"
             },
             {
               "departure": "07:25",
-              "arrival": "07:42"
+              "arrival": "07:42",
+              "train": "64"
             },
             {
               "departure": "07:33",
-              "arrival": "07:54"
+              "arrival": "07:54",
+              "train": "542"
             },
             {
               "departure": "07:45",
-              "arrival": "08:02"
+              "arrival": "08:02",
+              "train": "72"
             },
             {
               "departure": "07:53",
-              "arrival": "08:14"
+              "arrival": "08:14",
+              "train": "580"
             },
             {
               "departure": "08:05",
-              "arrival": "08:22"
+              "arrival": "08:22",
+              "train": "52"
             },
             {
               "departure": "08:13",
-              "arrival": "08:34"
+              "arrival": "08:34",
+              "train": "642"
             },
             {
               "departure": "08:25",
-              "arrival": "08:42"
+              "arrival": "08:42",
+              "train": "74"
             },
             {
               "departure": "08:33",
-              "arrival": "08:54"
+              "arrival": "08:54",
+              "train": "544"
             },
             {
               "departure": "08:53",
-              "arrival": "09:14"
+              "arrival": "09:14",
+              "train": "746"
             },
             {
               "departure": "09:13",
-              "arrival": "09:34"
+              "arrival": "09:34",
+              "train": "644"
             },
             {
               "departure": "09:33",
-              "arrival": "09:54"
+              "arrival": "09:54",
+              "train": "546"
             },
             {
               "departure": "09:53",
-              "arrival": "10:14"
+              "arrival": "10:14",
+              "train": "748"
             },
             {
               "departure": "10:13",
-              "arrival": "10:34"
+              "arrival": "10:34",
+              "train": "646"
             },
             {
               "departure": "10:33",
-              "arrival": "10:54"
+              "arrival": "10:54",
+              "train": "548"
             },
             {
               "departure": "10:53",
-              "arrival": "11:14"
+              "arrival": "11:14",
+              "train": "750"
             },
             {
               "departure": "11:13",
-              "arrival": "11:34"
+              "arrival": "11:34",
+              "train": "648"
             },
             {
               "departure": "11:33",
-              "arrival": "11:54"
+              "arrival": "11:54",
+              "train": "550"
             },
             {
               "departure": "11:53",
-              "arrival": "12:14"
+              "arrival": "12:14",
+              "train": "582"
             },
             {
               "departure": "12:13",
-              "arrival": "12:34"
+              "arrival": "12:34",
+              "train": "650"
             },
             {
               "departure": "12:33",
-              "arrival": "12:54"
+              "arrival": "12:54",
+              "train": "552"
             },
             {
               "departure": "12:53",
-              "arrival": "13:14"
+              "arrival": "13:14",
+              "train": "752"
             },
             {
               "departure": "13:13",
-              "arrival": "13:34"
+              "arrival": "13:34",
+              "train": "652"
             },
             {
               "departure": "13:33",
-              "arrival": "13:54"
+              "arrival": "13:54",
+              "train": "554"
             },
             {
               "departure": "13:53",
-              "arrival": "14:14"
+              "arrival": "14:14",
+              "train": "754"
             },
             {
               "departure": "14:13",
-              "arrival": "14:34"
+              "arrival": "14:34",
+              "train": "654"
             },
             {
               "departure": "14:33",
-              "arrival": "14:54"
+              "arrival": "14:54",
+              "train": "556"
             },
             {
               "departure": "14:53",
-              "arrival": "15:14"
+              "arrival": "15:14",
+              "train": "584"
             },
             {
               "departure": "15:13",
-              "arrival": "15:34"
+              "arrival": "15:34",
+              "train": "656"
             },
             {
               "departure": "15:33",
-              "arrival": "15:54"
+              "arrival": "15:54",
+              "train": "558"
             },
             {
               "departure": "15:53",
-              "arrival": "16:14"
+              "arrival": "16:14",
+              "train": "756"
             },
             {
               "departure": "16:13",
-              "arrival": "16:34"
+              "arrival": "16:34",
+              "train": "658"
             },
             {
               "departure": "16:33",
-              "arrival": "16:54"
+              "arrival": "16:54",
+              "train": "560"
             },
             {
               "departure": "16:53",
-              "arrival": "17:14"
+              "arrival": "17:14",
+              "train": "586"
             },
             {
               "departure": "17:13",
-              "arrival": "17:34"
+              "arrival": "17:34",
+              "train": "660"
             },
             {
               "departure": "17:25",
-              "arrival": "17:42"
+              "arrival": "17:42",
+              "train": "76"
             },
             {
               "departure": "17:33",
-              "arrival": "17:54"
+              "arrival": "17:54",
+              "train": "562"
             },
             {
               "departure": "17:45",
-              "arrival": "18:02"
+              "arrival": "18:02",
+              "train": "78"
             },
             {
               "departure": "17:53",
-              "arrival": "18:14"
+              "arrival": "18:14",
+              "train": "758"
             },
             {
               "departure": "18:13",
-              "arrival": "18:34"
+              "arrival": "18:34",
+              "train": "662"
             },
             {
               "departure": "18:33",
-              "arrival": "18:54"
+              "arrival": "18:54",
+              "train": "564"
             },
             {
               "departure": "18:53",
-              "arrival": "19:14"
+              "arrival": "19:14",
+              "train": "588"
             },
             {
               "departure": "19:13",
-              "arrival": "19:34"
+              "arrival": "19:34",
+              "train": "664"
             },
             {
               "departure": "19:33",
-              "arrival": "19:54"
+              "arrival": "19:54",
+              "train": "566"
             },
             {
               "departure": "19:53",
-              "arrival": "20:14"
+              "arrival": "20:14",
+              "train": "760"
             },
             {
               "departure": "20:13",
-              "arrival": "20:34"
+              "arrival": "20:34",
+              "train": "666"
             },
             {
               "departure": "20:33",
-              "arrival": "20:54"
+              "arrival": "20:54",
+              "train": "568"
             },
             {
               "departure": "21:03",
-              "arrival": "21:24"
+              "arrival": "21:24",
+              "train": "668"
             },
             {
               "departure": "21:33",
-              "arrival": "21:54"
+              "arrival": "21:54",
+              "train": "570"
             },
             {
               "departure": "22:03",
-              "arrival": "22:24"
+              "arrival": "22:24",
+              "train": "670"
             },
             {
               "departure": "22:33",
-              "arrival": "22:54"
+              "arrival": "22:54",
+              "train": "572"
             },
             {
               "departure": "23:03",
-              "arrival": "23:24"
+              "arrival": "23:24",
+              "train": "762"
             }
           ]
         },
@@ -266,227 +323,283 @@
           "timetable": [
             {
               "departure": "05:45",
-              "arrival": "06:06"
+              "arrival": "06:06",
+              "train": "541"
             },
             {
               "departure": "06:15",
-              "arrival": "06:36"
+              "arrival": "06:36",
+              "train": "675"
             },
             {
               "departure": "06:35",
-              "arrival": "06:53"
+              "arrival": "06:53",
+              "train": "71"
             },
             {
               "departure": "06:45",
-              "arrival": "07:06"
+              "arrival": "07:06",
+              "train": "543"
             },
             {
               "departure": "07:05",
-              "arrival": "07:26"
+              "arrival": "07:26",
+              "train": "641"
             },
             {
               "departure": "07:25",
-              "arrival": "07:46"
+              "arrival": "07:46",
+              "train": "743"
             },
             {
               "departure": "07:37",
-              "arrival": "07:55"
+              "arrival": "07:55",
+              "train": "73"
             },
             {
               "departure": "07:45",
-              "arrival": "08:06"
+              "arrival": "08:06",
+              "train": "545"
             },
             {
               "departure": "08:05",
-              "arrival": "08:26"
+              "arrival": "08:26",
+              "train": "643"
             },
             {
               "departure": "08:25",
-              "arrival": "08:46"
+              "arrival": "08:46",
+              "train": "745"
             },
             {
               "departure": "08:45",
-              "arrival": "09:06"
+              "arrival": "09:06",
+              "train": "547"
             },
             {
               "departure": "09:05",
-              "arrival": "09:26"
+              "arrival": "09:26",
+              "train": "645"
             },
             {
               "departure": "09:25",
-              "arrival": "09:46"
+              "arrival": "09:46",
+              "train": "747"
             },
             {
               "departure": "09:45",
-              "arrival": "10:06"
+              "arrival": "10:06",
+              "train": "549"
             },
             {
               "departure": "10:05",
-              "arrival": "10:26"
+              "arrival": "10:26",
+              "train": "647"
             },
             {
               "departure": "10:25",
-              "arrival": "10:46"
+              "arrival": "10:46",
+              "train": "581"
             },
             {
               "departure": "10:45",
-              "arrival": "11:06"
+              "arrival": "11:06",
+              "train": "551"
             },
             {
               "departure": "11:05",
-              "arrival": "11:26"
+              "arrival": "11:26",
+              "train": "649"
             },
             {
               "departure": "11:25",
-              "arrival": "11:46"
+              "arrival": "11:46",
+              "train": "749"
             },
             {
               "departure": "11:45",
-              "arrival": "12:06"
+              "arrival": "12:06",
+              "train": "553"
             },
             {
               "departure": "12:05",
-              "arrival": "12:26"
+              "arrival": "12:26",
+              "train": "651"
             },
             {
               "departure": "12:25",
-              "arrival": "12:46"
+              "arrival": "12:46",
+              "train": "751"
             },
             {
               "departure": "12:45",
-              "arrival": "13:06"
+              "arrival": "13:06",
+              "train": "555"
             },
             {
               "departure": "13:05",
-              "arrival": "13:26"
+              "arrival": "13:26",
+              "train": "653"
             },
             {
               "departure": "13:25",
-              "arrival": "13:46"
+              "arrival": "13:46",
+              "train": "583"
             },
             {
               "departure": "13:45",
-              "arrival": "14:06"
+              "arrival": "14:06",
+              "train": "557"
             },
             {
               "departure": "14:05",
-              "arrival": "14:26"
+              "arrival": "14:26",
+              "train": "655"
             },
             {
               "departure": "14:25",
-              "arrival": "14:46"
+              "arrival": "14:46",
+              "train": "753"
             },
             {
               "departure": "14:45",
-              "arrival": "15:06"
+              "arrival": "15:06",
+              "train": "559"
             },
             {
               "departure": "15:05",
-              "arrival": "15:26"
+              "arrival": "15:26",
+              "train": "657"
             },
             {
               "departure": "15:25",
-              "arrival": "15:46"
+              "arrival": "15:46",
+              "train": "585"
             },
             {
               "departure": "15:45",
-              "arrival": "16:06"
+              "arrival": "16:06",
+              "train": "561"
             },
             {
               "departure": "16:05",
-              "arrival": "16:26"
+              "arrival": "16:26",
+              "train": "659"
             },
             {
               "departure": "16:16",
-              "arrival": "16:33"
+              "arrival": "16:33",
+              "train": "51"
             },
             {
               "departure": "16:25",
-              "arrival": "16:46"
+              "arrival": "16:46",
+              "train": "755"
             },
             {
               "departure": "16:36",
-              "arrival": "16:53"
+              "arrival": "16:53",
+              "train": "75"
             },
             {
               "departure": "16:45",
-              "arrival": "17:06"
+              "arrival": "17:06",
+              "train": "563"
             },
             {
               "departure": "16:56",
-              "arrival": "17:13"
+              "arrival": "17:13",
+              "train": "77"
             },
             {
               "departure": "17:05",
-              "arrival": "17:26"
+              "arrival": "17:26",
+              "train": "661"
             },
             {
               "departure": "17:16",
-              "arrival": "17:34"
+              "arrival": "17:34",
+              "train": "53"
             },
             {
               "departure": "17:25",
-              "arrival": "17:46"
+              "arrival": "17:46",
+              "train": "587"
             },
             {
               "departure": "17:45",
-              "arrival": "18:06"
+              "arrival": "18:06",
+              "train": "565"
             },
             {
               "departure": "18:05",
-              "arrival": "18:26"
+              "arrival": "18:26",
+              "train": "663"
             },
             {
               "departure": "18:25",
-              "arrival": "18:46"
+              "arrival": "18:46",
+              "train": "757"
             },
             {
               "departure": "18:45",
-              "arrival": "19:06"
+              "arrival": "19:06",
+              "train": "567"
             },
             {
               "departure": "19:05",
-              "arrival": "19:26"
+              "arrival": "19:26",
+              "train": "665"
             },
             {
               "departure": "19:25",
-              "arrival": "19:46"
+              "arrival": "19:46",
+              "train": "759"
             },
             {
               "departure": "19:45",
-              "arrival": "20:06"
+              "arrival": "20:06",
+              "train": "569"
             },
             {
               "departure": "20:15",
-              "arrival": "20:36"
+              "arrival": "20:36",
+              "train": "667"
             },
             {
               "departure": "20:45",
-              "arrival": "21:06"
+              "arrival": "21:06",
+              "train": "571"
             },
             {
               "departure": "21:15",
-              "arrival": "21:36"
+              "arrival": "21:36",
+              "train": "669"
             },
             {
               "departure": "21:45",
-              "arrival": "22:06"
+              "arrival": "22:06",
+              "train": "573"
             },
             {
               "departure": "22:15",
-              "arrival": "22:36"
+              "arrival": "22:36",
+              "train": "671"
             },
             {
               "departure": "22:45",
-              "arrival": "23:06"
+              "arrival": "23:06",
+              "train": "761"
             },
             {
               "departure": "23:15",
-              "arrival": "23:36"
+              "arrival": "23:36",
+              "train": "763"
             },
             {
               "departure": "23:45",
-              "arrival": "00:06"
+              "arrival": "00:06",
+              "train": "765"
             }
           ]
         }
@@ -506,199 +619,248 @@
           "timetable": [
             {
               "departure": "06:01",
-              "arrival": "06:06"
+              "arrival": "06:06",
+              "train": "541"
             },
             {
               "departure": "06:31",
-              "arrival": "06:36"
+              "arrival": "06:36",
+              "train": "675"
             },
             {
               "departure": "07:01",
-              "arrival": "07:06"
+              "arrival": "07:06",
+              "train": "543"
             },
             {
               "departure": "07:21",
-              "arrival": "07:26"
+              "arrival": "07:26",
+              "train": "641"
             },
             {
               "departure": "07:41",
-              "arrival": "07:46"
+              "arrival": "07:46",
+              "train": "743"
             },
             {
               "departure": "08:01",
-              "arrival": "08:06"
+              "arrival": "08:06",
+              "train": "545"
             },
             {
               "departure": "08:21",
-              "arrival": "08:26"
+              "arrival": "08:26",
+              "train": "643"
             },
             {
               "departure": "08:41",
-              "arrival": "08:46"
+              "arrival": "08:46",
+              "train": "745"
             },
             {
               "departure": "09:01",
-              "arrival": "09:06"
+              "arrival": "09:06",
+              "train": "547"
             },
             {
               "departure": "09:21",
-              "arrival": "09:26"
+              "arrival": "09:26",
+              "train": "645"
             },
             {
               "departure": "09:41",
-              "arrival": "09:46"
+              "arrival": "09:46",
+              "train": "747"
             },
             {
               "departure": "10:01",
-              "arrival": "10:06"
+              "arrival": "10:06",
+              "train": "549"
             },
             {
               "departure": "10:21",
-              "arrival": "10:26"
+              "arrival": "10:26",
+              "train": "647"
             },
             {
               "departure": "10:41",
-              "arrival": "10:46"
+              "arrival": "10:46",
+              "train": "581"
             },
             {
               "departure": "11:01",
-              "arrival": "11:06"
+              "arrival": "11:06",
+              "train": "551"
             },
             {
               "departure": "11:21",
-              "arrival": "11:26"
+              "arrival": "11:26",
+              "train": "649"
             },
             {
               "departure": "11:41",
-              "arrival": "11:46"
+              "arrival": "11:46",
+              "train": "749"
             },
             {
               "departure": "12:01",
-              "arrival": "12:06"
+              "arrival": "12:06",
+              "train": "553"
             },
             {
               "departure": "12:21",
-              "arrival": "12:26"
+              "arrival": "12:26",
+              "train": "651"
             },
             {
               "departure": "12:41",
-              "arrival": "12:46"
+              "arrival": "12:46",
+              "train": "751"
             },
             {
               "departure": "13:01",
-              "arrival": "13:06"
+              "arrival": "13:06",
+              "train": "555"
             },
             {
               "departure": "13:21",
-              "arrival": "13:26"
+              "arrival": "13:26",
+              "train": "653"
             },
             {
               "departure": "13:41",
-              "arrival": "13:46"
+              "arrival": "13:46",
+              "train": "583"
             },
             {
               "departure": "14:01",
-              "arrival": "14:06"
+              "arrival": "14:06",
+              "train": "557"
             },
             {
               "departure": "14:21",
-              "arrival": "14:26"
+              "arrival": "14:26",
+              "train": "655"
             },
             {
               "departure": "14:41",
-              "arrival": "14:46"
+              "arrival": "14:46",
+              "train": "753"
             },
             {
               "departure": "15:01",
-              "arrival": "15:06"
+              "arrival": "15:06",
+              "train": "559"
             },
             {
               "departure": "15:21",
-              "arrival": "15:26"
+              "arrival": "15:26",
+              "train": "657"
             },
             {
               "departure": "15:41",
-              "arrival": "15:46"
+              "arrival": "15:46",
+              "train": "585"
             },
             {
               "departure": "16:01",
-              "arrival": "16:06"
+              "arrival": "16:06",
+              "train": "561"
             },
             {
               "departure": "16:21",
-              "arrival": "16:26"
+              "arrival": "16:26",
+              "train": "659"
             },
             {
               "departure": "16:41",
-              "arrival": "16:46"
+              "arrival": "16:46",
+              "train": "755"
             },
             {
               "departure": "17:01",
-              "arrival": "17:06"
+              "arrival": "17:06",
+              "train": "563"
             },
             {
               "departure": "17:21",
-              "arrival": "17:26"
+              "arrival": "17:26",
+              "train": "661"
             },
             {
               "departure": "17:41",
-              "arrival": "17:46"
+              "arrival": "17:46",
+              "train": "587"
             },
             {
               "departure": "18:01",
-              "arrival": "18:06"
+              "arrival": "18:06",
+              "train": "565"
             },
             {
               "departure": "18:21",
-              "arrival": "18:26"
+              "arrival": "18:26",
+              "train": "663"
             },
             {
               "departure": "18:41",
-              "arrival": "18:46"
+              "arrival": "18:46",
+              "train": "757"
             },
             {
               "departure": "19:01",
-              "arrival": "19:06"
+              "arrival": "19:06",
+              "train": "567"
             },
             {
               "departure": "19:21",
-              "arrival": "19:26"
+              "arrival": "19:26",
+              "train": "665"
             },
             {
               "departure": "19:41",
-              "arrival": "19:46"
+              "arrival": "19:46",
+              "train": "759"
             },
             {
               "departure": "20:01",
-              "arrival": "20:06"
+              "arrival": "20:06",
+              "train": "569"
             },
             {
               "departure": "20:31",
-              "arrival": "20:36"
+              "arrival": "20:36",
+              "train": "667"
             },
             {
               "departure": "21:01",
-              "arrival": "21:06"
+              "arrival": "21:06",
+              "train": "571"
             },
             {
               "departure": "21:31",
-              "arrival": "21:36"
+              "arrival": "21:36",
+              "train": "669"
             },
             {
               "departure": "22:01",
-              "arrival": "22:06"
+              "arrival": "22:06",
+              "train": "573"
             },
             {
               "departure": "22:31",
-              "arrival": "22:36"
+              "arrival": "22:36",
+              "train": "671"
             },
             {
               "departure": "23:01",
-              "arrival": "23:06"
+              "arrival": "23:06",
+              "train": "761"
             },
             {
               "departure": "23:31",
-              "arrival": "23:36"
+              "arrival": "23:36",
+              "train": "763"
             }
           ]
         },
@@ -708,203 +870,253 @@
           "timetable": [
             {
               "departure": "05:33",
-              "arrival": "05:38"
+              "arrival": "05:38",
+              "train": "740"
             },
             {
               "departure": "06:03",
-              "arrival": "06:08"
+              "arrival": "06:08",
+              "train": "742"
             },
             {
               "departure": "06:33",
-              "arrival": "06:38"
+              "arrival": "06:38",
+              "train": "540"
             },
             {
               "departure": "06:53",
-              "arrival": "06:58"
+              "arrival": "06:58",
+              "train": "640"
             },
             {
               "departure": "07:13",
-              "arrival": "07:18"
+              "arrival": "07:18",
+              "train": "764"
             },
             {
               "departure": "07:33",
-              "arrival": "07:38"
+              "arrival": "07:38",
+              "train": "542"
             },
             {
               "departure": "07:53",
-              "arrival": "07:58"
+              "arrival": "07:58",
+              "train": "580"
             },
             {
               "departure": "08:13",
-              "arrival": "08:18"
+              "arrival": "08:18",
+              "train": "642"
             },
             {
               "departure": "08:33",
-              "arrival": "08:38"
+              "arrival": "08:38",
+              "train": "544"
             },
             {
               "departure": "08:53",
-              "arrival": "08:58"
+              "arrival": "08:58",
+              "train": "746"
             },
             {
               "departure": "09:13",
-              "arrival": "09:18"
+              "arrival": "09:18",
+              "train": "644"
             },
             {
               "departure": "09:33",
-              "arrival": "09:38"
+              "arrival": "09:38",
+              "train": "546"
             },
             {
               "departure": "09:53",
-              "arrival": "09:58"
+              "arrival": "09:58",
+              "train": "748"
             },
             {
               "departure": "10:13",
-              "arrival": "10:18"
+              "arrival": "10:18",
+              "train": "646"
             },
             {
               "departure": "10:33",
-              "arrival": "10:38"
+              "arrival": "10:38",
+              "train": "548"
             },
             {
               "departure": "10:53",
-              "arrival": "10:58"
+              "arrival": "10:58",
+              "train": "750"
             },
             {
               "departure": "11:13",
-              "arrival": "11:18"
+              "arrival": "11:18",
+              "train": "648"
             },
             {
               "departure": "11:33",
-              "arrival": "11:38"
+              "arrival": "11:38",
+              "train": "550"
             },
             {
               "departure": "11:53",
-              "arrival": "11:58"
+              "arrival": "11:58",
+              "train": "582"
             },
             {
               "departure": "12:13",
-              "arrival": "12:18"
+              "arrival": "12:18",
+              "train": "650"
             },
             {
               "departure": "12:33",
-              "arrival": "12:38"
+              "arrival": "12:38",
+              "train": "552"
             },
             {
               "departure": "12:53",
-              "arrival": "12:58"
+              "arrival": "12:58",
+              "train": "752"
             },
             {
               "departure": "13:13",
-              "arrival": "13:18"
+              "arrival": "13:18",
+              "train": "652"
             },
             {
               "departure": "13:33",
-              "arrival": "13:38"
+              "arrival": "13:38",
+              "train": "554"
             },
             {
               "departure": "13:53",
-              "arrival": "13:58"
+              "arrival": "13:58",
+              "train": "754"
             },
             {
               "departure": "14:13",
-              "arrival": "14:18"
+              "arrival": "14:18",
+              "train": "654"
             },
             {
               "departure": "14:33",
-              "arrival": "14:38"
+              "arrival": "14:38",
+              "train": "556"
             },
             {
               "departure": "14:53",
-              "arrival": "14:58"
+              "arrival": "14:58",
+              "train": "584"
             },
             {
               "departure": "15:13",
-              "arrival": "15:18"
+              "arrival": "15:18",
+              "train": "656"
             },
             {
               "departure": "15:33",
-              "arrival": "15:38"
+              "arrival": "15:38",
+              "train": "558"
             },
             {
               "departure": "15:53",
-              "arrival": "15:58"
+              "arrival": "15:58",
+              "train": "756"
             },
             {
               "departure": "16:13",
-              "arrival": "16:18"
+              "arrival": "16:18",
+              "train": "658"
             },
             {
               "departure": "16:33",
-              "arrival": "16:38"
+              "arrival": "16:38",
+              "train": "560"
             },
             {
               "departure": "16:53",
-              "arrival": "16:58"
+              "arrival": "16:58",
+              "train": "586"
             },
             {
               "departure": "17:13",
-              "arrival": "17:18"
+              "arrival": "17:18",
+              "train": "660"
             },
             {
               "departure": "17:33",
-              "arrival": "17:38"
+              "arrival": "17:38",
+              "train": "562"
             },
             {
               "departure": "17:53",
-              "arrival": "17:58"
+              "arrival": "17:58",
+              "train": "758"
             },
             {
               "departure": "18:13",
-              "arrival": "18:18"
+              "arrival": "18:18",
+              "train": "662"
             },
             {
               "departure": "18:33",
-              "arrival": "18:38"
+              "arrival": "18:38",
+              "train": "564"
             },
             {
               "departure": "18:53",
-              "arrival": "18:58"
+              "arrival": "18:58",
+              "train": "588"
             },
             {
               "departure": "19:13",
-              "arrival": "19:18"
+              "arrival": "19:18",
+              "train": "664"
             },
             {
               "departure": "19:33",
-              "arrival": "19:38"
+              "arrival": "19:38",
+              "train": "566"
             },
             {
               "departure": "19:53",
-              "arrival": "19:58"
+              "arrival": "19:58",
+              "train": "760"
             },
             {
               "departure": "20:13",
-              "arrival": "20:18"
+              "arrival": "20:18",
+              "train": "666"
             },
             {
               "departure": "20:33",
-              "arrival": "20:38"
+              "arrival": "20:38",
+              "train": "568"
             },
             {
               "departure": "21:03",
-              "arrival": "21:08"
+              "arrival": "21:08",
+              "train": "668"
             },
             {
               "departure": "21:33",
-              "arrival": "21:38"
+              "arrival": "21:38",
+              "train": "570"
             },
             {
               "departure": "22:03",
-              "arrival": "22:08"
+              "arrival": "22:08",
+              "train": "670"
             },
             {
               "departure": "22:33",
-              "arrival": "22:38"
+              "arrival": "22:38",
+              "train": "572"
             },
             {
               "departure": "23:03",
-              "arrival": "23:08"
+              "arrival": "23:08",
+              "train": "762"
             }
           ]
         }
