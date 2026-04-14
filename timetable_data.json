@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-13 05:34:39",
+  "last_updated": "2026-04-14 05:16:38",
   "stations": {
     "laagri": {
       "name": "Laagri",
@@ -30,6 +30,11 @@
           "from": "laagri",
           "to": "tallinn",
           "timetable": [
+            {
+              "departure": "05:33",
+              "arrival": "05:54",
+              "train": "740"
+            },
             {
               "departure": "06:03",
               "arrival": "06:24",
@@ -863,6 +868,11 @@
           "from": "laagri",
           "to": "kivimae",
           "timetable": [
+            {
+              "departure": "05:33",
+              "arrival": "05:38",
+              "train": "740"
+            },
             {
               "departure": "06:03",
               "arrival": "06:08",
