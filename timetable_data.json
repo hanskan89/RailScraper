@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-24 05:29:17",
+  "last_updated": "2026-04-25 05:06:53",
   "stations": {
     "laagri": {
       "name": "Laagri",
@@ -31,16 +31,6 @@
           "to": "tallinn",
           "timetable": [
             {
-              "departure": "05:33",
-              "arrival": "05:54",
-              "train": "740"
-            },
-            {
-              "departure": "06:03",
-              "arrival": "06:24",
-              "train": "742"
-            },
-            {
               "departure": "06:33",
               "arrival": "06:54",
               "train": "540"
@@ -51,29 +41,9 @@
               "train": "640"
             },
             {
-              "departure": "07:05",
-              "arrival": "07:22",
-              "train": "50"
-            },
-            {
-              "departure": "07:13",
-              "arrival": "07:34",
-              "train": "764"
-            },
-            {
-              "departure": "07:25",
-              "arrival": "07:42",
-              "train": "64"
-            },
-            {
               "departure": "07:33",
               "arrival": "07:54",
               "train": "542"
-            },
-            {
-              "departure": "07:45",
-              "arrival": "08:02",
-              "train": "72"
             },
             {
               "departure": "07:53",
@@ -81,19 +51,9 @@
               "train": "580"
             },
             {
-              "departure": "08:05",
-              "arrival": "08:22",
-              "train": "52"
-            },
-            {
               "departure": "08:13",
               "arrival": "08:34",
               "train": "642"
-            },
-            {
-              "departure": "08:25",
-              "arrival": "08:42",
-              "train": "74"
             },
             {
               "departure": "08:33",
@@ -231,19 +191,9 @@
               "train": "660"
             },
             {
-              "departure": "17:25",
-              "arrival": "17:42",
-              "train": "76"
-            },
-            {
               "departure": "17:33",
               "arrival": "17:54",
               "train": "562"
-            },
-            {
-              "departure": "17:45",
-              "arrival": "18:02",
-              "train": "78"
             },
             {
               "departure": "17:53",
@@ -327,16 +277,6 @@
               "train": "541"
             },
             {
-              "departure": "06:15",
-              "arrival": "06:36",
-              "train": "675"
-            },
-            {
-              "departure": "06:35",
-              "arrival": "06:53",
-              "train": "71"
-            },
-            {
               "departure": "06:45",
               "arrival": "07:06",
               "train": "543"
@@ -350,11 +290,6 @@
               "departure": "07:25",
               "arrival": "07:46",
               "train": "743"
-            },
-            {
-              "departure": "07:37",
-              "arrival": "07:55",
-              "train": "73"
             },
             {
               "departure": "07:45",
@@ -487,19 +422,9 @@
               "train": "659"
             },
             {
-              "departure": "16:16",
-              "arrival": "16:33",
-              "train": "51"
-            },
-            {
               "departure": "16:25",
               "arrival": "16:46",
               "train": "755"
-            },
-            {
-              "departure": "16:36",
-              "arrival": "16:53",
-              "train": "75"
             },
             {
               "departure": "16:45",
@@ -507,19 +432,9 @@
               "train": "563"
             },
             {
-              "departure": "16:56",
-              "arrival": "17:13",
-              "train": "77"
-            },
-            {
               "departure": "17:05",
               "arrival": "17:26",
               "train": "661"
-            },
-            {
-              "departure": "17:16",
-              "arrival": "17:34",
-              "train": "53"
             },
             {
               "departure": "17:25",
@@ -621,11 +536,6 @@
               "departure": "06:01",
               "arrival": "06:06",
               "train": "541"
-            },
-            {
-              "departure": "06:31",
-              "arrival": "06:36",
-              "train": "675"
             },
             {
               "departure": "07:01",
@@ -869,16 +779,6 @@
           "to": "kivimae",
           "timetable": [
             {
-              "departure": "05:33",
-              "arrival": "05:38",
-              "train": "740"
-            },
-            {
-              "departure": "06:03",
-              "arrival": "06:08",
-              "train": "742"
-            },
-            {
               "departure": "06:33",
               "arrival": "06:38",
               "train": "540"
@@ -887,11 +787,6 @@
               "departure": "06:53",
               "arrival": "06:58",
               "train": "640"
-            },
-            {
-              "departure": "07:13",
-              "arrival": "07:18",
-              "train": "764"
             },
             {
               "departure": "07:33",
