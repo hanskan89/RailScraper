@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-01 06:10:12",
+  "last_updated": "2026-05-02 05:31:03",
   "stations": {
     "laagri": {
       "name": "Laagri",
@@ -39,11 +39,6 @@
               "departure": "06:53",
               "arrival": "07:14",
               "train": "640"
-            },
-            {
-              "departure": "07:13",
-              "arrival": "07:34",
-              "train": "764"
             },
             {
               "departure": "07:33",
@@ -277,9 +272,9 @@
           "to": "laagri",
           "timetable": [
             {
-              "departure": "06:15",
-              "arrival": "06:36",
-              "train": "675"
+              "departure": "05:45",
+              "arrival": "06:06",
+              "train": "541"
             },
             {
               "departure": "06:45",
@@ -538,9 +533,9 @@
           "to": "laagri",
           "timetable": [
             {
-              "departure": "06:31",
-              "arrival": "06:36",
-              "train": "675"
+              "departure": "06:01",
+              "arrival": "06:06",
+              "train": "541"
             },
             {
               "departure": "07:01",
@@ -792,11 +787,6 @@
               "departure": "06:53",
               "arrival": "06:58",
               "train": "640"
-            },
-            {
-              "departure": "07:13",
-              "arrival": "07:18",
-              "train": "764"
             },
             {
               "departure": "07:33",
