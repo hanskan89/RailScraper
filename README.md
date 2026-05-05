@@ -11,7 +11,7 @@ A web scraper that fetches daily train timetables from [Elron](https://elron.pil
 
 ## Using the Timetable
 
-Open `timetable.html` (e.g. via GitHub Pages or by hosting the file anywhere static) on your phone or desktop. Everything runs client-side — no server, no spinners.
+Open [`timetable.html`](https://hanskan89.github.io/RailScraper/timetable.html) (e.g. via GitHub Pages or by hosting the file anywhere static) on your phone or desktop. Everything runs client-side — no server, no spinners.
 
 ### Pick a route
 - **Tabs** at the top switch between route pairs (Laagri ↔ Tallinn, Kivimäe ↔ Laagri).
