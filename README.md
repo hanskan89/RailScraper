@@ -6,8 +6,9 @@ A web scraper that fetches daily train timetables from [Elron](https://elron.pil
 
 ## Routes
 
-- Laagri → Tallinn
 - Tallinn → Laagri
+- Kivimäe → Laagri
+- Rahumäe → Tallinn
 
 ## Using the Timetable
 
