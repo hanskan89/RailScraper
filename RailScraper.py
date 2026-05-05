@@ -256,18 +256,24 @@ class RailScraper:
             font-size: 1.1em;
             font-weight: 600;
         }}
-        .tab-bar {{
-            display: flex;
-            background: #1a1d28;
-            padding: 0 12px;
+        .tab-bar-wrap {{
             position: sticky;
             top: 0;
             z-index: 100;
+            background: #1a1d28;
             border-bottom: 2px solid #2a2d3a;
         }}
+        .tab-bar {{
+            display: flex;
+            padding: 0 12px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }}
+        .tab-bar::-webkit-scrollbar {{ display: none; }}
         .tab {{
-            flex: 1;
-            padding: 14px 8px;
+            flex: 0 0 auto;
+            padding: 14px 16px;
             text-align: center;
             cursor: pointer;
             font-size: 0.9em;
@@ -276,6 +282,7 @@ class RailScraper:
             border-bottom: 3px solid transparent;
             transition: all 0.2s;
             -webkit-tap-highlight-color: transparent;
+            white-space: nowrap;
         }}
         .tab.active {{
             color: #7c8aff;
@@ -460,7 +467,9 @@ class RailScraper:
     <div class="header">
         <span class="header-title">Rail Timetables</span>
     </div>
-    <div class="tab-bar" id="tabBar"></div>
+    <div class="tab-bar-wrap" id="tabBarWrap">
+        <div class="tab-bar" id="tabBar"></div>
+    </div>
     <div class="direction-bar">
         <span class="direction-label" id="directionLabel"></span>
         <button class="swap-btn" id="swapBtn" onclick="swapDirection()">&#8644;</button>
