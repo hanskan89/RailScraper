@@ -263,6 +263,17 @@ class RailScraper:
             background: #1a1d28;
             border-bottom: 2px solid #2a2d3a;
         }}
+        .tab-bar-wrap::after {{
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 2px;
+            width: 32px;
+            pointer-events: none;
+            background: linear-gradient(to right, rgba(26,29,40,0), #1a1d28);
+            opacity: 1;
+            transition: opacity 0.15s;
+        }}
+        .tab-bar-wrap.scrolled-end::after {{ opacity: 0; }}
         .tab-bar {{
             display: flex;
             padding: 0 12px;
@@ -635,6 +646,24 @@ class RailScraper:
             }});
         }}
 
+        function updateTabBarFade() {{
+            const bar = document.getElementById('tabBar');
+            const wrap = document.getElementById('tabBarWrap');
+            if (!bar || !wrap) return;
+            const atEnd = bar.scrollLeft + bar.clientWidth >= bar.scrollWidth - 1;
+            const overflowing = bar.scrollWidth > bar.clientWidth + 1;
+            wrap.classList.toggle('scrolled-end', atEnd || !overflowing);
+        }}
+
+        let _fadeRaf = 0;
+        function scheduleFadeUpdate() {{
+            if (_fadeRaf) return;
+            _fadeRaf = requestAnimationFrame(() => {{
+                _fadeRaf = 0;
+                updateTabBarFade();
+            }});
+        }}
+
         function renderDirection() {{
             const dir = getActiveDirection();
             const fromName = DATA.stations[dir.from].name;
@@ -757,6 +786,9 @@ class RailScraper:
         function init() {{
             loadPreferences();
             renderAll();
+            const bar = document.getElementById('tabBar');
+            if (bar) bar.addEventListener('scroll', scheduleFadeUpdate, {{ passive: true }});
+            window.addEventListener('resize', scheduleFadeUpdate);
             setInterval(() => {{
                 renderTimetable();
             }}, 60000);
