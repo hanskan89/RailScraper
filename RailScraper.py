@@ -472,6 +472,7 @@ class RailScraper:
 
         let activePairIndex = 0;
         let activeDirectionIndex = 0; // 0 = first direction, 1 = second
+        let pairDirections = []; // per-pair preferred direction index
         let showFutureOnly = true;
 
         // --- Geolocation & Persistence ---
@@ -501,32 +502,38 @@ class RailScraper:
 
         function applyGeoSelection(lat, lng) {{
             let bestPairIdx = 0;
-            let bestDirIdx = 0;
             let bestDist = Infinity;
 
+            // For every pair, choose the direction whose "from" station is
+            // closest to the user. The pair containing the overall nearest
+            // station becomes the active tab.
             DATA.route_pairs.forEach((pair, pi) => {{
                 const dirKeys = Object.keys(pair.directions);
-                pair.stations.forEach((stId, si) => {{
-                    const st = DATA.stations[stId];
+                let pairBestDirIdx = 0;
+                let pairBestDist = Infinity;
+                dirKeys.forEach((key, di) => {{
+                    const fromId = pair.directions[key].from;
+                    const st = DATA.stations[fromId];
                     const d = haversine(lat, lng, st.lat, st.lng);
-                    if (d < bestDist) {{
-                        bestDist = d;
-                        bestPairIdx = pi;
-                        // direction where this station is the "from"
-                        bestDirIdx = dirKeys.findIndex(k => pair.directions[k].from === stId);
-                        if (bestDirIdx === -1) bestDirIdx = 0;
+                    if (d < pairBestDist) {{
+                        pairBestDist = d;
+                        pairBestDirIdx = di;
                     }}
                 }});
+                pairDirections[pi] = pairBestDirIdx;
+                if (pairBestDist < bestDist) {{
+                    bestDist = pairBestDist;
+                    bestPairIdx = pi;
+                }}
             }});
 
             activePairIndex = bestPairIdx;
-            activeDirectionIndex = bestDirIdx;
+            activeDirectionIndex = pairDirections[activePairIndex];
 
-            // Cache
             try {{
                 localStorage.setItem('railscraper_geo', JSON.stringify({{
                     pair: activePairIndex,
-                    dir: activeDirectionIndex,
+                    pairDirs: pairDirections,
                     ts: Date.now()
                 }}));
             }} catch(e) {{}}
@@ -540,7 +547,8 @@ class RailScraper:
                 const geo = JSON.parse(localStorage.getItem('railscraper_geo'));
                 if (geo && (Date.now() - geo.ts) < GEO_TTL) {{
                     activePairIndex = geo.pair;
-                    activeDirectionIndex = geo.dir;
+                    if (Array.isArray(geo.pairDirs)) pairDirections = geo.pairDirs;
+                    activeDirectionIndex = pairDirections[activePairIndex] ?? geo.dir ?? 0;
                     return;
                 }}
             }} catch(e) {{}}
@@ -564,7 +572,8 @@ class RailScraper:
                 const last = JSON.parse(localStorage.getItem('railscraper_last_pair'));
                 if (last) {{
                     activePairIndex = last.pair;
-                    activeDirectionIndex = last.dir;
+                    if (Array.isArray(last.pairDirs)) pairDirections = last.pairDirs;
+                    activeDirectionIndex = pairDirections[activePairIndex] ?? last.dir ?? 0;
                 }}
             }} catch(e) {{}}
         }}
@@ -573,7 +582,8 @@ class RailScraper:
             try {{
                 localStorage.setItem('railscraper_last_pair', JSON.stringify({{
                     pair: activePairIndex,
-                    dir: activeDirectionIndex
+                    dir: activeDirectionIndex,
+                    pairDirs: pairDirections
                 }}));
             }} catch(e) {{}}
         }}
@@ -597,7 +607,7 @@ class RailScraper:
                 tab.textContent = pair.label;
                 tab.onclick = () => {{
                     activePairIndex = i;
-                    activeDirectionIndex = 0;
+                    activeDirectionIndex = pairDirections[i] ?? 0;
                     saveManualChoice();
                     renderAll();
                 }};
@@ -616,6 +626,7 @@ class RailScraper:
             const pair = getActivePair();
             const keys = Object.keys(pair.directions);
             activeDirectionIndex = (activeDirectionIndex + 1) % keys.length;
+            pairDirections[activePairIndex] = activeDirectionIndex;
             saveManualChoice();
             renderAll();
         }}
