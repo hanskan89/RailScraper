@@ -9,6 +9,26 @@ A web scraper that fetches daily train timetables from [Elron](https://elron.pil
 - Laagri → Tallinn
 - Tallinn → Laagri
 
+## Using the Timetable
+
+Open `timetable.html` (e.g. via GitHub Pages or by hosting the file anywhere static) on your phone or desktop. Everything runs client-side — no server, no spinners.
+
+### Pick a route
+- **Tabs** at the top switch between route pairs (Laagri ↔ Tallinn, Kivimäe ↔ Laagri).
+- **Swap button (⇄)** flips the direction of the current pair.
+
+### Auto-detect the closest station
+On first load the page asks for your location. If allowed, every route pair is oriented so the station nearest you is the *from* station — e.g. if you're in Laagri you'll see "Laagri → Tallinn" and "Laagri → Kivimäe" on their respective tabs without having to swap. Your location is used only in-browser and cached for 30 minutes; it is never sent anywhere.
+
+### See the next train at a glance
+- The **hero card** at the top shows a live countdown to the next departure (`12m`, `1h 04m`, …) plus the departure → arrival time and train number.
+- Each row in the list also has its own countdown that ticks every minute.
+- Color cues: **green** = leaves within 15 minutes, **blue** = next upcoming, faded = already departed.
+
+### Filter and remember
+- **Future only** toggle hides trains that have already left; flip it off to see the full day.
+- Your last picked tab and direction are remembered, so coming back to the page lands you where you left off.
+
 ## How It Works
 
 1. A GitHub Actions workflow runs daily at 03:00 UTC (can also be triggered manually)
