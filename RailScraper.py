@@ -616,6 +616,13 @@ class RailScraper:
                     dir: activeDirectionIndex,
                     pairDirs: pairDirections
                 }}));
+                // Mirror into the geo cache so a reload within the TTL respects this
+                // manual tap instead of reverting to the geo-picked pair.
+                const geo = JSON.parse(localStorage.getItem('railscraper_geo') || '{{}}') || {{}};
+                geo.pair = activePairIndex;
+                geo.pairDirs = pairDirections.slice();
+                if (!geo.ts) geo.ts = Date.now();
+                localStorage.setItem('railscraper_geo', JSON.stringify(geo));
             }} catch(e) {{}}
         }}
 
