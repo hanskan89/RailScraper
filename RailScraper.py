@@ -62,9 +62,10 @@ class RailScraper:
         """Load configuration from JSON file."""
         default_config = {
             "stations": {
-                "laagri":  {"name": "Laagri",  "lat": 59.3667, "lng": 24.6333},
-                "kivimae": {"name": "Kivimäe", "lat": 59.4019, "lng": 24.7069},
-                "tallinn": {"name": "Tallinn", "lat": 59.4400, "lng": 24.7375}
+                "laagri":   {"name": "Laagri",   "lat": 59.3544, "lng": 24.6275},
+                "kivimae":  {"name": "Kivimäe",  "lat": 59.3770, "lng": 24.6566},
+                "rahumae":  {"name": "Rahumäe",  "lat": 59.3888, "lng": 24.7044},
+                "tallinn":  {"name": "Tallinn",  "lat": 59.4400, "lng": 24.7375}
             },
             "route_pairs": [
                 {
@@ -84,6 +85,16 @@ class RailScraper:
                     "url_templates": {
                         "kivimae-laagri": "https://elron.pilet.ee/et/otsing/Kivim%C3%A4e/Laagri/{date}",
                         "laagri-kivimae": "https://elron.pilet.ee/et/otsing/Laagri/Kivim%C3%A4e/{date}"
+                    },
+                    "selectors": {"trip_container": ".trip-summary__timespan"}
+                },
+                {
+                    "id": "rahumae-tallinn",
+                    "label": "Rahumäe ↔ Tallinn",
+                    "stations": ["rahumae", "tallinn"],
+                    "url_templates": {
+                        "rahumae-tallinn": "https://elron.pilet.ee/et/otsing/Rahum%C3%A4e/Tallinn/{date}",
+                        "tallinn-rahumae": "https://elron.pilet.ee/et/otsing/Tallinn/Rahum%C3%A4e/{date}"
                     },
                     "selectors": {"trip_container": ".trip-summary__timespan"}
                 }
