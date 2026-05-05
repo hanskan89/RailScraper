@@ -499,7 +499,6 @@ class RailScraper:
 
     <script>
         const DATA = {data_json};
-        const GEO_TTL = 30 * 60 * 1000; // 30 minutes
 
         let activePairIndex = 0;
         let activeDirectionIndex = 0; // 0 = first direction, 1 = second
@@ -531,13 +530,14 @@ class RailScraper:
             return closest;
         }}
 
-        function applyGeoSelection(lat, lng) {{
+        // Geolocation refines the active direction (closest "from" station wins).
+        // It only picks the active pair on first-ever visit, when no manual choice
+        // has been persisted — the user's last manual tab tap is authoritative for
+        // pair selection on every subsequent load.
+        function applyGeoSelection(lat, lng, keepActivePair) {{
             let bestPairIdx = 0;
             let bestDist = Infinity;
 
-            // For every pair, choose the direction whose "from" station is
-            // closest to the user. The pair containing the overall nearest
-            // station becomes the active tab.
             DATA.route_pairs.forEach((pair, pi) => {{
                 const dirKeys = Object.keys(pair.directions);
                 let pairBestDirIdx = 0;
@@ -558,73 +558,49 @@ class RailScraper:
                 }}
             }});
 
-            activePairIndex = bestPairIdx;
+            if (!keepActivePair) {{
+                activePairIndex = bestPairIdx;
+            }}
             activeDirectionIndex = pairDirections[activePairIndex];
 
-            try {{
-                localStorage.setItem('railscraper_geo', JSON.stringify({{
-                    pair: activePairIndex,
-                    pairDirs: pairDirections,
-                    ts: Date.now()
-                }}));
-            }} catch(e) {{}}
-
+            persistChoice();
             renderAll();
         }}
 
         function loadPreferences() {{
-            // 1. Check geo cache
-            try {{
-                const geo = JSON.parse(localStorage.getItem('railscraper_geo'));
-                if (geo && (Date.now() - geo.ts) < GEO_TTL) {{
-                    activePairIndex = geo.pair;
-                    if (Array.isArray(geo.pairDirs)) pairDirections = geo.pairDirs;
-                    activeDirectionIndex = pairDirections[activePairIndex] ?? geo.dir ?? 0;
-                    return;
-                }}
-            }} catch(e) {{}}
-
-            // 2. Try fresh geolocation
-            if (navigator.geolocation) {{
-                navigator.geolocation.getCurrentPosition(
-                    pos => applyGeoSelection(pos.coords.latitude, pos.coords.longitude),
-                    () => loadFallback()
-                );
-                // Load fallback immediately while waiting for geo
-                loadFallback();
-                return;
-            }}
-
-            loadFallback();
-        }}
-
-        function loadFallback() {{
+            // 1. Restore last manual route choice — authoritative for which pair is active.
+            let havePersistedPair = false;
             try {{
                 const last = JSON.parse(localStorage.getItem('railscraper_last_pair'));
                 if (last) {{
                     activePairIndex = last.pair;
                     if (Array.isArray(last.pairDirs)) pairDirections = last.pairDirs;
                     activeDirectionIndex = pairDirections[activePairIndex] ?? last.dir ?? 0;
+                    havePersistedPair = true;
                 }}
             }} catch(e) {{}}
+
+            // 2. Always run geolocation to refine direction within the active pair
+            //    (and to pick the pair itself on a first-ever visit).
+            if (navigator.geolocation) {{
+                navigator.geolocation.getCurrentPosition(
+                    pos => applyGeoSelection(pos.coords.latitude, pos.coords.longitude, havePersistedPair),
+                    () => {{}}
+                );
+            }}
         }}
 
-        function saveManualChoice() {{
+        function persistChoice() {{
             try {{
                 localStorage.setItem('railscraper_last_pair', JSON.stringify({{
                     pair: activePairIndex,
                     dir: activeDirectionIndex,
                     pairDirs: pairDirections
                 }}));
-                // Mirror into the geo cache so a reload within the TTL respects this
-                // manual tap instead of reverting to the geo-picked pair.
-                const geo = JSON.parse(localStorage.getItem('railscraper_geo') || '{{}}') || {{}};
-                geo.pair = activePairIndex;
-                geo.pairDirs = pairDirections.slice();
-                if (!geo.ts) geo.ts = Date.now();
-                localStorage.setItem('railscraper_geo', JSON.stringify(geo));
             }} catch(e) {{}}
         }}
+
+        function saveManualChoice() {{ persistChoice(); }}
 
         // --- Rendering ---
 
