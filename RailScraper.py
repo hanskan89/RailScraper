@@ -632,6 +632,7 @@ class RailScraper:
         function renderTabs() {{
             const bar = document.getElementById('tabBar');
             bar.innerHTML = '';
+            let activeEl = null;
             DATA.route_pairs.forEach((pair, i) => {{
                 const tab = document.createElement('div');
                 tab.className = 'tab' + (i === activePairIndex ? ' active' : '');
@@ -643,7 +644,12 @@ class RailScraper:
                     renderAll();
                 }};
                 bar.appendChild(tab);
+                if (i === activePairIndex) activeEl = tab;
             }});
+            if (activeEl) {{
+                activeEl.scrollIntoView({{ inline: 'center', block: 'nearest', behavior: 'auto' }});
+            }}
+            scheduleFadeUpdate();
         }}
 
         function updateTabBarFade() {{
