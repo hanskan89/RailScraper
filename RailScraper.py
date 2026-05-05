@@ -62,9 +62,10 @@ class RailScraper:
         """Load configuration from JSON file."""
         default_config = {
             "stations": {
-                "laagri":  {"name": "Laagri",  "lat": 59.3667, "lng": 24.6333},
-                "kivimae": {"name": "Kivimäe", "lat": 59.4019, "lng": 24.7069},
-                "tallinn": {"name": "Tallinn", "lat": 59.4400, "lng": 24.7375}
+                "laagri":   {"name": "Laagri",   "lat": 59.3544, "lng": 24.6275},
+                "kivimae":  {"name": "Kivimäe",  "lat": 59.3770, "lng": 24.6566},
+                "rahumae":  {"name": "Rahumäe",  "lat": 59.3888, "lng": 24.7044},
+                "tallinn":  {"name": "Tallinn",  "lat": 59.4400, "lng": 24.7375}
             },
             "route_pairs": [
                 {
@@ -84,6 +85,16 @@ class RailScraper:
                     "url_templates": {
                         "kivimae-laagri": "https://elron.pilet.ee/et/otsing/Kivim%C3%A4e/Laagri/{date}",
                         "laagri-kivimae": "https://elron.pilet.ee/et/otsing/Laagri/Kivim%C3%A4e/{date}"
+                    },
+                    "selectors": {"trip_container": ".trip-summary__timespan"}
+                },
+                {
+                    "id": "rahumae-tallinn",
+                    "label": "Rahumäe ↔ Tallinn",
+                    "stations": ["rahumae", "tallinn"],
+                    "url_templates": {
+                        "rahumae-tallinn": "https://elron.pilet.ee/et/otsing/Rahum%C3%A4e/Tallinn/{date}",
+                        "tallinn-rahumae": "https://elron.pilet.ee/et/otsing/Tallinn/Rahum%C3%A4e/{date}"
                     },
                     "selectors": {"trip_container": ".trip-summary__timespan"}
                 }
@@ -245,18 +256,35 @@ class RailScraper:
             font-size: 1.1em;
             font-weight: 600;
         }}
-        .tab-bar {{
-            display: flex;
-            background: #1a1d28;
-            padding: 0 12px;
+        .tab-bar-wrap {{
             position: sticky;
             top: 0;
             z-index: 100;
+            background: #1a1d28;
             border-bottom: 2px solid #2a2d3a;
         }}
+        .tab-bar-wrap::after {{
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 2px;
+            width: 32px;
+            pointer-events: none;
+            background: linear-gradient(to right, rgba(26,29,40,0), #1a1d28);
+            opacity: 1;
+            transition: opacity 0.15s;
+        }}
+        .tab-bar-wrap.scrolled-end::after {{ opacity: 0; }}
+        .tab-bar {{
+            display: flex;
+            padding: 0 12px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }}
+        .tab-bar::-webkit-scrollbar {{ display: none; }}
         .tab {{
-            flex: 1;
-            padding: 14px 8px;
+            flex: 0 0 auto;
+            padding: 14px 16px;
             text-align: center;
             cursor: pointer;
             font-size: 0.9em;
@@ -265,6 +293,7 @@ class RailScraper:
             border-bottom: 3px solid transparent;
             transition: all 0.2s;
             -webkit-tap-highlight-color: transparent;
+            white-space: nowrap;
         }}
         .tab.active {{
             color: #7c8aff;
@@ -449,7 +478,9 @@ class RailScraper:
     <div class="header">
         <span class="header-title">Rail Timetables</span>
     </div>
-    <div class="tab-bar" id="tabBar"></div>
+    <div class="tab-bar-wrap" id="tabBarWrap">
+        <div class="tab-bar" id="tabBar"></div>
+    </div>
     <div class="direction-bar">
         <span class="direction-label" id="directionLabel"></span>
         <button class="swap-btn" id="swapBtn" onclick="swapDirection()">&#8644;</button>
@@ -468,7 +499,6 @@ class RailScraper:
 
     <script>
         const DATA = {data_json};
-        const GEO_TTL = 30 * 60 * 1000; // 30 minutes
 
         let activePairIndex = 0;
         let activeDirectionIndex = 0; // 0 = first direction, 1 = second
@@ -500,13 +530,14 @@ class RailScraper:
             return closest;
         }}
 
-        function applyGeoSelection(lat, lng) {{
+        // Geolocation refines the active direction (closest "from" station wins).
+        // It only picks the active pair on first-ever visit, when no manual choice
+        // has been persisted — the user's last manual tab tap is authoritative for
+        // pair selection on every subsequent load.
+        function applyGeoSelection(lat, lng, keepActivePair) {{
             let bestPairIdx = 0;
             let bestDist = Infinity;
 
-            // For every pair, choose the direction whose "from" station is
-            // closest to the user. The pair containing the overall nearest
-            // station becomes the active tab.
             DATA.route_pairs.forEach((pair, pi) => {{
                 const dirKeys = Object.keys(pair.directions);
                 let pairBestDirIdx = 0;
@@ -527,58 +558,39 @@ class RailScraper:
                 }}
             }});
 
-            activePairIndex = bestPairIdx;
+            if (!keepActivePair) {{
+                activePairIndex = bestPairIdx;
+            }}
             activeDirectionIndex = pairDirections[activePairIndex];
 
-            try {{
-                localStorage.setItem('railscraper_geo', JSON.stringify({{
-                    pair: activePairIndex,
-                    pairDirs: pairDirections,
-                    ts: Date.now()
-                }}));
-            }} catch(e) {{}}
-
+            persistChoice();
             renderAll();
         }}
 
         function loadPreferences() {{
-            // 1. Check geo cache
-            try {{
-                const geo = JSON.parse(localStorage.getItem('railscraper_geo'));
-                if (geo && (Date.now() - geo.ts) < GEO_TTL) {{
-                    activePairIndex = geo.pair;
-                    if (Array.isArray(geo.pairDirs)) pairDirections = geo.pairDirs;
-                    activeDirectionIndex = pairDirections[activePairIndex] ?? geo.dir ?? 0;
-                    return;
-                }}
-            }} catch(e) {{}}
-
-            // 2. Try fresh geolocation
-            if (navigator.geolocation) {{
-                navigator.geolocation.getCurrentPosition(
-                    pos => applyGeoSelection(pos.coords.latitude, pos.coords.longitude),
-                    () => loadFallback()
-                );
-                // Load fallback immediately while waiting for geo
-                loadFallback();
-                return;
-            }}
-
-            loadFallback();
-        }}
-
-        function loadFallback() {{
+            // 1. Restore last manual route choice — authoritative for which pair is active.
+            let havePersistedPair = false;
             try {{
                 const last = JSON.parse(localStorage.getItem('railscraper_last_pair'));
                 if (last) {{
                     activePairIndex = last.pair;
                     if (Array.isArray(last.pairDirs)) pairDirections = last.pairDirs;
                     activeDirectionIndex = pairDirections[activePairIndex] ?? last.dir ?? 0;
+                    havePersistedPair = true;
                 }}
             }} catch(e) {{}}
+
+            // 2. Always run geolocation to refine direction within the active pair
+            //    (and to pick the pair itself on a first-ever visit).
+            if (navigator.geolocation) {{
+                navigator.geolocation.getCurrentPosition(
+                    pos => applyGeoSelection(pos.coords.latitude, pos.coords.longitude, havePersistedPair),
+                    () => {{}}
+                );
+            }}
         }}
 
-        function saveManualChoice() {{
+        function persistChoice() {{
             try {{
                 localStorage.setItem('railscraper_last_pair', JSON.stringify({{
                     pair: activePairIndex,
@@ -587,6 +599,8 @@ class RailScraper:
                 }}));
             }} catch(e) {{}}
         }}
+
+        function saveManualChoice() {{ persistChoice(); }}
 
         // --- Rendering ---
 
@@ -601,6 +615,7 @@ class RailScraper:
         function renderTabs() {{
             const bar = document.getElementById('tabBar');
             bar.innerHTML = '';
+            let activeEl = null;
             DATA.route_pairs.forEach((pair, i) => {{
                 const tab = document.createElement('div');
                 tab.className = 'tab' + (i === activePairIndex ? ' active' : '');
@@ -612,6 +627,29 @@ class RailScraper:
                     renderAll();
                 }};
                 bar.appendChild(tab);
+                if (i === activePairIndex) activeEl = tab;
+            }});
+            if (activeEl) {{
+                activeEl.scrollIntoView({{ inline: 'center', block: 'nearest', behavior: 'auto' }});
+            }}
+            scheduleFadeUpdate();
+        }}
+
+        function updateTabBarFade() {{
+            const bar = document.getElementById('tabBar');
+            const wrap = document.getElementById('tabBarWrap');
+            if (!bar || !wrap) return;
+            const atEnd = bar.scrollLeft + bar.clientWidth >= bar.scrollWidth - 1;
+            const overflowing = bar.scrollWidth > bar.clientWidth + 1;
+            wrap.classList.toggle('scrolled-end', atEnd || !overflowing);
+        }}
+
+        let _fadeRaf = 0;
+        function scheduleFadeUpdate() {{
+            if (_fadeRaf) return;
+            _fadeRaf = requestAnimationFrame(() => {{
+                _fadeRaf = 0;
+                updateTabBarFade();
             }});
         }}
 
@@ -737,6 +775,9 @@ class RailScraper:
         function init() {{
             loadPreferences();
             renderAll();
+            const bar = document.getElementById('tabBar');
+            if (bar) bar.addEventListener('scroll', scheduleFadeUpdate, {{ passive: true }});
+            window.addEventListener('resize', scheduleFadeUpdate);
             setInterval(() => {{
                 renderTimetable();
             }}, 60000);
