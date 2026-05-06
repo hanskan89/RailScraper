@@ -62,10 +62,12 @@ class RailScraper:
         """Load configuration from JSON file."""
         default_config = {
             "stations": {
-                "laagri":   {"name": "Laagri",   "lat": 59.3544, "lng": 24.6275},
-                "kivimae":  {"name": "Kivimäe",  "lat": 59.3770, "lng": 24.6566},
-                "rahumae":  {"name": "Rahumäe",  "lat": 59.3888, "lng": 24.7044},
-                "tallinn":  {"name": "Tallinn",  "lat": 59.4400, "lng": 24.7375}
+                "laagri":    {"name": "Laagri",    "lat": 59.3544, "lng": 24.6275},
+                "kivimae":   {"name": "Kivimäe",   "lat": 59.3770, "lng": 24.6566},
+                "rahumae":   {"name": "Rahumäe",   "lat": 59.3888, "lng": 24.7044},
+                "nomme":     {"name": "Nõmme",     "lat": 59.3861, "lng": 24.6863},
+                "lillekula": {"name": "Lilleküla", "lat": 59.4248, "lng": 24.7280},
+                "tallinn":   {"name": "Tallinn",   "lat": 59.4400, "lng": 24.7375}
             },
             "route_pairs": [
                 {
@@ -95,6 +97,26 @@ class RailScraper:
                     "url_templates": {
                         "rahumae-tallinn": "https://elron.pilet.ee/et/otsing/Rahum%C3%A4e/Tallinn/{date}",
                         "tallinn-rahumae": "https://elron.pilet.ee/et/otsing/Tallinn/Rahum%C3%A4e/{date}"
+                    },
+                    "selectors": {"trip_container": ".trip-summary__timespan"}
+                },
+                {
+                    "id": "nomme-tallinn",
+                    "label": "Nõmme ↔ Tallinn",
+                    "stations": ["nomme", "tallinn"],
+                    "url_templates": {
+                        "nomme-tallinn": "https://elron.pilet.ee/et/otsing/N%C3%B5mme/Tallinn/{date}",
+                        "tallinn-nomme": "https://elron.pilet.ee/et/otsing/Tallinn/N%C3%B5mme/{date}"
+                    },
+                    "selectors": {"trip_container": ".trip-summary__timespan"}
+                },
+                {
+                    "id": "lillekula-nomme",
+                    "label": "Lilleküla ↔ Nõmme",
+                    "stations": ["lillekula", "nomme"],
+                    "url_templates": {
+                        "lillekula-nomme": "https://elron.pilet.ee/et/otsing/Lillek%C3%BCla/N%C3%B5mme/{date}",
+                        "nomme-lillekula": "https://elron.pilet.ee/et/otsing/N%C3%B5mme/Lillek%C3%BCla/{date}"
                     },
                     "selectors": {"trip_container": ".trip-summary__timespan"}
                 }
