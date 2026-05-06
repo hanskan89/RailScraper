@@ -9,13 +9,15 @@ A web scraper that fetches daily train timetables from [Elron](https://elron.pil
 - Laagri ↔ Tallinn
 - Kivimäe ↔ Laagri
 - Rahumäe ↔ Tallinn
+- Nõmme ↔ Tallinn
+- Lilleküla ↔ Nõmme
 
 ## Using the Timetable
 
 Open [`timetable.html`](https://hanskan89.github.io/RailScraper/timetable.html) (e.g. via GitHub Pages or by hosting the file anywhere static) on your phone or desktop. Everything runs client-side — no server, no spinners.
 
 ### Pick a route
-- **Tabs** at the top switch between route pairs (Laagri ↔ Tallinn, Kivimäe ↔ Laagri, Rahumäe ↔ Tallinn). On narrow phones the tab strip scrolls horizontally; the active tab auto-centers in view.
+- **Tabs** at the top switch between route pairs (Laagri ↔ Tallinn, Kivimäe ↔ Laagri, Rahumäe ↔ Tallinn, Nõmme ↔ Tallinn, Lilleküla ↔ Nõmme). On narrow phones the tab strip scrolls horizontally; the active tab auto-centers in view.
 - **Swap button (⇄)** flips the direction of the current pair.
 
 ### Auto-detect the closest station
