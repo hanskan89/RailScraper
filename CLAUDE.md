@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-RailScraper is a Python web scraper that fetches Estonian rail (Elron) timetables for Laagri↔Tallinn routes and generates a static HTML timetable page. It runs daily via GitHub Actions (cron at 03:00 UTC) and commits the updated `timetable.html` and `timetable_data.json` back to the repo.
+RailScraper is a Python web scraper that fetches Estonian rail (Elron) timetables for three route pairs (Laagri↔Tallinn, Kivimäe↔Laagri, Rahumäe↔Tallinn) and generates a static HTML timetable page. It runs daily via GitHub Actions (cron at 03:00 UTC) and commits the updated `timetable.html` and `timetable_data.json` back to the repo.
 
 ## Commands
 
@@ -23,7 +23,7 @@ There are no tests, linter, or build steps configured.
 The entire application is a single file: `RailScraper.py`.
 
 - **`RailScraper` class** — uses Selenium (headless Chrome) to load the Elron ticket site, waits for JS-rendered content, then parses trip times with BeautifulSoup. Routes are configured via a `config.json` (auto-created with defaults if missing).
-- **`generate_html()`** — produces a self-contained HTML page with inline CSS/JS. The client-side JS handles real-time countdown timers, past-train filtering, and status indicators (no server needed).
+- **`generate_html()`** — produces a self-contained HTML page with inline CSS/JS inside a Python f-string. Literal CSS/JS braces are doubled (`{{` `}}`); single braces are f-string interpolation. The client-side JS handles real-time countdown timers, past-train filtering, status indicators, horizontal tab-bar scroll with edge-fade, and persistence (one key: `railscraper_last_pair`; see memory `project_persistence_model.md`). The route tab bar uses two nested elements — `.tab-bar-wrap` is `position: sticky` (chrome), and `.tab-bar` inside it is the horizontal scroll container; sticky + overflow can't co-exist on one element.
 - **`main()`** — single-run entrypoint optimized for GitHub Actions (no scheduling loop).
 
 ## Key Files
