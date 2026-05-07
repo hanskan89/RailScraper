@@ -8,6 +8,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import datetime
+from zoneinfo import ZoneInfo
 import schedule
 import time
 import os
@@ -135,7 +136,7 @@ class RailScraper:
     
     def get_current_date_url(self, url_template: str) -> str:
         """Generate URL with current date in YYYY-MM-DD format."""
-        current_date = datetime.datetime.now().strftime('%Y-%m-%d')
+        current_date = datetime.datetime.now(ZoneInfo('Europe/Tallinn')).strftime('%Y-%m-%d')
         return url_template.format(date=current_date)
     
     def scrape_route(self, url_template: str, selectors: Dict, direction_label: str) -> List[Dict]:
