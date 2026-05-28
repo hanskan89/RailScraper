@@ -7,7 +7,7 @@ A web scraper that fetches daily train timetables from [Elron](https://elron.pil
 ## Routes
 
 - Laagri ↔ Tallinn
-- Kivimäe ↔ Laagri
+- Kivimäe ↔ Tallinn
 - Rahumäe ↔ Tallinn
 - Nõmme ↔ Tallinn
 - Lilleküla ↔ Nõmme
@@ -17,11 +17,11 @@ A web scraper that fetches daily train timetables from [Elron](https://elron.pil
 Open [`timetable.html`](https://hanskan89.github.io/RailScraper/timetable.html) (e.g. via GitHub Pages or by hosting the file anywhere static) on your phone or desktop. Everything runs client-side — no server, no spinners.
 
 ### Pick a route
-- **Tabs** at the top switch between route pairs (Laagri ↔ Tallinn, Kivimäe ↔ Laagri, Rahumäe ↔ Tallinn, Nõmme ↔ Tallinn, Lilleküla ↔ Nõmme). On narrow phones the tab strip scrolls horizontally; the active tab auto-centers in view.
+- **Tabs** at the top switch between route pairs (Laagri ↔ Tallinn, Kivimäe ↔ Tallinn, Rahumäe ↔ Tallinn, Nõmme ↔ Tallinn, Lilleküla ↔ Nõmme). On narrow phones the tab strip scrolls horizontally; the active tab auto-centers in view.
 - **Swap button (⇄)** flips the direction of the current pair.
 
 ### Auto-detect the closest station
-On every load the page asks for your location. If allowed, every route pair is oriented so the station nearest you is the *from* station — e.g. if you're in Laagri you'll see "Laagri → Tallinn" and "Laagri → Kivimäe" on their respective tabs without having to swap. Your location is used only in-browser; it is never sent anywhere.
+On every load the page asks for your location. If allowed, every route pair is oriented so the station nearest you is the *from* station — e.g. if you're in Nõmme you'll see "Nõmme → Tallinn" and "Nõmme → Lilleküla" on their respective tabs without having to swap. Your location is used only in-browser; it is never sent anywhere.
 
 ### See the next train at a glance
 - The **hero card** at the top shows a live countdown to the next departure (`12m`, `1h 04m`, …) plus the departure → arrival time and train number.
