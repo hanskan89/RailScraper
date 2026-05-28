@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-RailScraper is a Python web scraper that fetches Estonian rail (Elron) timetables for five route pairs (Laagri↔Tallinn, Kivimäe↔Laagri, Rahumäe↔Tallinn, Nõmme↔Tallinn, Lilleküla↔Nõmme) and generates a static HTML timetable page. It runs daily via GitHub Actions (cron at 22:00 UTC, i.e. 01:00 Tallinn after midnight) and commits the updated `timetable.html` and `timetable_data.json` back to the repo.
+RailScraper is a Python web scraper that fetches Estonian rail (Elron) timetables for five route pairs (Laagri↔Tallinn, Kivimäe↔Tallinn, Rahumäe↔Tallinn, Nõmme↔Tallinn, Lilleküla↔Nõmme) and generates a static HTML timetable page. It runs daily via GitHub Actions (cron at 22:00 UTC, i.e. 01:00 Tallinn after midnight) and commits the updated `timetable.html` and `timetable_data.json` back to the repo.
 
 ## Commands
 

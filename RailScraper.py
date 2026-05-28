@@ -82,12 +82,12 @@ class RailScraper:
                     "selectors": {"trip_container": ".trip-summary__timespan"}
                 },
                 {
-                    "id": "kivimae-laagri",
-                    "label": "Kivimäe ↔ Laagri",
-                    "stations": ["kivimae", "laagri"],
+                    "id": "kivimae-tallinn",
+                    "label": "Kivimäe ↔ Tallinn",
+                    "stations": ["kivimae", "tallinn"],
                     "url_templates": {
-                        "kivimae-laagri": "https://elron.pilet.ee/et/otsing/Kivim%C3%A4e/Laagri/{date}",
-                        "laagri-kivimae": "https://elron.pilet.ee/et/otsing/Laagri/Kivim%C3%A4e/{date}"
+                        "kivimae-tallinn": "https://elron.pilet.ee/et/otsing/Kivim%C3%A4e/Tallinn/{date}",
+                        "tallinn-kivimae": "https://elron.pilet.ee/et/otsing/Tallinn/Kivim%C3%A4e/{date}"
                     },
                     "selectors": {"trip_container": ".trip-summary__timespan"}
                 },
