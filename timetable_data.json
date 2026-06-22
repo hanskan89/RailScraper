@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-06-21 23:10:49",
+  "last_updated": "2026-06-22 23:16:58",
   "stations": {
     "laagri": {
       "name": "Laagri",
@@ -46,11 +46,6 @@
           "to": "tallinn",
           "timetable": [
             {
-              "departure": "06:03",
-              "arrival": "06:24",
-              "train": "742"
-            },
-            {
               "departure": "06:33",
               "arrival": "06:54",
               "train": "540"
@@ -59,11 +54,6 @@
               "departure": "06:53",
               "arrival": "07:14",
               "train": "640"
-            },
-            {
-              "departure": "07:05",
-              "arrival": "07:22",
-              "train": "50"
             },
             {
               "departure": "07:13",
@@ -79,11 +69,6 @@
               "departure": "07:53",
               "arrival": "08:14",
               "train": "580"
-            },
-            {
-              "departure": "08:05",
-              "arrival": "08:22",
-              "train": "52"
             },
             {
               "departure": "08:13",
@@ -568,16 +553,6 @@
               "train": "772"
             },
             {
-              "departure": "05:38",
-              "arrival": "05:54",
-              "train": "770"
-            },
-            {
-              "departure": "06:08",
-              "arrival": "06:24",
-              "train": "742"
-            },
-            {
               "departure": "06:38",
               "arrival": "06:54",
               "train": "540"
@@ -586,6 +561,11 @@
               "departure": "06:58",
               "arrival": "07:14",
               "train": "640"
+            },
+            {
+              "departure": "07:08",
+              "arrival": "07:24",
+              "train": "780"
             },
             {
               "departure": "07:18",
@@ -606,6 +586,11 @@
               "departure": "08:18",
               "arrival": "08:34",
               "train": "642"
+            },
+            {
+              "departure": "08:28",
+              "arrival": "08:44",
+              "train": "782"
             },
             {
               "departure": "08:38",
@@ -723,11 +708,6 @@
               "train": "558"
             },
             {
-              "departure": "15:48",
-              "arrival": "16:04",
-              "train": "776"
-            },
-            {
               "departure": "15:58",
               "arrival": "16:14",
               "train": "756"
@@ -736,11 +716,6 @@
               "departure": "16:18",
               "arrival": "16:34",
               "train": "658"
-            },
-            {
-              "departure": "16:28",
-              "arrival": "16:44",
-              "train": "778"
             },
             {
               "departure": "16:38",
@@ -869,29 +844,14 @@
               "train": "643"
             },
             {
-              "departure": "08:15",
-              "arrival": "08:31",
-              "train": "771"
-            },
-            {
               "departure": "08:25",
               "arrival": "08:41",
               "train": "745"
             },
             {
-              "departure": "08:35",
-              "arrival": "08:51",
-              "train": "773"
-            },
-            {
               "departure": "08:45",
               "arrival": "09:01",
               "train": "547"
-            },
-            {
-              "departure": "08:55",
-              "arrival": "09:11",
-              "train": "775"
             },
             {
               "departure": "09:05",
@@ -1044,11 +1004,6 @@
               "train": "567"
             },
             {
-              "departure": "18:55",
-              "arrival": "19:11",
-              "train": "777"
-            },
-            {
               "departure": "19:15",
               "arrival": "19:31",
               "train": "665"
@@ -1130,16 +1085,6 @@
               "train": "772"
             },
             {
-              "departure": "05:44",
-              "arrival": "05:54",
-              "train": "770"
-            },
-            {
-              "departure": "06:14",
-              "arrival": "06:24",
-              "train": "742"
-            },
-            {
               "departure": "06:44",
               "arrival": "06:54",
               "train": "540"
@@ -1148,6 +1093,11 @@
               "departure": "07:04",
               "arrival": "07:14",
               "train": "640"
+            },
+            {
+              "departure": "07:14",
+              "arrival": "07:24",
+              "train": "780"
             },
             {
               "departure": "07:24",
@@ -1168,6 +1118,11 @@
               "departure": "08:24",
               "arrival": "08:34",
               "train": "642"
+            },
+            {
+              "departure": "08:34",
+              "arrival": "08:44",
+              "train": "782"
             },
             {
               "departure": "08:44",
@@ -1285,11 +1240,6 @@
               "train": "558"
             },
             {
-              "departure": "15:54",
-              "arrival": "16:04",
-              "train": "776"
-            },
-            {
               "departure": "16:04",
               "arrival": "16:14",
               "train": "756"
@@ -1298,11 +1248,6 @@
               "departure": "16:24",
               "arrival": "16:34",
               "train": "658"
-            },
-            {
-              "departure": "16:34",
-              "arrival": "16:44",
-              "train": "778"
             },
             {
               "departure": "16:44",
@@ -1431,29 +1376,14 @@
               "train": "643"
             },
             {
-              "departure": "08:15",
-              "arrival": "08:25",
-              "train": "771"
-            },
-            {
               "departure": "08:25",
               "arrival": "08:35",
               "train": "745"
             },
             {
-              "departure": "08:35",
-              "arrival": "08:45",
-              "train": "773"
-            },
-            {
               "departure": "08:45",
               "arrival": "08:55",
               "train": "547"
-            },
-            {
-              "departure": "08:55",
-              "arrival": "09:05",
-              "train": "775"
             },
             {
               "departure": "09:05",
@@ -1606,11 +1536,6 @@
               "train": "567"
             },
             {
-              "departure": "18:55",
-              "arrival": "19:05",
-              "train": "777"
-            },
-            {
               "departure": "19:15",
               "arrival": "19:25",
               "train": "665"
@@ -1692,16 +1617,6 @@
               "train": "772"
             },
             {
-              "departure": "05:42",
-              "arrival": "05:54",
-              "train": "770"
-            },
-            {
-              "departure": "06:12",
-              "arrival": "06:24",
-              "train": "742"
-            },
-            {
               "departure": "06:42",
               "arrival": "06:54",
               "train": "540"
@@ -1713,8 +1628,8 @@
             },
             {
               "departure": "07:12",
-              "arrival": "07:22",
-              "train": "50"
+              "arrival": "07:24",
+              "train": "780"
             },
             {
               "departure": "07:22",
@@ -1732,14 +1647,14 @@
               "train": "580"
             },
             {
-              "departure": "08:12",
-              "arrival": "08:22",
-              "train": "52"
-            },
-            {
               "departure": "08:22",
               "arrival": "08:34",
               "train": "642"
+            },
+            {
+              "departure": "08:32",
+              "arrival": "08:44",
+              "train": "782"
             },
             {
               "departure": "08:42",
@@ -1857,11 +1772,6 @@
               "train": "558"
             },
             {
-              "departure": "15:52",
-              "arrival": "16:04",
-              "train": "776"
-            },
-            {
               "departure": "16:02",
               "arrival": "16:14",
               "train": "756"
@@ -1870,11 +1780,6 @@
               "departure": "16:22",
               "arrival": "16:34",
               "train": "658"
-            },
-            {
-              "departure": "16:32",
-              "arrival": "16:44",
-              "train": "778"
             },
             {
               "departure": "16:42",
@@ -2003,29 +1908,14 @@
               "train": "643"
             },
             {
-              "departure": "08:15",
-              "arrival": "08:27",
-              "train": "771"
-            },
-            {
               "departure": "08:25",
               "arrival": "08:37",
               "train": "745"
             },
             {
-              "departure": "08:35",
-              "arrival": "08:47",
-              "train": "773"
-            },
-            {
               "departure": "08:45",
               "arrival": "08:57",
               "train": "547"
-            },
-            {
-              "departure": "08:55",
-              "arrival": "09:07",
-              "train": "775"
             },
             {
               "departure": "09:05",
@@ -2178,11 +2068,6 @@
               "train": "567"
             },
             {
-              "departure": "18:55",
-              "arrival": "19:07",
-              "train": "777"
-            },
-            {
               "departure": "19:15",
               "arrival": "19:27",
               "train": "665"
@@ -2294,29 +2179,14 @@
               "train": "643"
             },
             {
-              "departure": "08:18",
-              "arrival": "08:27",
-              "train": "771"
-            },
-            {
               "departure": "08:28",
               "arrival": "08:37",
               "train": "745"
             },
             {
-              "departure": "08:38",
-              "arrival": "08:47",
-              "train": "773"
-            },
-            {
               "departure": "08:48",
               "arrival": "08:57",
               "train": "547"
-            },
-            {
-              "departure": "08:58",
-              "arrival": "09:07",
-              "train": "775"
             },
             {
               "departure": "09:08",
@@ -2469,11 +2339,6 @@
               "train": "567"
             },
             {
-              "departure": "18:58",
-              "arrival": "19:07",
-              "train": "777"
-            },
-            {
               "departure": "19:18",
               "arrival": "19:27",
               "train": "665"
@@ -2545,16 +2410,6 @@
               "train": "772"
             },
             {
-              "departure": "05:42",
-              "arrival": "05:51",
-              "train": "770"
-            },
-            {
-              "departure": "06:12",
-              "arrival": "06:21",
-              "train": "742"
-            },
-            {
               "departure": "06:42",
               "arrival": "06:51",
               "train": "540"
@@ -2566,8 +2421,8 @@
             },
             {
               "departure": "07:12",
-              "arrival": "07:19",
-              "train": "50"
+              "arrival": "07:21",
+              "train": "780"
             },
             {
               "departure": "07:22",
@@ -2585,14 +2440,14 @@
               "train": "580"
             },
             {
-              "departure": "08:12",
-              "arrival": "08:19",
-              "train": "52"
-            },
-            {
               "departure": "08:22",
               "arrival": "08:31",
               "train": "642"
+            },
+            {
+              "departure": "08:32",
+              "arrival": "08:41",
+              "train": "782"
             },
             {
               "departure": "08:42",
@@ -2710,11 +2565,6 @@
               "train": "558"
             },
             {
-              "departure": "15:52",
-              "arrival": "16:01",
-              "train": "776"
-            },
-            {
               "departure": "16:02",
               "arrival": "16:11",
               "train": "756"
@@ -2723,11 +2573,6 @@
               "departure": "16:22",
               "arrival": "16:31",
               "train": "658"
-            },
-            {
-              "departure": "16:32",
-              "arrival": "16:41",
-              "train": "778"
             },
             {
               "departure": "16:42",
