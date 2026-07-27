@@ -34,11 +34,15 @@ jobs:
     # still worth publishing, while the failed step keeps the run red.
     - name: Commit results
       if: always()
+      env:
+        # Track whichever branch the run was dispatched from; hardcoding main
+        # made any manual run from a branch rebase onto main and conflict.
+        BRANCH: ${{ github.ref_name }}
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add timetable.html timetable_data.json
         git diff --staged --quiet && exit 0
         git commit -m "Update timetables - $(date)"
-        git pull --rebase origin main
-        git push
+        git pull --rebase origin "$BRANCH"
+        git push origin "HEAD:$BRANCH"
