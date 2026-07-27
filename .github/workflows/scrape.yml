@@ -29,8 +29,11 @@ jobs:
         
     - name: Run scraper
       run: python RailScraper.py
-      
+
+    # Runs even when the scraper exits non-zero: routes that did succeed are
+    # still worth publishing, while the failed step keeps the run red.
     - name: Commit results
+      if: always()
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
