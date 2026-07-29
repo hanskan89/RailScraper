@@ -4,14 +4,11 @@ Rail Timetable Scraper Web App
 Scrapes two rail websites daily and generates a static HTML timetable page.
 """
 
-import requests
 from bs4 import BeautifulSoup
 import json
 import datetime
 from zoneinfo import ZoneInfo
-import schedule
 import time
-import os
 from typing import List, Dict, Tuple
 import logging
 from selenium import webdriver
@@ -25,6 +22,15 @@ from selenium.common.exceptions import TimeoutException, WebDriverException
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+# elron.pilet.ee renders the trip list within a few seconds but keeps the
+# document busy for far longer, so navigation is capped generously and a
+# timeout is treated as "look at the DOM anyway" rather than as a failure.
+PAGE_LOAD_TIMEOUT = 45
+CONTENT_TIMEOUT = 20
+SETTLE_POLLS = 10
+ROUTE_ATTEMPTS = 3
+
+
 class RailScraper:
     def setup_webdriver(self):
         """Setup Chrome WebDriver with appropriate options."""
@@ -36,9 +42,14 @@ class RailScraper:
             chrome_options.add_argument('--disable-gpu')
             chrome_options.add_argument('--window-size=1920,1080')
             chrome_options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
-            
+            # Images contribute nothing to the timetable and only slow the load.
+            chrome_options.add_argument('--blink-settings=imagesEnabled=false')
+            # 'eager' returns at DOMContentLoaded instead of blocking on the
+            # window load event, which the target site can take 30s+ to fire.
+            chrome_options.page_load_strategy = 'eager'
+
             self.driver = webdriver.Chrome(options=chrome_options)
-            self.driver.set_page_load_timeout(30)
+            self.driver.set_page_load_timeout(PAGE_LOAD_TIMEOUT)
             logger.info("WebDriver initialized successfully")
             
         except Exception as e:
@@ -139,91 +150,155 @@ class RailScraper:
         current_date = datetime.datetime.now(ZoneInfo('Europe/Tallinn')).strftime('%Y-%m-%d')
         return url_template.format(date=current_date)
     
+    def navigate(self, url: str):
+        """Load a URL, tolerating a slow window load event.
+
+        The trip list is present in the DOM long before the document finishes
+        loading, so a page load timeout is recoverable: stop the load and let
+        the caller inspect whatever rendered.
+        """
+        try:
+            self.driver.get(url)
+        except TimeoutException:
+            logger.warning("Page load timed out, using partially loaded page")
+            try:
+                self.driver.execute_script('window.stop();')
+            except WebDriverException as e:
+                logger.warning(f"Could not stop page load: {str(e)}")
+
+    def wait_for_trips(self, trip_selector: str):
+        """Wait for trip containers to appear, then for their count to settle."""
+        try:
+            WebDriverWait(self.driver, CONTENT_TIMEOUT).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, trip_selector))
+            )
+        except TimeoutException:
+            logger.warning(f"No trip containers appeared within {CONTENT_TIMEOUT}s")
+            return
+
+        # The list renders incrementally; poll until it stops growing so we
+        # never parse a half-populated timetable.
+        previous = -1
+        for _ in range(SETTLE_POLLS):
+            time.sleep(1)
+            current = len(self.driver.find_elements(By.CSS_SELECTOR, trip_selector))
+            if current == previous:
+                return
+            previous = current
+        logger.warning("Trip list still growing when the settle budget ran out")
+
+    def parse_trips(self, selectors: Dict) -> List[Dict]:
+        """Parse departure/arrival times and train numbers from the loaded page."""
+        soup = BeautifulSoup(self.driver.page_source, 'html.parser')
+
+        # Find all trip containers (parent level for times + train number)
+        trip_containers = soup.select('.trip-summary')
+
+        timetable = []
+
+        # Extract times and train number from each trip container
+        import re
+        time_pattern = re.compile(r'\b([0-2]?[0-9]):([0-5][0-9])\b')
+
+        for container in trip_containers:
+            timespan = container.select_one(selectors['trip_container'])
+            if not timespan:
+                continue
+
+            span_times = [
+                match.group()
+                for span in timespan.find_all('span')
+                if (match := time_pattern.search(span.get_text()))
+            ]
+
+            if len(span_times) >= 2:
+                departure_time = span_times[0]
+                arrival_time = span_times[1]
+
+                train_number = ''
+                line_num_el = container.select_one('.line-number')
+                if line_num_el:
+                    train_number = line_num_el.get_text(strip=True)
+
+                trip_data = {
+                    'departure': departure_time,
+                    'arrival': arrival_time,
+                    'train': train_number
+                }
+                timetable.append(trip_data)
+
+        # Remove duplicates while preserving order
+        seen = set()
+        unique_timetable = []
+        for trip in timetable:
+            trip_key = (trip['departure'], trip['arrival'])
+            if trip_key not in seen:
+                seen.add(trip_key)
+                unique_timetable.append(trip)
+
+        return unique_timetable
+
     def scrape_route(self, url_template: str, selectors: Dict, direction_label: str) -> List[Dict]:
         """Scrape timetable data for a single route direction using Selenium."""
-        try:
-            # Generate URL with current date
-            url = self.get_current_date_url(url_template)
-            logger.info(f"Scraping {direction_label} from {url}")
-            
-            # Load the page
-            self.driver.get(url)
-            
-            # Wait for the page to load and data to populate
-            logger.info("Waiting for dynamic content to load...")
-            time.sleep(5)  # Wait 5 seconds for dynamic content
-            
-            # Additional wait for specific elements to be present
+        url = self.get_current_date_url(url_template)
+
+        for attempt in range(1, ROUTE_ATTEMPTS + 1):
+            logger.info(f"Scraping {direction_label} from {url} (attempt {attempt}/{ROUTE_ATTEMPTS})")
             try:
-                # Wait up to 10 seconds for at least one trip container to appear
-                WebDriverWait(self.driver, 10).until(
-                    EC.presence_of_element_located((By.CSS_SELECTOR, selectors['trip_container']))
-                )
-                logger.info("Trip containers found, proceeding with extraction")
-            except TimeoutException:
-                logger.warning("Timeout waiting for trip containers, proceeding anyway")
+                self.navigate(url)
+                self.wait_for_trips(selectors['trip_container'])
+                timetable = self.parse_trips(selectors)
+            except WebDriverException as e:
+                logger.error(f"Error scraping {direction_label}: {str(e)}")
+                timetable = []
 
-            # Get page source and parse with BeautifulSoup
-            soup = BeautifulSoup(self.driver.page_source, 'html.parser')
+            if timetable:
+                logger.info(f"Found {len(timetable)} unique schedules for {direction_label}")
+                return timetable
 
-            # Find all trip containers (parent level for times + train number)
-            trip_containers = soup.select('.trip-summary')
+            logger.warning(f"No schedules extracted for {direction_label} on attempt {attempt}")
 
-            timetable = []
+        logger.error(f"Giving up on {direction_label} after {ROUTE_ATTEMPTS} attempts")
+        return []
 
-            # Extract times and train number from each trip container
-            import re
-            time_pattern = re.compile(r'\b([0-2]?[0-9]):([0-5][0-9])\b')
+    def load_previous_timetables(self, path: str = 'timetable_data.json') -> Dict[str, Dict]:
+        """Index the last committed run by direction id, for stale fallback."""
+        try:
+            with open(path, 'r') as f:
+                previous = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            logger.info(f"No usable previous timetable data ({str(e)})")
+            return {}
 
-            for container in trip_containers:
-                timespan = container.select_one(selectors['trip_container'])
-                if not timespan:
-                    continue
-
-                span_times = [
-                    match.group()
-                    for span in timespan.find_all('span')
-                    if (match := time_pattern.search(span.get_text()))
-                ]
-
-                if len(span_times) >= 2:
-                    departure_time = span_times[0]
-                    arrival_time = span_times[1]
-
-                    train_number = ''
-                    line_num_el = container.select_one('.line-number')
-                    if line_num_el:
-                        train_number = line_num_el.get_text(strip=True)
-
-                    trip_data = {
-                        'departure': departure_time,
-                        'arrival': arrival_time,
-                        'train': train_number
+        indexed = {}
+        fallback_date = previous.get('service_date') or previous.get('last_updated', '')[:10]
+        for pair in previous.get('route_pairs', []):
+            for direction_id, direction in pair.get('directions', {}).items():
+                if direction.get('timetable'):
+                    indexed[direction_id] = {
+                        'timetable': direction['timetable'],
+                        'stale_from': direction.get('stale_from') or fallback_date
                     }
-                    timetable.append(trip_data)
-            
-            # Remove duplicates while preserving order
-            seen = set()
-            unique_timetable = []
-            for trip in timetable:
-                trip_key = (trip['departure'], trip['arrival'])
-                if trip_key not in seen:
-                    seen.add(trip_key)
-                    unique_timetable.append(trip)
-            
-            logger.info(f"Found {len(unique_timetable)} unique schedules for {direction_label}")
-            return unique_timetable
-        except Exception as e:
-            logger.error(f"Error scraping {direction_label}: {str(e)}")
-            return []
-    
-    def scrape_all_routes(self) -> Dict:
-        """Scrape all configured route pairs and directions."""
+        return indexed
+
+    def scrape_all_routes(self) -> Tuple[Dict, List[str]]:
+        """Scrape all configured route pairs and directions.
+
+        Returns the scraped data plus the direction ids that yielded nothing.
+        A direction that fails keeps the previously scraped timetable, flagged
+        with 'stale_from', so the page shows a dated schedule rather than
+        claiming there are no trains at all.
+        """
+        service_date = datetime.datetime.now(ZoneInfo('Europe/Tallinn')).strftime('%Y-%m-%d')
         all_data = {
             'last_updated': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'service_date': service_date,
             'stations': self.config['stations'],
             'route_pairs': []
         }
+
+        previous = self.load_previous_timetables()
+        failed = []
 
         for pair in self.config['route_pairs']:
             pair_data = {
@@ -240,16 +315,29 @@ class RailScraper:
                 direction_label = f"{self.config['stations'][from_station]['name']} → {self.config['stations'][to_station]['name']}"
 
                 timetable = self.scrape_route(url_template, pair['selectors'], direction_label)
-                pair_data['directions'][direction_id] = {
+                direction_data = {
                     'from': from_station,
                     'to': to_station,
                     'timetable': timetable
                 }
 
+                if not timetable:
+                    failed.append(direction_id)
+                    stale = previous.get(direction_id)
+                    if stale:
+                        logger.warning(
+                            f"Keeping {len(stale['timetable'])} schedules scraped on "
+                            f"{stale['stale_from']} for {direction_label}"
+                        )
+                        direction_data['timetable'] = stale['timetable']
+                        direction_data['stale_from'] = stale['stale_from']
+
+                pair_data['directions'][direction_id] = direction_data
+
             all_data['route_pairs'].append(pair_data)
 
-        return all_data
-    
+        return all_data, failed
+
     def generate_html(self, data: Dict) -> str:
         """Generate HTML page with client-side rendering, tabs, geolocation, and persistence."""
         data_json = json.dumps(data)
@@ -488,6 +576,16 @@ class RailScraper:
             padding: 40px 20px;
             font-style: italic;
         }}
+        .stale-banner {{
+            margin: 0 16px 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: #2a2416;
+            border: 1px solid #4a3f22;
+            color: #c9a961;
+            font-size: 0.8em;
+            text-align: center;
+        }}
         .last-updated {{
             text-align: center;
             color: #3a3d4a;
@@ -513,6 +611,7 @@ class RailScraper:
         <div class="hero-countdown" id="heroCountdown"></div>
         <div class="hero-time" id="heroTime"></div>
     </div>
+    <div class="stale-banner hidden" id="staleBanner"></div>
     <div class="filter-bar">
         <span class="upcoming-count" id="upcomingCount"></span>
         <button class="filter-btn active" id="filterBtn" onclick="toggleFilter()">Future only</button>
@@ -714,6 +813,14 @@ class RailScraper:
             const container = document.getElementById('timetable');
             const now = new Date();
 
+            // This direction failed to re-scrape, so these times were captured
+            // on an earlier date and may not match today's service.
+            const staleBanner = document.getElementById('staleBanner');
+            staleBanner.classList.toggle('hidden', !dir.stale_from);
+            if (dir.stale_from) {{
+                staleBanner.textContent = 'Could not refresh this route \\u2014 showing the schedule from ' + dir.stale_from;
+            }}
+
             if (!timetable || timetable.length === 0) {{
                 container.innerHTML = '<div class="no-trains-msg">No timetable data available</div>';
                 document.getElementById('hero').classList.add('no-trains');
@@ -822,26 +929,27 @@ class RailScraper:
         except Exception as e:
             logger.error(f"Error saving HTML file: {str(e)}")
     
-    def run_scraping_job(self):
-        """Run the complete scraping job."""
+    def run_scraping_job(self) -> List[str]:
+        """Run the complete scraping job. Returns the direction ids that failed."""
         logger.info("Starting daily scraping job...")
-        
+
         try:
             # Scrape all routes
-            data = self.scrape_all_routes()
-            
+            data, failed = self.scrape_all_routes()
+
             # Generate HTML
             html_content = self.generate_html(data)
-            
+
             # Save HTML file
             self.save_html(html_content)
-            
+
             # Save data as JSON backup
             with open('timetable_data.json', 'w') as f:
                 json.dump(data, f, indent=2)
-            
+
             logger.info("Scraping job completed successfully!")
-            
+            return failed
+
         finally:
             # Always close the webdriver
             self.close_webdriver()
@@ -849,10 +957,16 @@ class RailScraper:
 def main():
     """Main function to run the scraper once (optimized for GitHub Actions)."""
     scraper = RailScraper()
-    
+
     logger.info("Running rail scraper...")
-    scraper.run_scraping_job()
+    failed = scraper.run_scraping_job()
     logger.info("Scraper completed!")
+
+    # Exit non-zero so a silent scrape regression shows up as a red CI run
+    # instead of quietly publishing a timetable full of holes.
+    if failed:
+        logger.error(f"Scraping failed for {len(failed)} direction(s): {', '.join(failed)}")
+        raise SystemExit(1)
 
 if __name__ == "__main__":
     main()
