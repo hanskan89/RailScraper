@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-07-29 10:12:57",
-  "service_date": "2026-07-29",
+  "last_updated": "2026-07-29 22:57:58",
+  "service_date": "2026-07-30",
   "stations": {
     "laagri": {
       "name": "Laagri",
@@ -46,6 +46,81 @@
           "from": "laagri",
           "to": "tallinn",
           "timetable": [
+            {
+              "departure": "06:03",
+              "arrival": "06:24",
+              "train": "742"
+            },
+            {
+              "departure": "06:33",
+              "arrival": "06:54",
+              "train": "540"
+            },
+            {
+              "departure": "06:53",
+              "arrival": "07:14",
+              "train": "640"
+            },
+            {
+              "departure": "07:05",
+              "arrival": "07:22",
+              "train": "50"
+            },
+            {
+              "departure": "07:13",
+              "arrival": "07:34",
+              "train": "674"
+            },
+            {
+              "departure": "07:33",
+              "arrival": "07:54",
+              "train": "542"
+            },
+            {
+              "departure": "07:53",
+              "arrival": "08:14",
+              "train": "580"
+            },
+            {
+              "departure": "08:05",
+              "arrival": "08:22",
+              "train": "52"
+            },
+            {
+              "departure": "08:13",
+              "arrival": "08:34",
+              "train": "642"
+            },
+            {
+              "departure": "08:33",
+              "arrival": "08:54",
+              "train": "544"
+            },
+            {
+              "departure": "08:53",
+              "arrival": "09:14",
+              "train": "746"
+            },
+            {
+              "departure": "09:13",
+              "arrival": "09:34",
+              "train": "644"
+            },
+            {
+              "departure": "09:33",
+              "arrival": "09:54",
+              "train": "546"
+            },
+            {
+              "departure": "09:53",
+              "arrival": "10:14",
+              "train": "748"
+            },
+            {
+              "departure": "10:13",
+              "arrival": "10:34",
+              "train": "646"
+            },
             {
               "departure": "10:33",
               "arrival": "10:54",
@@ -227,6 +302,71 @@
           "from": "tallinn",
           "to": "laagri",
           "timetable": [
+            {
+              "departure": "05:45",
+              "arrival": "06:06",
+              "train": "541"
+            },
+            {
+              "departure": "06:05",
+              "arrival": "06:26",
+              "train": "675"
+            },
+            {
+              "departure": "06:45",
+              "arrival": "07:06",
+              "train": "543"
+            },
+            {
+              "departure": "07:05",
+              "arrival": "07:26",
+              "train": "641"
+            },
+            {
+              "departure": "07:25",
+              "arrival": "07:46",
+              "train": "743"
+            },
+            {
+              "departure": "07:45",
+              "arrival": "08:06",
+              "train": "545"
+            },
+            {
+              "departure": "08:05",
+              "arrival": "08:26",
+              "train": "643"
+            },
+            {
+              "departure": "08:25",
+              "arrival": "08:46",
+              "train": "745"
+            },
+            {
+              "departure": "08:45",
+              "arrival": "09:06",
+              "train": "547"
+            },
+            {
+              "departure": "09:05",
+              "arrival": "09:26",
+              "train": "645"
+            },
+            {
+              "departure": "09:25",
+              "arrival": "09:46",
+              "train": "747"
+            },
+            {
+              "departure": "09:45",
+              "arrival": "10:06",
+              "train": "549"
+            },
+            {
+              "departure": "10:05",
+              "arrival": "10:26",
+              "train": "647"
+            },
             {
               "departure": "10:25",
               "arrival": "10:46",
@@ -423,6 +563,76 @@
           "from": "kivimae",
           "to": "tallinn",
           "timetable": [
+            {
+              "departure": "05:18",
+              "arrival": "05:34",
+              "train": "772"
+            },
+            {
+              "departure": "05:38",
+              "arrival": "05:54",
+              "train": "770"
+            },
+            {
+              "departure": "06:08",
+              "arrival": "06:24",
+              "train": "742"
+            },
+            {
+              "departure": "06:38",
+              "arrival": "06:54",
+              "train": "540"
+            },
+            {
+              "departure": "06:58",
+              "arrival": "07:14",
+              "train": "640"
+            },
+            {
+              "departure": "07:18",
+              "arrival": "07:34",
+              "train": "674"
+            },
+            {
+              "departure": "07:38",
+              "arrival": "07:54",
+              "train": "542"
+            },
+            {
+              "departure": "07:58",
+              "arrival": "08:14",
+              "train": "580"
+            },
+            {
+              "departure": "08:18",
+              "arrival": "08:34",
+              "train": "642"
+            },
+            {
+              "departure": "08:38",
+              "arrival": "08:54",
+              "train": "544"
+            },
+            {
+              "departure": "08:58",
+              "arrival": "09:14",
+              "train": "746"
+            },
+            {
+              "departure": "09:18",
+              "arrival": "09:34",
+              "train": "644"
+            },
+            {
+              "departure": "09:38",
+              "arrival": "09:54",
+              "train": "546"
+            },
+            {
+              "departure": "09:58",
+              "arrival": "10:14",
+              "train": "748"
+            },
             {
               "departure": "10:18",
               "arrival": "10:34",
@@ -624,6 +834,86 @@
           "from": "tallinn",
           "to": "kivimae",
           "timetable": [
+            {
+              "departure": "05:45",
+              "arrival": "06:01",
+              "train": "541"
+            },
+            {
+              "departure": "06:05",
+              "arrival": "06:21",
+              "train": "675"
+            },
+            {
+              "departure": "06:45",
+              "arrival": "07:01",
+              "train": "543"
+            },
+            {
+              "departure": "07:05",
+              "arrival": "07:21",
+              "train": "641"
+            },
+            {
+              "departure": "07:25",
+              "arrival": "07:41",
+              "train": "743"
+            },
+            {
+              "departure": "07:45",
+              "arrival": "08:01",
+              "train": "545"
+            },
+            {
+              "departure": "08:05",
+              "arrival": "08:21",
+              "train": "643"
+            },
+            {
+              "departure": "08:15",
+              "arrival": "08:31",
+              "train": "771"
+            },
+            {
+              "departure": "08:25",
+              "arrival": "08:41",
+              "train": "745"
+            },
+            {
+              "departure": "08:35",
+              "arrival": "08:51",
+              "train": "773"
+            },
+            {
+              "departure": "08:45",
+              "arrival": "09:01",
+              "train": "547"
+            },
+            {
+              "departure": "08:55",
+              "arrival": "09:11",
+              "train": "775"
+            },
+            {
+              "departure": "09:05",
+              "arrival": "09:21",
+              "train": "645"
+            },
+            {
+              "departure": "09:25",
+              "arrival": "09:41",
+              "train": "747"
+            },
+            {
+              "departure": "09:45",
+              "arrival": "10:01",
+              "train": "549"
+            },
+            {
+              "departure": "10:05",
+              "arrival": "10:21",
+              "train": "647"
+            },
             {
               "departure": "10:25",
               "arrival": "10:41",
@@ -836,6 +1126,76 @@
           "to": "tallinn",
           "timetable": [
             {
+              "departure": "05:24",
+              "arrival": "05:34",
+              "train": "772"
+            },
+            {
+              "departure": "05:44",
+              "arrival": "05:54",
+              "train": "770"
+            },
+            {
+              "departure": "06:14",
+              "arrival": "06:24",
+              "train": "742"
+            },
+            {
+              "departure": "06:44",
+              "arrival": "06:54",
+              "train": "540"
+            },
+            {
+              "departure": "07:04",
+              "arrival": "07:14",
+              "train": "640"
+            },
+            {
+              "departure": "07:24",
+              "arrival": "07:34",
+              "train": "674"
+            },
+            {
+              "departure": "07:44",
+              "arrival": "07:54",
+              "train": "542"
+            },
+            {
+              "departure": "08:04",
+              "arrival": "08:14",
+              "train": "580"
+            },
+            {
+              "departure": "08:24",
+              "arrival": "08:34",
+              "train": "642"
+            },
+            {
+              "departure": "08:44",
+              "arrival": "08:54",
+              "train": "544"
+            },
+            {
+              "departure": "09:04",
+              "arrival": "09:14",
+              "train": "746"
+            },
+            {
+              "departure": "09:24",
+              "arrival": "09:34",
+              "train": "644"
+            },
+            {
+              "departure": "09:44",
+              "arrival": "09:54",
+              "train": "546"
+            },
+            {
+              "departure": "10:04",
+              "arrival": "10:14",
+              "train": "748"
+            },
+            {
               "departure": "10:24",
               "arrival": "10:34",
               "train": "646"
@@ -1036,6 +1396,86 @@
           "from": "tallinn",
           "to": "rahumae",
           "timetable": [
+            {
+              "departure": "05:45",
+              "arrival": "05:55",
+              "train": "541"
+            },
+            {
+              "departure": "06:05",
+              "arrival": "06:15",
+              "train": "675"
+            },
+            {
+              "departure": "06:45",
+              "arrival": "06:55",
+              "train": "543"
+            },
+            {
+              "departure": "07:05",
+              "arrival": "07:15",
+              "train": "641"
+            },
+            {
+              "departure": "07:25",
+              "arrival": "07:35",
+              "train": "743"
+            },
+            {
+              "departure": "07:45",
+              "arrival": "07:55",
+              "train": "545"
+            },
+            {
+              "departure": "08:05",
+              "arrival": "08:15",
+              "train": "643"
+            },
+            {
+              "departure": "08:15",
+              "arrival": "08:25",
+              "train": "771"
+            },
+            {
+              "departure": "08:25",
+              "arrival": "08:35",
+              "train": "745"
+            },
+            {
+              "departure": "08:35",
+              "arrival": "08:45",
+              "train": "773"
+            },
+            {
+              "departure": "08:45",
+              "arrival": "08:55",
+              "train": "547"
+            },
+            {
+              "departure": "08:55",
+              "arrival": "09:05",
+              "train": "775"
+            },
+            {
+              "departure": "09:05",
+              "arrival": "09:15",
+              "train": "645"
+            },
+            {
+              "departure": "09:25",
+              "arrival": "09:35",
+              "train": "747"
+            },
+            {
+              "departure": "09:45",
+              "arrival": "09:55",
+              "train": "549"
+            },
+            {
+              "departure": "10:05",
+              "arrival": "10:15",
+              "train": "647"
+            },
             {
               "departure": "10:25",
               "arrival": "10:35",
@@ -1248,6 +1688,86 @@
           "to": "tallinn",
           "timetable": [
             {
+              "departure": "05:22",
+              "arrival": "05:34",
+              "train": "772"
+            },
+            {
+              "departure": "05:42",
+              "arrival": "05:54",
+              "train": "770"
+            },
+            {
+              "departure": "06:12",
+              "arrival": "06:24",
+              "train": "742"
+            },
+            {
+              "departure": "06:42",
+              "arrival": "06:54",
+              "train": "540"
+            },
+            {
+              "departure": "07:02",
+              "arrival": "07:14",
+              "train": "640"
+            },
+            {
+              "departure": "07:12",
+              "arrival": "07:22",
+              "train": "50"
+            },
+            {
+              "departure": "07:22",
+              "arrival": "07:34",
+              "train": "674"
+            },
+            {
+              "departure": "07:42",
+              "arrival": "07:54",
+              "train": "542"
+            },
+            {
+              "departure": "08:02",
+              "arrival": "08:14",
+              "train": "580"
+            },
+            {
+              "departure": "08:12",
+              "arrival": "08:22",
+              "train": "52"
+            },
+            {
+              "departure": "08:22",
+              "arrival": "08:34",
+              "train": "642"
+            },
+            {
+              "departure": "08:42",
+              "arrival": "08:54",
+              "train": "544"
+            },
+            {
+              "departure": "09:02",
+              "arrival": "09:14",
+              "train": "746"
+            },
+            {
+              "departure": "09:22",
+              "arrival": "09:34",
+              "train": "644"
+            },
+            {
+              "departure": "09:42",
+              "arrival": "09:54",
+              "train": "546"
+            },
+            {
+              "departure": "10:02",
+              "arrival": "10:14",
+              "train": "748"
+            },
+            {
               "departure": "10:22",
               "arrival": "10:34",
               "train": "646"
@@ -1448,6 +1968,86 @@
           "from": "tallinn",
           "to": "nomme",
           "timetable": [
+            {
+              "departure": "05:45",
+              "arrival": "05:57",
+              "train": "541"
+            },
+            {
+              "departure": "06:05",
+              "arrival": "06:17",
+              "train": "675"
+            },
+            {
+              "departure": "06:45",
+              "arrival": "06:57",
+              "train": "543"
+            },
+            {
+              "departure": "07:05",
+              "arrival": "07:17",
+              "train": "641"
+            },
+            {
+              "departure": "07:25",
+              "arrival": "07:37",
+              "train": "743"
+            },
+            {
+              "departure": "07:45",
+              "arrival": "07:57",
+              "train": "545"
+            },
+            {
+              "departure": "08:05",
+              "arrival": "08:17",
+              "train": "643"
+            },
+            {
+              "departure": "08:15",
+              "arrival": "08:27",
+              "train": "771"
+            },
+            {
+              "departure": "08:25",
+              "arrival": "08:37",
+              "train": "745"
+            },
+            {
+              "departure": "08:35",
+              "arrival": "08:47",
+              "train": "773"
+            },
+            {
+              "departure": "08:45",
+              "arrival": "08:57",
+              "train": "547"
+            },
+            {
+              "departure": "08:55",
+              "arrival": "09:07",
+              "train": "775"
+            },
+            {
+              "departure": "09:05",
+              "arrival": "09:17",
+              "train": "645"
+            },
+            {
+              "departure": "09:25",
+              "arrival": "09:37",
+              "train": "747"
+            },
+            {
+              "departure": "09:45",
+              "arrival": "09:57",
+              "train": "549"
+            },
+            {
+              "departure": "10:05",
+              "arrival": "10:17",
+              "train": "647"
+            },
             {
               "departure": "10:25",
               "arrival": "10:37",
@@ -1660,6 +2260,86 @@
           "to": "nomme",
           "timetable": [
             {
+              "departure": "05:48",
+              "arrival": "05:57",
+              "train": "541"
+            },
+            {
+              "departure": "06:08",
+              "arrival": "06:17",
+              "train": "675"
+            },
+            {
+              "departure": "06:48",
+              "arrival": "06:57",
+              "train": "543"
+            },
+            {
+              "departure": "07:08",
+              "arrival": "07:17",
+              "train": "641"
+            },
+            {
+              "departure": "07:28",
+              "arrival": "07:37",
+              "train": "743"
+            },
+            {
+              "departure": "07:48",
+              "arrival": "07:57",
+              "train": "545"
+            },
+            {
+              "departure": "08:08",
+              "arrival": "08:17",
+              "train": "643"
+            },
+            {
+              "departure": "08:18",
+              "arrival": "08:27",
+              "train": "771"
+            },
+            {
+              "departure": "08:28",
+              "arrival": "08:37",
+              "train": "745"
+            },
+            {
+              "departure": "08:38",
+              "arrival": "08:47",
+              "train": "773"
+            },
+            {
+              "departure": "08:48",
+              "arrival": "08:57",
+              "train": "547"
+            },
+            {
+              "departure": "08:58",
+              "arrival": "09:07",
+              "train": "775"
+            },
+            {
+              "departure": "09:08",
+              "arrival": "09:17",
+              "train": "645"
+            },
+            {
+              "departure": "09:28",
+              "arrival": "09:37",
+              "train": "747"
+            },
+            {
+              "departure": "09:48",
+              "arrival": "09:57",
+              "train": "549"
+            },
+            {
+              "departure": "10:08",
+              "arrival": "10:17",
+              "train": "647"
+            },
+            {
               "departure": "10:28",
               "arrival": "10:37",
               "train": "581"
@@ -1860,6 +2540,86 @@
           "from": "nomme",
           "to": "lillekula",
           "timetable": [
+            {
+              "departure": "05:22",
+              "arrival": "05:31",
+              "train": "772"
+            },
+            {
+              "departure": "05:42",
+              "arrival": "05:51",
+              "train": "770"
+            },
+            {
+              "departure": "06:12",
+              "arrival": "06:21",
+              "train": "742"
+            },
+            {
+              "departure": "06:42",
+              "arrival": "06:51",
+              "train": "540"
+            },
+            {
+              "departure": "07:02",
+              "arrival": "07:11",
+              "train": "640"
+            },
+            {
+              "departure": "07:12",
+              "arrival": "07:19",
+              "train": "50"
+            },
+            {
+              "departure": "07:22",
+              "arrival": "07:31",
+              "train": "674"
+            },
+            {
+              "departure": "07:42",
+              "arrival": "07:51",
+              "train": "542"
+            },
+            {
+              "departure": "08:02",
+              "arrival": "08:11",
+              "train": "580"
+            },
+            {
+              "departure": "08:12",
+              "arrival": "08:19",
+              "train": "52"
+            },
+            {
+              "departure": "08:22",
+              "arrival": "08:31",
+              "train": "642"
+            },
+            {
+              "departure": "08:42",
+              "arrival": "08:51",
+              "train": "544"
+            },
+            {
+              "departure": "09:02",
+              "arrival": "09:11",
+              "train": "746"
+            },
+            {
+              "departure": "09:22",
+              "arrival": "09:31",
+              "train": "644"
+            },
+            {
+              "departure": "09:42",
+              "arrival": "09:51",
+              "train": "546"
+            },
+            {
+              "departure": "10:02",
+              "arrival": "10:11",
+              "train": "748"
+            },
             {
               "departure": "10:22",
               "arrival": "10:31",
