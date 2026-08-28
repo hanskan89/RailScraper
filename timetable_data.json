@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-08-27 02:53:33",
-  "service_date": "2026-08-27",
+  "last_updated": "2026-08-28 05:56:57",
+  "service_date": "2026-08-28",
   "stations": {
     "laagri": {
       "name": "Laagri",
@@ -303,11 +303,6 @@
           "to": "laagri",
           "timetable": [
             {
-              "departure": "05:45",
-              "arrival": "06:06",
-              "train": "541"
-            },
-            {
               "departure": "06:05",
               "arrival": "06:26",
               "train": "675"
@@ -563,16 +558,6 @@
           "from": "kivimae",
           "to": "tallinn",
           "timetable": [
-            {
-              "departure": "05:18",
-              "arrival": "05:34",
-              "train": "772"
-            },
-            {
-              "departure": "05:38",
-              "arrival": "05:54",
-              "train": "770"
-            },
             {
               "departure": "06:08",
               "arrival": "06:24",
@@ -834,11 +819,6 @@
           "from": "tallinn",
           "to": "kivimae",
           "timetable": [
-            {
-              "departure": "05:45",
-              "arrival": "06:01",
-              "train": "541"
-            },
             {
               "departure": "06:05",
               "arrival": "06:21",
@@ -1126,16 +1106,6 @@
           "to": "tallinn",
           "timetable": [
             {
-              "departure": "05:24",
-              "arrival": "05:34",
-              "train": "772"
-            },
-            {
-              "departure": "05:44",
-              "arrival": "05:54",
-              "train": "770"
-            },
-            {
               "departure": "06:14",
               "arrival": "06:24",
               "train": "742"
@@ -1396,11 +1366,6 @@
           "from": "tallinn",
           "to": "rahumae",
           "timetable": [
-            {
-              "departure": "05:45",
-              "arrival": "05:55",
-              "train": "541"
-            },
             {
               "departure": "06:05",
               "arrival": "06:15",
@@ -1688,16 +1653,6 @@
           "to": "tallinn",
           "timetable": [
             {
-              "departure": "05:22",
-              "arrival": "05:34",
-              "train": "772"
-            },
-            {
-              "departure": "05:42",
-              "arrival": "05:54",
-              "train": "770"
-            },
-            {
               "departure": "06:12",
               "arrival": "06:24",
               "train": "742"
@@ -1968,11 +1923,6 @@
           "from": "tallinn",
           "to": "nomme",
           "timetable": [
-            {
-              "departure": "05:45",
-              "arrival": "05:57",
-              "train": "541"
-            },
             {
               "departure": "06:05",
               "arrival": "06:17",
@@ -2260,11 +2210,6 @@
           "to": "nomme",
           "timetable": [
             {
-              "departure": "05:48",
-              "arrival": "05:57",
-              "train": "541"
-            },
-            {
               "departure": "06:08",
               "arrival": "06:17",
               "train": "675"
@@ -2540,16 +2485,6 @@
           "from": "nomme",
           "to": "lillekula",
           "timetable": [
-            {
-              "departure": "05:22",
-              "arrival": "05:31",
-              "train": "772"
-            },
-            {
-              "departure": "05:42",
-              "arrival": "05:51",
-              "train": "770"
-            },
             {
               "departure": "06:12",
               "arrival": "06:21",
