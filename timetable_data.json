@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-23 02:12:27",
-  "service_date": "2026-11-23",
+  "last_updated": "2026-11-24 05:43:45",
+  "service_date": "2026-11-24",
   "stations": {
     "laagri": {
       "name": "Laagri",
@@ -46,11 +46,6 @@
           "from": "laagri",
           "to": "tallinn",
           "timetable": [
-            {
-              "departure": "05:33",
-              "arrival": "05:54",
-              "train": "740"
-            },
             {
               "departure": "06:03",
               "arrival": "06:24",
@@ -619,16 +614,6 @@
           "to": "tallinn",
           "timetable": [
             {
-              "departure": "05:18",
-              "arrival": "05:34",
-              "train": "772"
-            },
-            {
-              "departure": "05:38",
-              "arrival": "05:54",
-              "train": "740"
-            },
-            {
               "departure": "06:08",
               "arrival": "06:24",
               "train": "742"
@@ -1181,16 +1166,6 @@
           "to": "tallinn",
           "timetable": [
             {
-              "departure": "05:24",
-              "arrival": "05:34",
-              "train": "772"
-            },
-            {
-              "departure": "05:44",
-              "arrival": "05:54",
-              "train": "740"
-            },
-            {
               "departure": "06:14",
               "arrival": "06:24",
               "train": "742"
@@ -1742,16 +1717,6 @@
           "from": "nomme",
           "to": "tallinn",
           "timetable": [
-            {
-              "departure": "05:22",
-              "arrival": "05:34",
-              "train": "772"
-            },
-            {
-              "departure": "05:42",
-              "arrival": "05:54",
-              "train": "740"
-            },
             {
               "departure": "06:12",
               "arrival": "06:24",
@@ -2675,16 +2640,6 @@
           "from": "nomme",
           "to": "lillekula",
           "timetable": [
-            {
-              "departure": "05:22",
-              "arrival": "05:31",
-              "train": "772"
-            },
-            {
-              "departure": "05:42",
-              "arrival": "05:51",
-              "train": "740"
-            },
             {
               "departure": "06:12",
               "arrival": "06:21",
